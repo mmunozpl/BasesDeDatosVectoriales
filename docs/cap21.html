@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Capítulo 21. Caso de estudio integral – Bases de datos</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cap20.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-654c8d80848ee01bf5d57418afe456c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cap21.html">Capítulo 21. Caso de estudio integral</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Bases de datos</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Alternar modo lector">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 1. La persistencia y la disciplina de gestión de datos</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 2. El modelo relacional</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 3. SQL: del DML declarativo a las extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 4. Diseño y normalización</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 5. Transacciones, concurrencia y recuperación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 6. Límites del relacional y el movimiento NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 7. Consistencia distribuida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 8. Las familias NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 9. Mecánica de la distribución</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 10. Recuperación de información clásica</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 11. De la representación dispersa a la densa</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 12. Deep learning para embeddings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 13. Geometría del espacio métrico</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 14. Anatomía de una base de datos vectorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 15. Índices de vecino aproximado</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 16. Motores: dedicados frente a extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 17. Consulta híbrida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 18. Evaluación y operación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 19. Recuperación aumentada y memoria de agentes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 20. El futuro híbrido</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap21.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Capítulo 21. Caso de estudio integral</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#el-problema-recuperación-de-imágenes-de-aves" id="toc-el-problema-recuperación-de-imágenes-de-aves" class="nav-link active" data-scroll-target="#el-problema-recuperación-de-imágenes-de-aves">El problema: recuperación de imágenes de aves</a></li>
+  <li><a href="#la-arquitectura-los-tres-estratos" id="toc-la-arquitectura-los-tres-estratos" class="nav-link" data-scroll-target="#la-arquitectura-los-tres-estratos">La arquitectura: los tres estratos</a></li>
+  <li><a href="#la-representación-y-el-corpus-del-dato-al-vector" id="toc-la-representación-y-el-corpus-del-dato-al-vector" class="nav-link" data-scroll-target="#la-representación-y-el-corpus-del-dato-al-vector">La representación y el corpus: del dato al vector</a>
+  <ul class="collapse">
+  <li><a href="#del-píxel-al-vector-y-la-construcción-del-corpus" id="toc-del-píxel-al-vector-y-la-construcción-del-corpus" class="nav-link" data-scroll-target="#del-píxel-al-vector-y-la-construcción-del-corpus">Del píxel al vector y la construcción del corpus</a></li>
+  </ul></li>
+  <li><a href="#la-tesis-demostrada-filtro-y-similitud" id="toc-la-tesis-demostrada-filtro-y-similitud" class="nav-link" data-scroll-target="#la-tesis-demostrada-filtro-y-similitud">La tesis demostrada: filtro y similitud</a>
+  <ul class="collapse">
+  <li><a href="#el-prefiltrado-en-la-identificación-en-el-terreno" id="toc-el-prefiltrado-en-la-identificación-en-el-terreno" class="nav-link" data-scroll-target="#el-prefiltrado-en-la-identificación-en-el-terreno">El prefiltrado en la identificación en el terreno</a></li>
+  <li><a href="#vector-único-interacción-tardía-y-el-punto-de-operación" id="toc-vector-único-interacción-tardía-y-el-punto-de-operación" class="nav-link" data-scroll-target="#vector-único-interacción-tardía-y-el-punto-de-operación">Vector único, interacción tardía y el punto de operación</a></li>
+  </ul></li>
+  <li><a href="#más-allá-de-la-imagen-la-ficha-y-lo-multimodal" id="toc-más-allá-de-la-imagen-la-ficha-y-lo-multimodal" class="nav-link" data-scroll-target="#más-allá-de-la-imagen-la-ficha-y-lo-multimodal">Más allá de la imagen: la ficha y lo multimodal</a></li>
+  <li><a href="#la-evaluación-y-el-problema-del-desbalance" id="toc-la-evaluación-y-el-problema-del-desbalance" class="nav-link" data-scroll-target="#la-evaluación-y-el-problema-del-desbalance">La evaluación y el problema del desbalance</a></li>
+  <li><a href="#operar-el-sistema-producción-coste-y-validación" id="toc-operar-el-sistema-producción-coste-y-validación" class="nav-link" data-scroll-target="#operar-el-sistema-producción-coste-y-validación">Operar el sistema: producción, coste y validación</a>
+  <ul class="collapse">
+  <li><a href="#coste-sostenibilidad-y-puesta-en-producción" id="toc-coste-sostenibilidad-y-puesta-en-producción" class="nav-link" data-scroll-target="#coste-sostenibilidad-y-puesta-en-producción">Coste, sostenibilidad y puesta en producción</a></li>
+  <li><a href="#del-prototipo-al-despliegue-validación-deriva-y-ablación" id="toc-del-prototipo-al-despliegue-validación-deriva-y-ablación" class="nav-link" data-scroll-target="#del-prototipo-al-despliegue-validación-deriva-y-ablación">Del prototipo al despliegue: validación, deriva y ablación</a></li>
+  </ul></li>
+  <li><a href="#gobernanza-de-los-datos-de-biodiversidad" id="toc-gobernanza-de-los-datos-de-biodiversidad" class="nav-link" data-scroll-target="#gobernanza-de-los-datos-de-biodiversidad">Gobernanza de los datos de biodiversidad</a>
+  <ul class="collapse">
+  <li><a href="#protección-de-la-ubicación-del-borrado-al-aprendizaje-federado" id="toc-protección-de-la-ubicación-del-borrado-al-aprendizaje-federado" class="nav-link" data-scroll-target="#protección-de-la-ubicación-del-borrado-al-aprendizaje-federado">Protección de la ubicación: del borrado al aprendizaje federado</a></li>
+  <li><a href="#integración-en-la-plataforma-de-ciencia-ciudadana" id="toc-integración-en-la-plataforma-de-ciencia-ciudadana" class="nav-link" data-scroll-target="#integración-en-la-plataforma-de-ciencia-ciudadana">Integración en la plataforma de ciencia ciudadana</a></li>
+  </ul></li>
+  <li><a href="#práctica-la-identificación-medida" id="toc-práctica-la-identificación-medida" class="nav-link" data-scroll-target="#práctica-la-identificación-medida">Práctica: la identificación, medida</a>
+  <ul class="collapse">
+  <li><a href="#la-demostración-una-consulta-de-identificación" id="toc-la-demostración-una-consulta-de-identificación" class="nav-link" data-scroll-target="#la-demostración-una-consulta-de-identificación">La demostración: una consulta de identificación</a></li>
+  <li><a href="#lo-que-la-práctica-enseña-y-lo-que-no" id="toc-lo-que-la-práctica-enseña-y-lo-que-no" class="nav-link" data-scroll-target="#lo-que-la-práctica-enseña-y-lo-que-no">Lo que la práctica enseña, y lo que no</a></li>
+  </ul></li>
+  <li><a href="#el-alcance-del-sistema-usos-generalidad-y-límites" id="toc-el-alcance-del-sistema-usos-generalidad-y-límites" class="nav-link" data-scroll-target="#el-alcance-del-sistema-usos-generalidad-y-límites">El alcance del sistema: usos, generalidad y límites</a>
+  <ul class="collapse">
+  <li><a href="#el-sistema-como-herramienta-de-formación" id="toc-el-sistema-como-herramienta-de-formación" class="nav-link" data-scroll-target="#el-sistema-como-herramienta-de-formación">El sistema como herramienta de formación</a></li>
+  <li><a href="#más-allá-de-las-aves-la-generalidad-del-patrón" id="toc-más-allá-de-las-aves-la-generalidad-del-patrón" class="nav-link" data-scroll-target="#más-allá-de-las-aves-la-generalidad-del-patrón">Más allá de las aves: la generalidad del patrón</a></li>
+  <li><a href="#los-límites-de-lo-que-hemos-construido" id="toc-los-límites-de-lo-que-hemos-construido" class="nav-link" data-scroll-target="#los-límites-de-lo-que-hemos-construido">Los límites de lo que hemos construido</a></li>
+  </ul></li>
+  <li><a href="#síntesis-el-libro-entero-en-una-pieza" id="toc-síntesis-el-libro-entero-en-una-pieza" class="nav-link" data-scroll-target="#síntesis-el-libro-entero-en-una-pieza">Síntesis: el libro entero en una pieza</a></li>
+  <li><a href="#ejercicios-propuestos" id="toc-ejercicios-propuestos" class="nav-link" data-scroll-target="#ejercicios-propuestos">Ejercicios propuestos</a></li>
+  <li><a href="#lecturas-recomendadas" id="toc-lecturas-recomendadas" class="nav-link" data-scroll-target="#lecturas-recomendadas">Lecturas recomendadas</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Capítulo 21. Caso de estudio integral</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Un libro de bases de datos puede terminar de dos maneras: con una mirada al horizonte —que el capítulo&nbsp;20 ya ofreció— o con las manos en una pieza real. Este capítulo final elige lo segundo. No introduce teoría nueva: toma todo lo que el libro ha construido —del modelo relacional a la recuperación vectorial— y lo articula en un sistema único y concreto, un sistema de identificación de especies que recupera imágenes de aves, para demostrar, sobre una sola pieza, la tesis que ha vertebrado la obra: <em>el filtrado estructurado acota, la similitud vectorial ordena, y ninguno de los dos basta por separado</em>.</p>
+<p>El escenario es real y exigente. Un ornitólogo, ante un ave dudosa, quiere ver observaciones pasadas parecidas —para comparar, para recordar, para decidir—, pero no cualquier observación parecida: las del mismo hábitat, de la misma estación, con su especie confirmada y su registro. «Parecida» es una pregunta para la similitud vectorial sobre la imagen; «del mismo hábitat, de esta época del año» es una pregunta para el filtro relacional sobre los metadatos; y «con su especie y su ficha» es una pregunta para el documento. Las tres, a la vez, en una sola consulta. Es el caso perfecto para cerrar el libro porque ninguna de sus partes lo resuelve sola, y porque el valor de equivocarse —en una decisión de conservación— obliga a tomarse en serio cada decisión de diseño que los capítulos anteriores trataron en abstracto.</p>
+<p>El capítulo recorre el sistema entero: el problema y su flujo, la arquitectura que articula los tres estratos, la representación de la imagen como vector, la demostración medida de la tesis, el contraste entre el vector único y la interacción tardía a nivel de región (estilo ColPali) para quien necesite precisión fina, la evaluación con sus métricas y su problema del desbalance, la puesta en producción y la gobernanza de los datos de biodiversidad. Todo se mide en el módulo de la práctica, con embeddings sintéticos en CPU —honestos sobre su naturaleza— que reproducen la <em>dirección</em> de cada fenómeno, que es lo que el diseño necesita. Las cifras de un sistema real se obtienen con sus datos y su codificador; el criterio, que es lo que este libro enseña, se obtiene aquí.</p>
+<section id="el-problema-recuperación-de-imágenes-de-aves" class="level2">
+<h2 class="anchored" data-anchor-id="el-problema-recuperación-de-imágenes-de-aves">El problema: recuperación de imágenes de aves</h2>
+<p>Conviene precisar la tarea, porque su forma dicta la arquitectura. No se trata de <em>clasificar</em> el ave —decir «esto es un mirlo común»— sino de <em>recuperar</em> las observaciones pasadas más útiles para el juicio del naturalista. La diferencia es importante y a menudo se confunde. Un clasificador da una etiqueta y una confianza, y pide al naturalista que confíe en una caja negra; un recuperador da <em>observaciones</em>, con su imagen, su especie confirmada y su registro, y deja el juicio al naturalista, que compara y decide. En un dominio donde la responsabilidad es humana y la explicación, obligatoria, recuperar observaciones comparables es a menudo más valioso —y más defendible— que emitir un veredicto automático. El sistema no sustituye al ornitólogo: le da la memoria visual de todas las observaciones que nunca podría recordar.</p>
+<p>La tarea, además, es naturalmente <em>híbrida</em>. Una consulta de campo útil no es «enséñame aves parecidas» a secas, sino «enséñame aves parecidas <em>que cumplan</em> estas condiciones»: mismo hábitat —un ave de bosque no se compara con una de humedal—, estación del año, a veces sexo o plumaje, y con especie confirmada por un experto, no presunta. Cada una de esas condiciones es un filtro sobre un atributo estructurado; el «parecida» es la similitud sobre la imagen. Y el resultado debe traer el documento completo —la imagen, la ficha de observación, el registro— para que el naturalista lo lea. Filtrar, ordenar por parecido, devolver el documento: los tres estratos del libro, que aquí no son una elección de diseño sino una exigencia de la tarea.</p>
+<p>Conviene insistir en la elección de <em>recuperar</em> y no <em>clasificar</em>, porque marca todo el diseño y es una tentación frecuente. La línea base obvia sería un clasificador: una red que, dada la imagen, emite «mirlo común con probabilidad 0,87». Es directo y, en <em>benchmarks</em>, brilla <span class="citation" data-cites="vanhorn2018">(<a href="#ref-vanhorn2018" role="doc-biblioref">Van Horn et&nbsp;al. 2018</a>)</span>. Pero arrastra dos problemas que en el trabajo de campo pesan. El primero es la <em>explicabilidad</em>: el clasificador da un número, no una razón, y un naturalista —responsable de la identificación— no puede apoyarse en una probabilidad sin ver en qué se basa. El segundo es la <em>rigidez</em>: un clasificador solo sabe las clases con que se entrenó, y ante una presentación atípica o una especie rara que no vio, falla sin avisar.</p>
+<p>El recuperador esquiva ambos. Da <em>observaciones</em>, no etiquetas: el naturalista ve las aves pasadas más parecidas, con su especie confirmada y su registro, y <em>razona</em> por analogía como ya hace en su trabajo de campo —«esto se parece a aquellos tres mirlos comunes que vi»—. La explicación es intrínseca: la evidencia son las observaciones mismas. Y es flexible: ante un ave atípica, recupera lo más parecido que haya, sin pretender encajarla en una caja. No son incompatibles —un sistema maduro puede ofrecer ambos, el recuperador para el juicio y un clasificador como segunda opinión— pero el recuperador es el que respeta el papel del naturalista, y por eso vertebra este caso. La similitud vectorial, aquí, no automatiza la decisión: la informa.</p>
+</section>
+<section id="la-arquitectura-los-tres-estratos" class="level2">
+<h2 class="anchored" data-anchor-id="la-arquitectura-los-tres-estratos">La arquitectura: los tres estratos</h2>
+<p>El sistema articula los tres estratos en un flujo que la figura&nbsp;21.1 resume. Cada imagen del ave, al ingresar, pasa por un <em>codificador</em> —una red de visión, típicamente un <em>vision transformer</em> (ViT)— que la transforma en un vector que captura su apariencia; ese vector se almacena en un <em>índice</em> de vecinos aproximados —un HNSW (capítulo&nbsp;15)— junto a los <em>metadatos</em> estructurados de la observación —hábitat, fecha, especie— en el mismo sistema. Ante una consulta, el motor <em>filtra</em> por los metadatos relevantes, <em>ordena</em> por similitud de los vectores entre los que pasan el filtro, y <em>devuelve</em> las imágenes con sus fichas. Filtro acota, similitud ordena, documento responde.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap21/fig_01.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;21.1.</strong> La arquitectura articula los tres estratos del libro: la imagen pasa por el codificador (ViT) que la vectoriza; la consulta filtra por metadatos relacionales (hábitat, fecha) y ordena por similitud en el índice HNSW; y se devuelve la imagen con su ficha. Filtro acota, similitud ordena.</figcaption>
+</figure>
+</div>
+<p>La elección de las piezas no es arbitraria, y cada una remite a un capítulo. El <em>codificador</em> es el del capítulo&nbsp;12: una red preentrenada que lleva la imagen a un espacio donde la proximidad significa parecido visual, sin entrenarla nosotros. El <em>índice HNSW</em> es el del capítulo&nbsp;15: un grafo navegable que da recall alto a latencia baja sobre cientos de miles de vectores, escogido sobre IVF o PQ por su rendimiento en este rango de escala (capítulo&nbsp;16). El <em>filtro</em> prefiltrado es el del capítulo&nbsp;17 y&nbsp;20: empujado dentro de la búsqueda para no hundirse cuando es selectivo. Y el almacén único —vector, metadatos e imagen juntos— es la convergencia del capítulo&nbsp;20, encarnada aquí en una extensión vectorial sobre un motor relacional (del tipo <em>pgvector</em> sobre PostgreSQL), que da el prefiltrado y la consistencia que dos sistemas separados no darían. El sistema de identificación no inventa nada: <em>compone</em> lo que el libro construyó.</p>
+<p>Esa composición tiene una propiedad que conviene subrayar: las piezas encajan porque <em>comparten el vector</em> como lengua común. El codificador produce un vector; el índice organiza vectores; el filtro acota qué vectores se comparan; la interacción tardía es vectores por región; la convergencia aloja el vector junto al dato. El vector es el sustrato que permite que estratos de orígenes tan distintos —el relacional de los años setenta, el documental de los dos mil, el vectorial de la última década— conversen en una sola consulta. Sin esa lengua común, integrar sería pegar sistemas que no se entienden; con ella, la integración es natural, porque todos hablan de proximidad en un espacio. Que el libro haya terminado en el vector no es casual: es la pieza que hace posible la composición de todo lo demás.</p>
+<p>Vale la pena seguir el sistema en uso, porque el flujo dicta requisitos que el diseño abstracto no ve. Hay dos momentos: la <em>ingesta</em> y la <em>consulta</em>. En la ingesta, cada ejemplar nuevo —una fotografía de campo con sus metadatos— entra al sistema: se vectoriza con el codificador, se almacena el vector junto a los metadatos y la imagen, y se indexa. Un detalle de campo importa aquí: la especie que acompaña a la observación debe ser la <em>confirmada</em> —por un experto, por anillamiento— no la presunta, porque un corpus de etiquetas dudosas contamina toda recuperación posterior. La calidad del sistema empieza en la calidad de la etiqueta, y esa es una decisión del naturalista, no técnica.</p>
+<p>En la consulta, el ornitólogo fotografía el ave dudosa, introduce los metadatos conocidos —hábitat, fecha de la observación— y el sistema responde con las observaciones comparables: del mismo hábitat (prefiltro), ordenadas por parecido (similitud), cada una con su especie confirmada y su ficha (documento). El naturalista las revisa, compara, y <em>decide</em>. El flujo impone tres requisitos que recorren el libro: la consulta ha de ser rápida —segundos, no minutos, para no romper el ritmo del trabajo de campo, lo que fija el punto de operación del índice (capítulo&nbsp;16)—; el resultado ha de ser <em>explicable</em> —observaciones con fuente, no un número—; y el sistema ha de tratar igual de bien lo común y lo raro —de ahí el prefiltrado de la sección&nbsp;21.4.1—. El flujo no es un adorno narrativo: es la fuente de los requisitos que justifican cada pieza.</p>
+</section>
+<section id="la-representación-y-el-corpus-del-dato-al-vector" class="level2">
+<h2 class="anchored" data-anchor-id="la-representación-y-el-corpus-del-dato-al-vector">La representación y el corpus: del dato al vector</h2>
+<section id="del-píxel-al-vector-y-la-construcción-del-corpus" class="level3">
+<h3 class="anchored" data-anchor-id="del-píxel-al-vector-y-la-construcción-del-corpus">Del píxel al vector y la construcción del corpus</h3>
+<p>El corazón del sistema es la representación: cómo una imagen del ave se vuelve un vector cuya proximidad signifique parecido para la identificación. Aquí el capítulo&nbsp;12 da la herramienta —un codificador de visión preentrenado— y el capítulo&nbsp;13, la advertencia —no toda proximidad en el espacio del vector significa lo que queremos—. Un ViT <span class="citation" data-cites="dosovitskiy2021">(<a href="#ref-dosovitskiy2021" role="doc-biblioref"><span class="nocase">Dosovitskiy et&nbsp;al.</span> 2021</a>)</span> o un modelo contrastivo imagen-texto <span class="citation" data-cites="radford2021">(<a href="#ref-radford2021" role="doc-biblioref"><span class="nocase">Radford et&nbsp;al.</span> 2021</a>)</span> preentrenado sobre millones de imágenes produce vectores donde las imágenes visualmente parecidas quedan cerca; pero «visualmente parecido» no es lo mismo que «de la misma especie», y esa brecha es la primera que un sistema serio debe medir y cerrar.</p>
+<p>El problema es concreto. Un codificador genérico, entrenado con fotos de internet, puede juzgar dos aves parecidas por el fondo, la iluminación o la postura, no por los rasgos que importan a la identificación —la barra alar, el anillo ocular, el patrón del plumaje y la forma del pico que componen los rasgos de campo—. El vector captura lo que el codificador aprendió a mirar, y si ese no es lo relevante para la identificación, la similitud ordenará por lo accesorio. Las salidas son las del capítulo&nbsp;12: ajustar el codificador con imágenes del dominio —fotografías de campo, etiquetadas— para que su espacio refleje el parecido entre especies, o usar uno ya especializado en el dominio. Conjuntos como CUB-200 <span class="citation" data-cites="wah2011">(<a href="#ref-wah2011" role="doc-biblioref">Wah et&nbsp;al. 2011</a>)</span> hicieron posible ese ajuste, y trabajos como el del reconocimiento de especies a escala continental <span class="citation" data-cites="vanhorn2018">(<a href="#ref-vanhorn2018" role="doc-biblioref">Van Horn et&nbsp;al. 2018</a>)</span> mostraron que una red puede aprender los rasgos correctos. La lección, heredada del capítulo&nbsp;12, es que el vector es tan bueno como el codificador que lo produce, y que en un dominio especializado el codificador genérico es el punto de partida, no el de llegada.</p>
+<p>Hay una sutileza que conviene no pasar por alto, porque distingue la recuperación de la clasificación también en la representación. Para <em>clasificar</em> basta que el espacio separe las clases —que mirlos comunes y gorriones comunes caigan en regiones distintas—; para <em>recuperar</em> se pide más: que la <em>geometría fina</em> dentro de cada clase sea significativa, de modo que «el mirlo común más parecido a este» tenga sentido, no solo «esto es un mirlo común». Un espacio que clasifica bien puede recuperar mal si dentro de cada clase las distancias son arbitrarias. Por eso el ajuste del codificador para recuperación suele usar objetivos contrastivos —acercar lo que debe estar cerca, alejar lo que debe estar lejos— en vez de la mera clasificación, y por eso la evaluación de la sección&nbsp;21.6 mide la calidad del <em>vecindario</em>, no solo de la frontera. La representación para recuperar es más exigente que para clasificar: no basta agrupar, hay que ordenar dentro del grupo.</p>
+<p>Antes de recuperar nada hay que tener qué recuperar, y en identificación de aves el corpus es el activo más caro y delicado del sistema. No es un volcado de imágenes: es una colección curada de observaciones con su <em>verdad de referencia</em> —la especie confirmada— que es lo que da valor a cada recuperación. Construirlo plantea problemas que el resto del libro dio por resueltos. El primero es la <em>etiqueta</em>: una especie confirmada por un experto —mediante anillamiento, captura o la revisión de un especialista— es cara y lenta de obtener, y un corpus solo de observaciones confirmadas está sesgado hacia los ejemplares que parecieron suficientemente llamativos o accesibles para confirmar —un sesgo de selección que el sistema heredará si no se corrige—.</p>
+<p>El segundo es la <em>calidad de la imagen</em>: fotos tomadas con dispositivos distintos, iluminación variable, distancias no calibradas, producen vectores que reflejan el dispositivo tanto como el ave, y el codificador puede acabar ordenando por «cámara» en vez de por «especie». Normalizar la captura —o enseñar al codificador a ignorar lo accesorio— es trabajo previo que decide la calidad final. El tercero es la <em>representatividad</em>: si el corpus procede de una sola estación de campo, de una sola región, de un solo hábitat, el sistema funcionará bien para esos observadores y mal para los demás —el sesgo que la sección&nbsp;21.8 retomará—. Conjuntos públicos como CUB-200 <span class="citation" data-cites="wah2011">(<a href="#ref-wah2011" role="doc-biblioref">Wah et&nbsp;al. 2011</a>)</span> dieron a la comunidad un punto de partida, pero también enseñaron sus límites: un corpus que no representa a quien lo va a usar es un sistema que falla con quien más lo necesita.</p>
+<p>La lección, que el capítulo&nbsp;3 ya anticipó para el esquema y aquí reaparece para el dato, es que la calidad de un sistema de datos empieza en la calidad de sus datos, y que en biodiversidad esa calidad es una responsabilidad científica además de técnica. Ningún codificador ni índice rescata a un corpus mal etiquetado, mal capturado o poco representativo: la recuperación es tan buena como el corpus sobre el que opera, y construir ese corpus es la mitad del trabajo, invisible y decisiva.</p>
+<p>Hay además una asimetría temporal que conviene anticipar: el corpus se construye una vez con esfuerzo y se usa muchas, pero su valor <em>crece</em> con cada observación bien añadida y <em>se erosiona</em> con cada observación mal añadida. Un solo lote de imágenes con etiquetas erróneas —por un cambio de criterio no documentado, por una tubería de ingestión defectuosa— contamina todas las recuperaciones que lo toquen, y detectar la contaminación a posteriori es difícil porque el sistema sigue «funcionando». De ahí que la disciplina de ingesta —validar la etiqueta, registrar su procedencia y criterio, auditar muestras— no sea burocracia sino la defensa del activo más caro del sistema. En el trabajo de campo, además, esa disciplina tiene un guardián natural: el ornitólogo que confirma la especie, cuyo juicio es la verdad de referencia que ningún algoritmo puede fabricar. El corpus de campo es, en el fondo, conocimiento naturalista acumulado y estructurado, y cuidarlo es cuidar ese conocimiento.</p>
+</section>
+</section>
+<section id="la-tesis-demostrada-filtro-y-similitud" class="level2">
+<h2 class="anchored" data-anchor-id="la-tesis-demostrada-filtro-y-similitud">La tesis demostrada: filtro y similitud</h2>
+<p>Aquí el libro se cierra sobre sí mismo: la práctica mide, sobre el caso de identificación, que ni el filtro ni la similitud bastan solos (figura&nbsp;21.2). Se define la consulta útil para la identificación —recuperar observaciones de la <em>misma especie y el mismo hábitat</em> que el ave de consulta— y se comparan tres estrategias. La <em>similitud sola</em> —el top-<span class="math inline">\(k\)</span> por parecido visual, ignorando el hábitat— acierta la especie pero trae observaciones de cualquier hábitat: precisión baja, porque casi ninguna está en el entorno pedido. El <em>filtro solo</em> —observaciones del mismo hábitat, sin ordenar por parecido— acierta el entorno pero trae especies al azar: precisión intermedia. Y <em>filtro más similitud</em> —del mismo hábitat, ordenadas por parecido— acierta ambas condiciones y gana con claridad.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap21/fig_02.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;21.2.</strong> Precisión@10 de recuperar el caso útil para la identificación (misma especie y hábitat) con tres estrategias. La similitud sola acierta la especie pero ignora el hábitat; el filtro solo acierta el hábitat pero no la especie; juntos ganan. Ninguno basta solo. Datos de <code>src/cap21_caso.py</code>.</figcaption>
+</figure>
+</div>
+<p>Esta figura es, en cierto modo, el resumen de todo el libro en una sola medida. La primera parte enseñó el filtro exacto —el «igual a»— y la tercera, la similitud —el «cercano a»—; aquí se ve que cada uno, solo, deja fuera la mitad de la respuesta, y que la consulta útil los necesita a la vez. El filtro sin similitud trae lo correcto en hábitat pero irrelevante en parecido; la similitud sin filtro trae lo parecido pero en el lugar equivocado. La maquinaria que los une —el prefiltrado dentro del motor, del capítulo&nbsp;20— es la que convierte dos respuestas a medias en una respuesta entera. Nótese, además, que el orden de las barras no es casual: el filtro solo (0,37) supera a la similitud sola (0,17) en este caso, porque acertar el hábitat —una de las dos condiciones— es más probable cuando se garantiza por construcción que cuando se deja al azar de la similitud global. Pero esa ventaja del filtro es engañosa: trae el hábitat correcto con especies al azar, justo lo que un naturalista no quiere. Solo al añadir la similitud <em>dentro</em> del filtro —ordenar por parecido entre los del hábitat— se acierta también la especie, y la barra salta a 0,49. Las cifras concretas dependen del corpus sintético; la ordenación —ambos solos por debajo, juntos por encima— es la que no cambia, y la que importa. No es una metáfora: es una columna de barras, medida sobre un caso concreto, que dice lo que el libro ha venido diciendo desde el principio.</p>
+<section id="el-prefiltrado-en-la-identificación-en-el-terreno" class="level3">
+<h3 class="anchored" data-anchor-id="el-prefiltrado-en-la-identificación-en-el-terreno">El prefiltrado en la identificación en el terreno</h3>
+<p>Que la consulta deba prefiltrar —y no postfiltrar— no es un tecnicismo: en la identificación en el terreno es la diferencia entre un sistema que funciona y uno que falla justo cuando más importa. La práctica lo mide sobre el caso (figura&nbsp;21.3). Muchos filtros relevantes para la identificación son <em>selectivos</em>: un hábitat poco común, una franja estrecha de fechas de observación, una estación del año infrecuente. Cuando el filtro es selectivo, el postfiltrado —traer los <span class="math inline">\(k\)</span> globalmente más parecidos y luego descartar los que no cumplen— se hunde, porque casi ninguno de los más parecidos pertenece a esa minoría; el prefiltrado —buscar solo entre los que cumplen— mantiene el recall perfecto.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap21/fig_03.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;21.3.</strong> recall@10 de la consulta de identificación (observaciones del mismo hábitat, por parecido) con prefiltrado frente a postfiltrado, según la prevalencia del hábitat. Cuanto más raro el hábitat, más se hunde el postfiltrado; el prefiltrado no se inmuta. Datos de <code>src/cap21_caso.py</code>.</figcaption>
+</figure>
+</div>
+<p>La consecuencia para la conservación es seria. Los casos que más importan —un ave en un hábitat inusual, una especie de un grupo poco representado— son precisamente los de filtro selectivo, donde el postfiltrado falla. Un sistema que postfiltra parecerá funcionar en las pruebas con consultas comunes y <em>fallará en silencio</em> en los casos raros, que son los que más necesitan el apoyo. Por eso la arquitectura del capítulo&nbsp;20 —un motor que prefiltra, con el vector junto a los metadatos— no es aquí una preferencia de ingeniería sino un requisito de fiabilidad: el sistema debe rendir igual de bien en lo común y en lo raro, y solo el prefiltrado lo garantiza. La decisión técnica tiene, para la conservación, una consecuencia ética.</p>
+</section>
+<section id="vector-único-interacción-tardía-y-el-punto-de-operación" class="level3">
+<h3 class="anchored" data-anchor-id="vector-único-interacción-tardía-y-el-punto-de-operación">Vector único, interacción tardía y el punto de operación</h3>
+<p>Hay una limitación del vector único que en imagen de aves se vuelve crítica, y que el libro anticipó al hablar de la interacción tardía (capítulo&nbsp;17). Cuando una imagen se resume en un solo vector —el promedio de su contenido— una señal que vive en una <em>región pequeña</em> se diluye: un mirlo común cuyo rasgo distintivo ocupa una esquina de la observación produce un vector global dominado por el resto, poco informativo, de la imagen (figura&nbsp;21.4). El vector único, bueno para el parecido global, es ciego al detalle local que a veces lo es todo.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap21/fig_04.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;21.4.</strong> Vector único frente a interacción tardía. Arriba: la imagen se resume en un vector (media de parches) y la señal de una región pequeña se diluye. Abajo: cada parche conserva su vector y la consulta casa con el parche que lleva la señal (max-sim), sin diluirla.</figcaption>
+</figure>
+</div>
+<p>La interacción tardía —estilo ColBERT en texto <span class="citation" data-cites="khattab2020">(<a href="#ref-khattab2020" role="doc-biblioref">Khattab y Zaharia 2020</a>)</span>, ColPali en documentos visuales <span class="citation" data-cites="colpali2024">(<a href="#ref-colpali2024" role="doc-biblioref">Faysse et&nbsp;al. 2024</a>)</span>— resuelve esto representando la imagen no con un vector sino con <em>muchos</em>, uno por región (parche), y midiendo la similitud como el mejor casamiento parche a parche (max-sim) en vez del producto de dos vectores únicos. El trabajo de campo mide la ganancia (figura&nbsp;21.5): cuando la señal discriminante vive en una región pequeña, el vector único casi nunca recupera el ejemplar relevante, mientras la interacción tardía lo recupera, y su recall crece con la fuerza de la señal local. Donde el detalle importa, mirar por regiones bate a mirar el promedio.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap21/fig_05.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;21.5.</strong> recall@10 del ejemplar relevante según la fuerza de la señal local: vector único (media de parches) frente a interacción tardía (max-sim sobre parches, estilo ColPali). El vector único diluye la señal local; la interacción tardía la conserva. Datos de <code>src/cap21_caso.py</code>.</figcaption>
+</figure>
+</div>
+<p>El contraste tiene su precio, y el capítulo&nbsp;17 ya lo nombró: la interacción tardía guarda muchos vectores por imagen en vez de uno —más memoria— y compara conjuntos en vez de vectores —más cómputo—. No es gratis, y por eso no se usa siempre: para el parecido global —«aves que se parezcan a esta en conjunto»— el vector único basta y es mucho más barato. La interacción tardía se reserva para cuando el detalle local identifica la especie y el vector único lo perdería, que en la fotografía de campo ocurre justo en los casos difíciles. Es, de nuevo, una decisión de adecuación: tanta resolución como el caso exija, y no más. El sistema maduro ofrece las dos y elige según la pregunta.</p>
+<p>Hay un punto intermedio que conviene mencionar, porque ilustra que las opciones no son binarias. Se puede usar el vector único para una <em>primera criba</em> barata —recuperar, digamos, las cien observaciones globalmente más parecidas, rápido y con poca memoria— y aplicar la interacción tardía, cara, solo a reordenar esas cien por el detalle local. Es exactamente el patrón de dos etapas del capítulo&nbsp;17 —recuperar barato y amplio, reordenar caro y fino— ahora con el vector único como recuperador y la interacción tardía como reordenador. Así se paga el coste de la resolución fina solo sobre un puñado de candidatos, no sobre todo el corpus, y se obtiene casi la precisión de la interacción tardía a casi el coste del vector único. La arquitectura del libro vuelve a encajar: lo que en el capítulo&nbsp;17 fue bi-encoder más cross-encoder, aquí es vector único más interacción tardía, la misma idea servida sobre imagen.</p>
+<p>El sistema de identificación de especies fija un punto de operación que ilustra bien la lección del capítulo&nbsp;16: la elección del índice y sus parámetros no es universal, sino que la dicta el caso. La escala es moderada —una plataforma de ciencia ciudadana acumula decenas o cientos de miles de observaciones, una red grande quizá millones, lejos de los miles de millones de un buscador web— y eso, por sí solo, descarta algunas opciones y favorece otras. A esta escala, un HNSW <span class="citation" data-cites="malkov2018">(<a href="#ref-malkov2018" role="doc-biblioref">Malkov y Yashunin 2020</a>)</span> en memoria da recall alto a latencia de milisegundos sin la complejidad de las particiones distribuidas que solo la escala extrema justifica; el IVF o el PQ, pensados para comprimir y distribuir lo masivo, serían aquí complejidad sin beneficio.</p>
+<p>Pero el punto de operación lo fija, sobre todo, la <em>asimetría del coste del error</em>. En un buscador web, perder un resultado relevante es un inconveniente; en la identificación en el terreno, no recuperar una observación que habría cambiado el juicio del naturalista puede invalidar el registro. Eso inclina el punto de operación hacia el <em>recall alto</em>, aun a costa de latencia o de cómputo: se prefiere sondear más —más <span class="math inline">\(ef\)</span> en el HNSW, más candidatos— y tardar un poco más, a arriesgarse a perder el ejemplar relevante. La latencia tolerable la fija el flujo de la sección&nbsp;21.2: la consulta es de apoyo, no de tiempo real estricto, así que unos cientos de milisegundos son aceptables, y ese margen se gasta en recall. La curva recall-latencia del capítulo&nbsp;16 sigue siendo la misma; lo que cambia, y lo que el caso enseña, es <em>dónde</em> situarse en ella: en la identificación de aves, arriba en recall, porque el coste de fallar lo exige. No hay un punto de operación «correcto» en abstracto; hay uno correcto para cada caso, y el de campo es de los que más recall piden.</p>
+</section>
+</section>
+<section id="más-allá-de-la-imagen-la-ficha-y-lo-multimodal" class="level2">
+<h2 class="anchored" data-anchor-id="más-allá-de-la-imagen-la-ficha-y-lo-multimodal">Más allá de la imagen: la ficha y lo multimodal</h2>
+<p>El caso, tal como se ha presentado, recupera por imagen; pero un sistema de identificación maduro rara vez se queda en la imagen sola, y aquí confluyen el capítulo&nbsp;12 y el&nbsp;19. Cada observación lleva, además de la foto, una <em>ficha de observación</em> —texto libre: notas de campo, descripción, comportamiento— y a veces otros datos. Un sistema completo puede recuperar por imagen, por texto, o por ambos: el codificador multimodal del capítulo&nbsp;12 lleva imagen y texto a un espacio común, de modo que «aves que se parezcan a esta <em>y</em> cuya ficha mencione canto agudo y vuelo bajo» es una consulta que combina similitud visual y textual. La maquinaria es la misma —vectorizar, indexar, recuperar por similitud— generalizada a dos modalidades.</p>
+<p>Y sobre eso se puede montar el patrón del capítulo&nbsp;19: un RAG de campo <span class="citation" data-cites="lewis2020">(<a href="#ref-lewis2020" role="doc-biblioref">Lewis et&nbsp;al. 2020</a>)</span> que recupere los ejemplares comparables y sus fichas, y se los entregue a un modelo que redacte un resumen —«de las cinco observaciones más parecidas, cuatro fueron gorriones comunes y una, mirlo común; los rasgos compartidos son...»— con las fuentes a la vista para que el naturalista verifique. Aquí reaparecen, intactas, todas las cautelas del capítulo&nbsp;19: la fidelidad (que el resumen se apoye en las observaciones, no invente), la citación (que cada afirmación apunte a su ejemplar), la abstención (que admita cuando los ejemplares no bastan). El sistema de identificación no es, pues, una isla: es el punto donde confluyen la representación multimodal, la recuperación híbrida, el patrón RAG y la convergencia de motores —el libro entero, una vez más, articulado sobre una pieza que importa—. Que todas las piezas encajen sin fricción sobre un caso real es la mejor prueba de que no eran piezas sueltas, sino partes de un mismo edificio.</p>
+<p>Conviene una cautela, sin embargo, para no prometer de más: combinar modalidades no es gratis ni automáticamente mejor. Fundir la similitud visual y la textual exige decidir <em>cómo</em> se combinan —con qué peso, con la fusión de rangos del capítulo&nbsp;17, con un reordenado—, y una combinación mal calibrada puede rendir peor que la mejor modalidad sola, porque el ruido de una arrastra a la otra. La regla del capítulo&nbsp;17 se mantiene: añadir una señal solo ayuda si aporta información que la otra no tenía, y hay que <em>medir</em> que así sea, no suponerlo. En la identificación de aves, la imagen suele ser la señal dominante y el texto, un complemento que afina; invertir esa jerarquía sin medirla degradaría el sistema. Lo multimodal amplía lo que se puede preguntar, pero hereda toda la disciplina de evaluación del libro: más modalidades, más que medir, no menos.</p>
+<p>Un ejemplo concreto fija las ideas. Un observador sube a la plataforma una observación de un ave pequeña posada en un humedal —un hábitat poco frecuente en el corpus, de difícil cobertura, donde el ornitólogo tiene menos experiencia acumulada—. La imagen es ambigua: podría ser un gorrión común o un mirlo común joven. El naturalista fotografía el ejemplar, indica el hábitat (humedal) y la fecha de observación, y consulta el sistema.</p>
+<p>Aquí cada decisión de diseño del capítulo se vuelve tangible. El <em>prefiltrado</em> por hábitat (sección&nbsp;21.4.1) es crucial: el humedal es raro, y un postfiltrado habría traído observaciones parecidas de bosque o de matorral —inútiles, porque la apariencia varía con el hábitat— mientras el prefiltrado trae solo las del humedal. La <em>interacción tardía</em> (sección&nbsp;21.4.2) puede marcar la diferencia si el rasgo distintivo ocupa una región pequeña —una barra alar, un anillo ocular— que el vector único diluiría. El <em>desbalance</em> (sección&nbsp;21.6) es el riesgo de fondo: si el corpus tiene pocos mirlos comunes de humedal —y los tiene, por raro— el sistema podría no recuperar la observación comparable que orientaría al naturalista, y por eso la evaluación por subgrupo y la mitigación del desbalance no son lujos. Y el <em>papel del ornitólogo</em> (sección&nbsp;21.8) es el marco: el sistema le muestra los ejemplares comparables —tres gorriones comunes y un mirlo común confirmado por un experto, con sus fichas— y es él quien, viéndolos, decide la especie. El sistema no dijo «mirlo común»; le dio al ornitólogo la memoria que no tenía, y la decisión siguió siendo suya. Ese es, en un caso, el valor y el límite del sistema.</p>
+</section>
+<section id="la-evaluación-y-el-problema-del-desbalance" class="level2">
+<h2 class="anchored" data-anchor-id="la-evaluación-y-el-problema-del-desbalance">La evaluación y el problema del desbalance</h2>
+<p>Evaluar el sistema es aplicar el capítulo&nbsp;18 con el rigor que la identificación de especies exige, y trae a la luz un problema que en el trabajo de campo es ineludible: el <em>desbalance</em>. Un corpus de observaciones, como la realidad que refleja, está desequilibrado —muchos gorriones comunes, pocos mirlos comunes, muy pocas especies raras— y la recuperación hereda ese desequilibrio (figura&nbsp;21.6). La práctica lo mide: la precisión de recuperar la misma especie es alta para las clases frecuentes (el gorrión común, con más de la mitad del corpus, supera el 70 %) y baja para las raras (el mirlo común, la abubilla, el alimoche, por debajo del 30 %), porque para una consulta de una clase rara hay pocos ejemplos de la misma especie entre los que recuperar.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap21/fig_06.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;21.6.</strong> Precisión@10 por especie, de más a menos frecuente. Las especies raras se recuperan peor que las frecuentes: la recuperación hereda el desbalance del corpus, y la observación más valiosa para la conservación suele ser la rara. Datos de <code>src/cap21_caso.py</code>.</figcaption>
+</figure>
+</div>
+<p>La importancia de esto es máxima para la conservación, y conviene no maquillarla. Las clases raras —el alimoche, la abubilla— son justamente las <em>escasas o amenazadas</em>, las que el sistema más debería ayudar a reconocer, y son las que peor recupera, por la misma razón estadística de la concentración del capítulo&nbsp;13: en un mar de gorriones, el alimoche destaca menos. Un sistema que se evalúe solo con la precisión <em>media</em> ocultará este fallo bajo el buen rendimiento de la clase común, exactamente el «promedio que engaña» que el capítulo&nbsp;18 advirtió. La evaluación honesta de un sistema de identificación debe medir <em>por clase</em> —y especialmente sobre las especies críticas—, no en agregado, y aceptar que el caso raro es donde el sistema es más débil justo cuando ha de ser más fuerte. Mitigarlo —sobremuestrear las clases raras, ponderar, recoger más observaciones— es parte del diseño; ignorarlo es una negligencia con consecuencias.</p>
+<p>Conviene precisar qué métricas usar, porque el capítulo&nbsp;18 ofreció varias y aquí la elección tiene peso para la conservación. La <em>precisión@k</em> —cuántos de los <span class="math inline">\(k\)</span> recuperados son de la misma especie— mide la pureza de lo que el naturalista ve, y es la natural para «enséñame ejemplares comparables». Pero en un sistema de apoyo a la identificación importa también el <em>recall</em> sobre la especie crítica: ¿de todos los alimoches comparables que había, cuántos se recuperaron? Perder uno —un falso negativo en la recuperación— es el error caro. Y como las clases están desbalanceadas, conviene una métrica que no se deje dominar por la clase común: medir por clase y <em>promediar las clases</em>, no las observaciones, para que el alimoche pese lo mismo que el gorrión pese a ser mucho menos frecuente. La elección de la métrica, lejos de ser un tecnicismo, codifica qué errores se consideran graves; en conservación, esa elección es una decisión científica disfrazada de fórmula.</p>
+<p>Un sistema de identificación responsable se conoce por cómo falla, y conviene catalogar sus modos de error porque cada uno pide una defensa. El primero es la <em>observación fuera de distribución</em>: una imagen que no se parece a nada del corpus —una especie rara, un encuadre de captura inusual—. El recuperador, que siempre devuelve los <span class="math inline">\(k\)</span> más cercanos, traerá ejemplares <em>poco</em> parecidos sin avisar de que lo son: el riesgo es que el naturalista tome por comparables observaciones que no lo son. La defensa es declarar la <em>distancia</em>: si el caso más cercano está lejos, el sistema debe decirlo —«no hay ejemplares muy parecidos en el corpus»— en vez de presentar resultados con falsa confianza. Es la abstención del capítulo&nbsp;19, trasladada a la imagen.</p>
+<p>El segundo es el <em>filtro que vacía</em>: una combinación de metadatos tan específica que ningún ejemplar la cumple —un hábitat raro en una estación rara con un plumaje raro— y el prefiltrado devuelve un conjunto vacío o mínimo. La defensa es relajar el filtro de forma controlada —ampliar la franja de fechas, agrupar hábitats vecinos— y avisar de que se ha hecho, para que el naturalista sepa que los ejemplares no son del filtro exacto. El tercero es el <em>atajo que domina</em>: una marca de agua, una rama, una etiqueta de anillamiento, que el codificador toma por rasgo y que hace recuperar observaciones que comparten el atajo, no el ave. La defensa está en el dato y el codificador (secciones&nbsp;21.3.1 y&nbsp;21.3.1): normalizar la captura, enseñar al modelo a ignorar lo accesorio. El cuarto, ya visto, es el <em>fallo silencioso del desbalance</em>: peor recuperación en la clase rara, que solo la evaluación por subgrupo detecta. Catalogar estos fallos no es pesimismo: es la condición para defenderse de ellos, y un sistema que no sabe cómo se equivoca no está listo para el trabajo de campo.</p>
+</section>
+<section id="operar-el-sistema-producción-coste-y-validación" class="level2">
+<h2 class="anchored" data-anchor-id="operar-el-sistema-producción-coste-y-validación">Operar el sistema: producción, coste y validación</h2>
+<section id="coste-sostenibilidad-y-puesta-en-producción" class="level3">
+<h3 class="anchored" data-anchor-id="coste-sostenibilidad-y-puesta-en-producción">Coste, sostenibilidad y puesta en producción</h3>
+<p>El sistema tiene una economía que decide su viabilidad, y que reúne las lecciones de coste de los capítulos&nbsp;18 y&nbsp;20 sobre una pieza. El <em>almacenamiento</em> domina a escala: cada observación guarda su imagen —pesada— y su vector, y si se usa interacción tardía, muchos vectores por imagen en vez de uno, multiplicando la huella. La cuantización del capítulo&nbsp;18 es lo que mantiene esto a raya: un vector en 128 bytes en vez de 512 es la diferencia entre un coste asumible y uno que crece sin control a medida que el corpus acumula años de observaciones. El <em>cómputo de ingestión</em> es el segundo coste: vectorizar cada imagen nueva con el codificador —y, si es un modelo grande, en hardware acelerado— tiene un precio recurrente que al ritmo de una plataforma de ciencia ciudadana suma.</p>
+<p>Pero el coste que más decide es el <em>humano</em>, y a menudo se olvida. Construir y mantener el corpus —etiquetar con especies confirmadas, curar la calidad, auditar el sesgo— requiere tiempo de ornitólogos expertos, que es caro y escaso; y validar y monitorizar el sistema (sección&nbsp;21.7.2) consume trabajo de revisión continuo. Un sistema técnicamente brillante que exija más trabajo humano del que ahorra no es sostenible, por bueno que sea su recall. La sostenibilidad de un sistema de identificación de especies no se mide solo en servidores sino en horas de experto, y diseñarlo para <em>reducir</em> esa carga —automatizar la ingesta, hacer la consulta rápida, presentar las observaciones de forma que el naturalista las lea en segundos— es tan importante como afinar el índice. La tecnología más elegante fracasa si nadie tiene tiempo de operarla.</p>
+<p>Llevar el sistema a producción es aplicar los capítulos&nbsp;18 y&nbsp;20 a una pieza con requisitos de campo. El <em>índice</em> es un HNSW sobre la extensión vectorial del motor relacional, con sus parámetros (<span class="math inline">\(M\)</span>, <span class="math inline">\(ef\)</span>) ajustados al punto de operación que el caso exige: en identificación, recall alto —perder una observación relevante es grave— aun a costa de algo de latencia, porque la consulta no es de tiempo real estricto sino de apoyo al juicio del experto. La <em>frescura</em> (capítulo&nbsp;20) importa: el corpus crece con cada observación nueva y se corrige cuando un experto confirma o refuta una especie, y el índice debe reflejar esas altas y correcciones; el vector junto al dato, en un solo motor, hace que la corrección de la especie y la actualización del índice ocurran en la misma transacción.</p>
+<p>La <em>cuantización</em> (capítulo&nbsp;18) entra por el coste: a escala de una plataforma de ciencia ciudadana o de una red de estaciones de campo, millones de imágenes con sus vectores —y, si se usa interacción tardía, muchos vectores por imagen— hacen del almacenamiento un factor real, y comprimir el vector es lo que mantiene la factura a raya. Y la <em>evaluación continua</em> (capítulo&nbsp;18) vigila la deriva: si cambian los equipos de captura, las regiones muestreadas o el codificador, la calidad puede degradarse en silencio, y un cuadro de métricas por clase —con alertas sobre las críticas— es lo que lo detecta antes de que una observación se pierda. La puesta en producción de un sistema de identificación de especies no es distinta, en su mecánica, de la de cualquier sistema vectorial; lo distinto es que el coste del fallo se mide en valor científico y de conservación, y eso eleva el listón de cada decisión.</p>
+</section>
+<section id="del-prototipo-al-despliegue-validación-deriva-y-ablación" class="level3">
+<h3 class="anchored" data-anchor-id="del-prototipo-al-despliegue-validación-deriva-y-ablación">Del prototipo al despliegue: validación, deriva y ablación</h3>
+<p>Hay un abismo entre el sistema que funciona en una demostración y el que se despliega en una plataforma real de biodiversidad, y conviene nombrarlo porque es donde muchos proyectos prometedores se detienen. Un sistema que apoya decisiones de conservación es, en muchos contextos, una herramienta sujeta a exigencias de gobernanza de datos, y eso impone exigencias que ningún capítulo técnico cubre del todo. La primera es la <em>validación en el terreno</em>: no basta con que las métricas del capítulo&nbsp;18 salgan bien en un conjunto de prueba; hay que demostrar, en un estudio prospectivo y con observadores reales, que el sistema mejora —o al menos no empeora— las identificaciones del naturalista. Esa validación es lenta, cara y ajena a la ingeniería, pero es la que separa una herramienta usable de una demostración.</p>
+<p>La segunda es la <em>trazabilidad y el versionado</em>. En una herramienta de referencia, cada respuesta debe poder reconstruirse: con qué versión del codificador se generó cada vector, qué había en el índice ese día, qué parámetros tenía el sistema. La consistencia y el versionado del capítulo&nbsp;20 dejan de ser buenas prácticas y se vuelven requisitos de fiabilidad: cuando el codificador se actualiza, no se puede simplemente reindexar y seguir; hay que revalidar, porque el sistema ha cambiado. La tercera es la <em>monitorización en producción</em>: una herramienta de identificación no se despliega y se olvida, se vigila —con las métricas por subgrupo de la sección 21.8— para detectar la deriva antes de que dañe, y con un canal para que los naturalistas reporten fallos.</p>
+<p>La lección, que cierra la parte de operación del libro, es que la distancia entre el prototipo y el despliegue en el terreno no es técnica sino de <em>rigor</em>: el prototipo demuestra que se puede; el despliegue demuestra que es fiable, una y otra vez, sobre observaciones reales. El libro ha enseñado a construir el sistema; desplegarlo para la identificación de especies exige, además, la humildad de validarlo como lo que es —algo de lo que depende una decisión de conservación— y de aceptar que la mayor parte de ese trabajo ocurre después de que el código funcione.</p>
+<p>Una consecuencia práctica de este rigor es que el sistema debe diseñarse, desde el principio, para ser <em>auditable</em>. No basta con que funcione; tiene que poder <em>demostrar</em> que funcionó, observación por observación, ante quien lo cuestione —un comité científico, un gestor del corpus, un observador—. Eso impone decisiones de arquitectura tempranas: registrar cada consulta y su resultado, conservar las versiones del codificador y del índice, poder reconstruir qué habría devuelto el sistema en una fecha pasada. Son requisitos que un prototipo ignora y una herramienta de referencia no puede, y que encarecen el desarrollo de formas que sorprenden a quien viene del software de consumo. La diferencia entre una demostración deslumbrante y un sistema desplegable es, en buena medida, todo este andamiaje invisible de trazabilidad y validación, que no añade ni una décima de recall pero sin el cual el recall no importa, porque el sistema no llega al observador. Conviene saberlo antes de empezar: en biodiversidad, el código es la punta del iceberg.</p>
+<p>El capítulo&nbsp;18 enseñó que un índice se degrada cuando los datos cambian; en la identificación de aves, ese cambio tiene formas propias que conviene reconocer, porque ocurren despacio y se notan tarde. La primera es la <em>deriva del dispositivo</em>: los equipos de captura se renuevan, y las imágenes de la cámara nueva pueden diferir sutilmente de las viejas —color, resolución, enfoque— de modo que el codificador las sitúa en una región distinta del espacio, y una observación nueva deja de parecerse a las viejas comparables por una distorsión técnica, no biológica. La segunda es la <em>deriva de la distribución</em>: si la plataforma empieza a recibir observaciones de regiones o hábitats distintos, el corpus histórico representa cada vez peor a los ejemplares actuales.</p>
+<p>La tercera, y la más sutil, es la <em>deriva de los criterios</em>: la propia taxonomía evoluciona —cambian las clasificaciones, se redefinen especies, se dividen y fusionan taxones— de modo que una especie confirmada hace diez años puede no corresponder a lo que hoy se llamaría igual. El corpus, entonces, no solo envejece en sus imágenes sino en sus <em>etiquetas</em>, y una observación antigua bien recuperada puede llevar una etiqueta que ya no significa lo mismo. Esto no tiene equivalente en un buscador web, y es propio de un dominio de conocimiento vivo. Las defensas son las del capítulo&nbsp;18 más una de campo: monitorizar la distribución de las observaciones nuevas frente al corpus, revalidar periódicamente, y —crucial— mantener trazable qué criterio taxonómico se usó para cada etiqueta, de modo que una re-etiquetación sea posible cuando los criterios cambien. La deriva del corpus recuerda que el corpus no es un activo que se construye una vez, sino uno que se cuida indefinidamente, y que en biodiversidad ese cuidado incluye revisar el significado de lo que se guardó.</p>
+<p>Un sistema que compone tantas piezas —codificador, filtro, prefiltrado, interacción tardía, reordenado— invita a una pregunta honesta: ¿cada una aporta de verdad, o algunas están porque sí? La respuesta rigurosa es el <em>estudio de ablación</em>, que el capítulo&nbsp;18 sugirió y aquí se vuelve obligatorio: medir el sistema completo y luego quitar una pieza cada vez, viendo cuánto cae la calidad. Si quitar el prefiltrado y postfiltrar no cambia nada, el prefiltrado sobraba; si quitarlo hunde el recall en las especies raras, está justificado. La ablación convierte la fe en evidencia: cada componente se queda porque se ha medido que su ausencia empeora, no porque suene bien.</p>
+<p>La ablación tiene, en este sistema, un valor doble. Técnicamente, evita la complejidad injustificada —cada pieza cuesta operarla, y una que no mejora es deuda—. Para la identificación, es parte de la validación: ante un comité científico o un gestor del corpus, «añadimos la interacción tardía porque mejora el recall del mirlo común del 0,6 al 0,8 en el estudio de ablación» es un argumento defendible, mientras «la añadimos porque es lo último» no lo es. La figura 21.2 de la tesis es, de hecho, una ablación en miniatura: muestra el sistema con filtro y similitud frente a quitar uno u otro, y mide que ambos hacen falta. Generalizar esa disciplina a cada componente —medir el sistema con y sin él, sobre todo en las clases críticas— es lo que distingue un sistema diseñado de uno acumulado, y es la última aplicación, sobre el caso integral, de la lección que ha recorrido el libro: no afirmar sin medir.</p>
+</section>
+</section>
+<section id="gobernanza-de-los-datos-de-biodiversidad" class="level2">
+<h2 class="anchored" data-anchor-id="gobernanza-de-los-datos-de-biodiversidad">Gobernanza de los datos de biodiversidad</h2>
+<p>Un sistema que toca datos de observadores y apoya decisiones de conservación añade, sobre la gobernanza del capítulo&nbsp;20, una capa de exigencias propias que ningún diseño responsable puede ignorar. La <em>protección de la ubicación</em> es la primera: las imágenes y los metadatos de una especie amenazada son datos sensibles —revelan dónde está un ejemplar raro—, y el sistema debe controlar quién busca sobre qué —el prefiltrado puede incorporar el filtro de permisos, de modo que un observador solo recupere observaciones a las que tiene acceso—; además, como advirtió el capítulo&nbsp;20, del vector se puede reconstruir parte de la imagen, así que el propio vector es dato sensible y se gobierna como tal. El <em>borrado</em> —el derecho del observador a que sus datos se eliminen— obliga a quitar la imagen, sus metadatos y su vector del índice, con la dificultad, ya vista, de borrar en un índice HNSW.</p>
+<p>El <em>sesgo</em> es la segunda exigencia, y enlaza con el desbalance de la sección&nbsp;21.6. Si el corpus sobrerrepresenta un hábitat, el sistema recuperará peor para las observaciones de hábitats poco representados —un sesgo que en biodiversidad se traduce en un mapa incompleto de la fauna—. Auditar el sistema por subgrupos, no solo en agregado, es una obligación, no un extra; y la composición del corpus es una decisión científica y de conservación, no solo técnica. La tercera, y la que ordena las demás, es el <em>papel del naturalista</em>: el sistema recupera, no identifica, y la decisión es y debe seguir siendo humana. Su valor está en ampliar la memoria del experto —ofrecerle las observaciones comparables que no podría recordar— no en sustituir su juicio. Diseñarlo como apoyo, con sus fuentes a la vista y su incertidumbre declarada, no como oráculo, es lo que lo hace a la vez útil y responsable. La tecnología del libro, aquí, sirve al juicio humano; no lo reemplaza.</p>
+<p>Conviene cerrar la gobernanza con una reflexión sobre la <em>confianza</em>, que es el recurso que un sistema de identificación gana o pierde. Un sistema que acierta casi siempre pero falla en silencio en la especie rara —sin avisar de que no tiene observaciones comparables, presentando lo poco parecido como si fuera mucho— erosiona la confianza del naturalista más que uno que acierta menos pero declara su incertidumbre. La honestidad del sistema —decir «no sé», mostrar la distancia, avisar de que relajó un filtro— no es solo buena ingeniería: es lo que hace que un experto lo adopte y lo use bien, sin sobreconfiar ni desecharlo. La calibración del capítulo&nbsp;18 reaparece aquí con su consecuencia más práctica: un sistema bien calibrado, que sabe lo que no sabe, es un sistema en el que se puede confiar; uno sobreconfiado es peligroso justo porque es persuasivo. En la identificación de especies, la humildad del sistema es una característica de seguridad.</p>
+<section id="protección-de-la-ubicación-del-borrado-al-aprendizaje-federado" class="level3">
+<h3 class="anchored" data-anchor-id="protección-de-la-ubicación-del-borrado-al-aprendizaje-federado">Protección de la ubicación: del borrado al aprendizaje federado</h3>
+<p>La protección de la ubicación merece más que el párrafo de la gobernanza, porque en imagen de campo plantea un problema que la convergencia del capítulo&nbsp;20 vuelve agudo: para que el sistema sea bueno necesita muchas observaciones, pero las observaciones de especies amenazadas son datos que no pueden salir libremente de la estación de campo que los custodia, por el riesgo de furtivismo. La tensión —más datos mejoran el sistema, pero los datos no se pueden compartir— es central, y tiene respuestas técnicas que conviene conocer.</p>
+<p>La primera, modesta, es la <em>anonimización</em>: quitar de los metadatos lo que revela la ubicación exacta del ejemplar. Pero no basta, por dos razones que el capítulo&nbsp;20 ya insinuó. Una: la propia imagen puede delatar el lugar —un fondo reconocible, un mojón, un rasgo del terreno— y el vector derivado conserva parte de esa información, de modo que compartir vectores no es tan inocuo como parece. Otra: con suficientes metadatos «anónimos» —estación, hábitat, fecha, comarca— se puede re-identificar el emplazamiento. La anonimización reduce el riesgo, no lo elimina.</p>
+<p>La respuesta más ambiciosa es el <em>aprendizaje federado</em> <span class="citation" data-cites="mcmahan2017">(<a href="#ref-mcmahan2017" role="doc-biblioref">McMahan et&nbsp;al. 2017</a>)</span>: en vez de llevar los datos al modelo, llevar el modelo a los datos. Cada estación de campo entrena o ajusta el codificador con sus observaciones, localmente, y comparte solo los <em>parámetros aprendidos</em> —no las imágenes—, que se agregan en un modelo común. Así el codificador mejora con la diversidad de muchas estaciones sin que ninguna imagen salga de su lugar de origen. Es una idea elegante que encaja con la naturaleza del problema —el dato es local y sensible, el conocimiento puede ser compartido— pero trae sus propios retos: los parámetros también filtran información (hay que protegerlos), las estaciones tienen distribuciones distintas (el modelo agregado puede no servir a todas por igual, otra cara del sesgo), y coordinar el entrenamiento entre instituciones es complejo. No es una bala de plata, pero es la dirección en que la protección de la ubicación y la calidad dejan de ser un dilema de suma cero. La lección, prospectiva como el capítulo&nbsp;20, es que el futuro de los sistemas de identificación pasa por aprender de datos que nunca se centralizan.</p>
+</section>
+<section id="integración-en-la-plataforma-de-ciencia-ciudadana" class="level3">
+<h3 class="anchored" data-anchor-id="integración-en-la-plataforma-de-ciencia-ciudadana">Integración en la plataforma de ciencia ciudadana</h3>
+<p>Un sistema de identificación no vive en el vacío: vive dentro de la infraestructura informática de la plataforma de ciencia ciudadana, y esa integración decide si se usa o se ignora. Las fotografías de campo no están en una carpeta suelta sino en un repositorio de observaciones; los metadatos del ejemplar, en la ficha de observación; y el naturalista trabaja en esas herramientas, no en una aplicación aparte. Un sistema de recuperación que obligue al observador a salir de su flujo —abrir otra aplicación, copiar datos, volver— añade fricción, y la fricción es lo que mata la adopción de una herramienta de campo, por buena que sea.</p>
+<p>La integración impone requisitos que recorren el libro desde el otro extremo. La <em>ingesta</em> debe conectarse a las fuentes existentes —leer las imágenes nuevas del repositorio, los metadatos de la ficha— sin duplicar el dato, lo que reabre la consistencia del capítulo&nbsp;20: el vector debe mantenerse al día respecto a una fuente que el sistema no controla. La <em>consulta</em> debe presentarse donde el naturalista ya está, idealmente embebida en su herramienta, devolviendo las observaciones en segundos. Y la <em>interoperabilidad</em> —los formatos y protocolos estándar del dominio de la biodiversidad— es lo que permite que el sistema converse con el resto sin un acoplamiento frágil. Nada de esto es vectorial, pero todo decide si el sistema vectorial llega a usarse. Es el recordatorio final de que un sistema de datos no es su algoritmo, sino su algoritmo <em>en su contexto</em>: la mejor recuperación del mundo, mal integrada, no recupera nada porque nadie la consulta. El libro ha enseñado a construir el motor; este capítulo recuerda que el motor ha de montarse en un coche que alguien quiera conducir.</p>
+</section>
+</section>
+<section id="práctica-la-identificación-medida" class="level2">
+<h2 class="anchored" data-anchor-id="práctica-la-identificación-medida">Práctica: la identificación, medida</h2>
+<p>Todo sale de <code>src/cap21_caso.py</code> —numpy, CPU, semilla 21—, que construye un corpus sintético de observaciones de aves y mide los cuatro fenómenos del capítulo. El corpus es la pieza de la que todo depende, y su diseño encarna las decisiones del caso (listado&nbsp;21.1): cada observación recibe una <em>especie</em> muestreada con la frecuencia desbalanceada del muestreo de campo, un <em>hábitat</em> al azar, y un <em>embedding</em> que es el centro de su especie más ruido —de modo que las observaciones de la misma especie quedan cerca en el espacio, como las acercaría un codificador real—. Es la simplificación honesta del capítulo: cúmulos por clase en vez de un ViT sobre píxeles.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:corpus21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:corpus21-1"><a href="#lst:corpus21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _corpus(n, dim, rng):</span>
+<span id="lst:corpus21-2"><a href="#lst:corpus21-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># especie muestreada con la frecuencia desbalanceada del muestreo de campo</span></span>
+<span id="lst:corpus21-3"><a href="#lst:corpus21-3" aria-hidden="true" tabindex="-1"></a>    esp <span class="op">=</span> rng.choice(<span class="bu">len</span>(ESPECIES), n, p<span class="op">=</span>FRECUENCIA)</span>
+<span id="lst:corpus21-4"><a href="#lst:corpus21-4" aria-hidden="true" tabindex="-1"></a>    hab <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="bu">len</span>(HABITATS), n)            <span class="co"># habitat</span></span>
+<span id="lst:corpus21-5"><a href="#lst:corpus21-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># cada especie es un cumulo; el embedding es su centro mas ruido</span></span>
+<span id="lst:corpus21-6"><a href="#lst:corpus21-6" aria-hidden="true" tabindex="-1"></a>    centros <span class="op">=</span> _norm(rng.standard_normal((<span class="bu">len</span>(ESPECIES), dim)))</span>
+<span id="lst:corpus21-7"><a href="#lst:corpus21-7" aria-hidden="true" tabindex="-1"></a>    emb <span class="op">=</span> _norm(centros[esp] <span class="op">+</span> <span class="fl">0.9</span> <span class="op">*</span> rng.standard_normal((n, dim)))</span>
+<span id="lst:corpus21-8"><a href="#lst:corpus21-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"emb"</span>: emb, <span class="st">"esp"</span>: esp, <span class="st">"hab"</span>: hab}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 21.1.</strong> El corpus sintetico de aves: especie con frecuencia desbalanceada, habitat al azar y embedding = centro de la especie mas ruido.</p>
+<p>Sobre ese corpus se miden los cuatro fenómenos del capítulo. El núcleo de la tesis compara las tres estrategias sobre la consulta útil (listado&nbsp;21.2): la relevancia exige <em>misma especie y mismo hábitat</em>, y solo el filtro más la similitud cumple ambas.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:tesis21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:tesis21-1"><a href="#lst:tesis21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_filtro_mas_similitud(n<span class="op">=</span><span class="dv">20000</span>, dim<span class="op">=</span><span class="dv">64</span>, k<span class="op">=</span><span class="dv">10</span>, nq<span class="op">=</span><span class="dv">400</span>):</span>
+<span id="lst:tesis21-2"><a href="#lst:tesis21-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(SEMILLA)</span>
+<span id="lst:tesis21-3"><a href="#lst:tesis21-3" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> _corpus(n, dim, rng)</span>
+<span id="lst:tesis21-4"><a href="#lst:tesis21-4" aria-hidden="true" tabindex="-1"></a>    emb, esp, hab <span class="op">=</span> c[<span class="st">"emb"</span>], c[<span class="st">"esp"</span>], c[<span class="st">"hab"</span>]</span>
+<span id="lst:tesis21-5"><a href="#lst:tesis21-5" aria-hidden="true" tabindex="-1"></a>    p_sim <span class="op">=</span> p_fil <span class="op">=</span> p_amb <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="lst:tesis21-6"><a href="#lst:tesis21-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(nq):</span>
+<span id="lst:tesis21-7"><a href="#lst:tesis21-7" aria-hidden="true" tabindex="-1"></a>        qi <span class="op">=</span> <span class="bu">int</span>(rng.integers(<span class="dv">0</span>, n))</span>
+<span id="lst:tesis21-8"><a href="#lst:tesis21-8" aria-hidden="true" tabindex="-1"></a>        q, qd, qs <span class="op">=</span> emb[qi], esp[qi], hab[qi]</span>
+<span id="lst:tesis21-9"><a href="#lst:tesis21-9" aria-hidden="true" tabindex="-1"></a>        rel <span class="op">=</span> (esp <span class="op">==</span> qd) <span class="op">&amp;</span> (hab <span class="op">==</span> qs)        <span class="co"># relevante: especie Y habitat</span></span>
+<span id="lst:tesis21-10"><a href="#lst:tesis21-10" aria-hidden="true" tabindex="-1"></a>        sims <span class="op">=</span> emb <span class="op">@</span> q</span>
+<span id="lst:tesis21-11"><a href="#lst:tesis21-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># solo similitud: top-k por parecido, ignora el habitat</span></span>
+<span id="lst:tesis21-12"><a href="#lst:tesis21-12" aria-hidden="true" tabindex="-1"></a>        p_sim <span class="op">+=</span> rel[np.argsort(<span class="op">-</span>sims)[:k]].mean()</span>
+<span id="lst:tesis21-13"><a href="#lst:tesis21-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># solo filtro: del mismo habitat, sin ordenar por parecido</span></span>
+<span id="lst:tesis21-14"><a href="#lst:tesis21-14" aria-hidden="true" tabindex="-1"></a>        mismo <span class="op">=</span> np.where(hab <span class="op">==</span> qs)[<span class="dv">0</span>]</span>
+<span id="lst:tesis21-15"><a href="#lst:tesis21-15" aria-hidden="true" tabindex="-1"></a>        p_fil <span class="op">+=</span> rel[rng.choice(mismo, k, replace<span class="op">=</span><span class="va">False</span>)].mean()</span>
+<span id="lst:tesis21-16"><a href="#lst:tesis21-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># filtro + similitud: del mismo habitat, ordenadas por parecido</span></span>
+<span id="lst:tesis21-17"><a href="#lst:tesis21-17" aria-hidden="true" tabindex="-1"></a>        p_amb <span class="op">+=</span> rel[mismo[np.argsort(<span class="op">-</span>sims[mismo])[:k]]].mean()</span>
+<span id="lst:tesis21-18"><a href="#lst:tesis21-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [(<span class="st">"solo_similitud"</span>, p_sim <span class="op">/</span> nq), (<span class="st">"solo_filtro"</span>, p_fil <span class="op">/</span> nq),</span>
+<span id="lst:tesis21-19"><a href="#lst:tesis21-19" aria-hidden="true" tabindex="-1"></a>            (<span class="st">"filtro+similitud"</span>, p_amb <span class="op">/</span> nq)]   <span class="co"># ninguno solo gana</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 21.2.</strong> La simulacion de la tesis completa: relevante = misma especie Y habitat; se promedia la precision@k de las tres estrategias sobre muchas consultas.</p>
+<p>El núcleo de la interacción tardía contrasta el vector único con el max-sim sobre parches (listado&nbsp;21.3): el vector único promedia los parches —y diluye la señal local— mientras el max-sim se queda con el parche que mejor casa con la consulta, conservándola.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:tardia21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:tardia21-1"><a href="#lst:tardia21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cada observacion son `parches` vectores; el fondo es ruido comun</span></span>
+<span id="lst:tardia21-2"><a href="#lst:tardia21-2" aria-hidden="true" tabindex="-1"></a>fondo <span class="op">=</span> _norm(rng.standard_normal((n, parches, dim)))</span>
+<span id="lst:tardia21-3"><a href="#lst:tardia21-3" aria-hidden="true" tabindex="-1"></a>patron <span class="op">=</span> _norm(rng.standard_normal(dim))      <span class="co"># rasgo de campo discriminante</span></span>
+<span id="lst:tardia21-4"><a href="#lst:tardia21-4" aria-hidden="true" tabindex="-1"></a>objetivo, jp <span class="op">=</span> <span class="bu">int</span>(rng.integers(<span class="dv">0</span>, n)), <span class="bu">int</span>(rng.integers(<span class="dv">0</span>, parches))</span>
+<span id="lst:tardia21-5"><a href="#lst:tardia21-5" aria-hidden="true" tabindex="-1"></a>fondo[objetivo, jp] <span class="op">=</span> _norm(fondo[objetivo, jp] <span class="op">+</span> senal <span class="op">*</span> patron)</span>
+<span id="lst:tardia21-6"><a href="#lst:tardia21-6" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> _norm(patron <span class="op">+</span> <span class="fl">0.15</span> <span class="op">*</span> rng.standard_normal(dim))   <span class="co"># consulta</span></span>
+<span id="lst:tardia21-7"><a href="#lst:tardia21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># vector unico: media de parches -&gt; diluye la senal de una region pequena</span></span>
+<span id="lst:tardia21-8"><a href="#lst:tardia21-8" aria-hidden="true" tabindex="-1"></a>vu <span class="op">=</span> _norm(fondo.mean(axis<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="lst:tardia21-9"><a href="#lst:tardia21-9" aria-hidden="true" tabindex="-1"></a>top_u <span class="op">=</span> np.argsort(<span class="op">-</span>(vu <span class="op">@</span> q))[:k]</span>
+<span id="lst:tardia21-10"><a href="#lst:tardia21-10" aria-hidden="true" tabindex="-1"></a><span class="co"># interaccion tardia: max-sim del parche mas parecido por observacion</span></span>
+<span id="lst:tardia21-11"><a href="#lst:tardia21-11" aria-hidden="true" tabindex="-1"></a>maxsim <span class="op">=</span> (fondo <span class="op">@</span> q).<span class="bu">max</span>(axis<span class="op">=</span><span class="dv">1</span>)              <span class="co"># mejor parche por observacion</span></span>
+<span id="lst:tardia21-12"><a href="#lst:tardia21-12" aria-hidden="true" tabindex="-1"></a>top_t <span class="op">=</span> np.argsort(<span class="op">-</span>maxsim)[:k]               <span class="co"># conserva la senal local</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 21.3.</strong> El nucleo de la interaccion tardia: una senal vive en un parche; el vector unico (media) la diluye, el max-sim (mejor parche por observacion) la conserva.</p>
+<p>El prefiltrado se mide como en el capítulo&nbsp;20, pero con un filtro de prevalencia variable que imita un hábitat raro (listado&nbsp;21.4): el prefiltrado busca solo entre los del hábitat —y es exacto—; el postfiltrado toma los <span class="math inline">\(k\)</span> globales y filtra —y se hunde cuando el hábitat es raro—.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:prefilt21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:prefilt21-1"><a href="#lst:prefilt21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_prefiltrado(n<span class="op">=</span><span class="dv">20000</span>, dim<span class="op">=</span><span class="dv">64</span>, k<span class="op">=</span><span class="dv">10</span>, nq<span class="op">=</span><span class="dv">300</span>):</span>
+<span id="lst:prefilt21-2"><a href="#lst:prefilt21-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(SEMILLA)</span>
+<span id="lst:prefilt21-3"><a href="#lst:prefilt21-3" aria-hidden="true" tabindex="-1"></a>    emb <span class="op">=</span> _corpus(n, dim, rng)[<span class="st">"emb"</span>]</span>
+<span id="lst:prefilt21-4"><a href="#lst:prefilt21-4" aria-hidden="true" tabindex="-1"></a>    filas <span class="op">=</span> []</span>
+<span id="lst:prefilt21-5"><a href="#lst:prefilt21-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> prev <span class="kw">in</span> (<span class="fl">0.3</span>, <span class="fl">0.15</span>, <span class="fl">0.07</span>, <span class="fl">0.03</span>, <span class="fl">0.01</span>):</span>
+<span id="lst:prefilt21-6"><a href="#lst:prefilt21-6" aria-hidden="true" tabindex="-1"></a>        raro <span class="op">=</span> rng.random(n) <span class="op">&lt;</span> prev            <span class="co"># habitat de prevalencia `prev`</span></span>
+<span id="lst:prefilt21-7"><a href="#lst:prefilt21-7" aria-hidden="true" tabindex="-1"></a>        idx_raro <span class="op">=</span> np.where(raro)[<span class="dv">0</span>]</span>
+<span id="lst:prefilt21-8"><a href="#lst:prefilt21-8" aria-hidden="true" tabindex="-1"></a>        rec_pre <span class="op">=</span> rec_post <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="lst:prefilt21-9"><a href="#lst:prefilt21-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(nq):</span>
+<span id="lst:prefilt21-10"><a href="#lst:prefilt21-10" aria-hidden="true" tabindex="-1"></a>            q <span class="op">=</span> _norm(rng.standard_normal(dim))</span>
+<span id="lst:prefilt21-11"><a href="#lst:prefilt21-11" aria-hidden="true" tabindex="-1"></a>            sims <span class="op">=</span> emb <span class="op">@</span> q</span>
+<span id="lst:prefilt21-12"><a href="#lst:prefilt21-12" aria-hidden="true" tabindex="-1"></a>            oro <span class="op">=</span> idx_raro[np.argsort(<span class="op">-</span>sims[idx_raro])[:k]]    <span class="co"># verdad</span></span>
+<span id="lst:prefilt21-13"><a href="#lst:prefilt21-13" aria-hidden="true" tabindex="-1"></a>            pre <span class="op">=</span> idx_raro[np.argsort(<span class="op">-</span>sims[idx_raro])[:k]]    <span class="co"># prefiltrado</span></span>
+<span id="lst:prefilt21-14"><a href="#lst:prefilt21-14" aria-hidden="true" tabindex="-1"></a>            rec_pre <span class="op">+=</span> <span class="bu">len</span>(<span class="bu">set</span>(pre) <span class="op">&amp;</span> <span class="bu">set</span>(oro)) <span class="op">/</span> <span class="bu">len</span>(oro)</span>
+<span id="lst:prefilt21-15"><a href="#lst:prefilt21-15" aria-hidden="true" tabindex="-1"></a>            top <span class="op">=</span> np.argsort(<span class="op">-</span>sims)[:k]                         <span class="co"># k globales</span></span>
+<span id="lst:prefilt21-16"><a href="#lst:prefilt21-16" aria-hidden="true" tabindex="-1"></a>            post <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> top <span class="cf">if</span> raro[i]]                  <span class="co"># postfiltrar</span></span>
+<span id="lst:prefilt21-17"><a href="#lst:prefilt21-17" aria-hidden="true" tabindex="-1"></a>            rec_post <span class="op">+=</span> <span class="bu">len</span>(<span class="bu">set</span>(post) <span class="op">&amp;</span> <span class="bu">set</span>(oro)) <span class="op">/</span> <span class="bu">len</span>(oro)</span>
+<span id="lst:prefilt21-18"><a href="#lst:prefilt21-18" aria-hidden="true" tabindex="-1"></a>        filas.append((prev, rec_pre <span class="op">/</span> nq, rec_post <span class="op">/</span> nq))</span>
+<span id="lst:prefilt21-19"><a href="#lst:prefilt21-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> filas                               <span class="co"># postfiltrado se hunde con prev</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 21.4.</strong> La simulacion de prefiltrado completa: para cada prevalencia del habitat, el prefiltrado busca solo entre los del habitat (exacto) y el postfiltrado filtra los k globales.</p>
+<p>El desbalance se mide recuperando, para cada especie, casos de la misma y midiendo la precisión@<span class="math inline">\(k\)</span> (listado&nbsp;21.5): las clases raras, con pocos ejemplos en el corpus, recuperan peor.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:desbal21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:desbal21-1"><a href="#lst:desbal21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_desbalance(n<span class="op">=</span><span class="dv">20000</span>, dim<span class="op">=</span><span class="dv">64</span>, k<span class="op">=</span><span class="dv">10</span>, nq<span class="op">=</span><span class="dv">400</span>):</span>
+<span id="lst:desbal21-2"><a href="#lst:desbal21-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(SEMILLA)</span>
+<span id="lst:desbal21-3"><a href="#lst:desbal21-3" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> _corpus(n, dim, rng)</span>
+<span id="lst:desbal21-4"><a href="#lst:desbal21-4" aria-hidden="true" tabindex="-1"></a>    emb, esp <span class="op">=</span> c[<span class="st">"emb"</span>], c[<span class="st">"esp"</span>]</span>
+<span id="lst:desbal21-5"><a href="#lst:desbal21-5" aria-hidden="true" tabindex="-1"></a>    filas <span class="op">=</span> []</span>
+<span id="lst:desbal21-6"><a href="#lst:desbal21-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> d, nombre <span class="kw">in</span> <span class="bu">enumerate</span>(ESPECIES):</span>
+<span id="lst:desbal21-7"><a href="#lst:desbal21-7" aria-hidden="true" tabindex="-1"></a>        idx <span class="op">=</span> np.where(esp <span class="op">==</span> d)[<span class="dv">0</span>]            <span class="co"># ejemplos de esta clase</span></span>
+<span id="lst:desbal21-8"><a href="#lst:desbal21-8" aria-hidden="true" tabindex="-1"></a>        prec <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="lst:desbal21-9"><a href="#lst:desbal21-9" aria-hidden="true" tabindex="-1"></a>        elegidos <span class="op">=</span> rng.choice(idx, <span class="bu">min</span>(nq, <span class="bu">len</span>(idx)), replace<span class="op">=</span><span class="va">False</span>)</span>
+<span id="lst:desbal21-10"><a href="#lst:desbal21-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> qi <span class="kw">in</span> elegidos:</span>
+<span id="lst:desbal21-11"><a href="#lst:desbal21-11" aria-hidden="true" tabindex="-1"></a>            top <span class="op">=</span> np.argsort(<span class="op">-</span>(emb <span class="op">@</span> emb[qi]))[:k]</span>
+<span id="lst:desbal21-12"><a href="#lst:desbal21-12" aria-hidden="true" tabindex="-1"></a>            prec <span class="op">+=</span> (esp[top] <span class="op">==</span> d).mean()     <span class="co"># cuantos de la misma especie</span></span>
+<span id="lst:desbal21-13"><a href="#lst:desbal21-13" aria-hidden="true" tabindex="-1"></a>        filas.append((nombre, <span class="bu">float</span>(FRECUENCIA[d]), prec <span class="op">/</span> <span class="bu">len</span>(elegidos)))</span>
+<span id="lst:desbal21-14"><a href="#lst:desbal21-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> filas                               <span class="co"># raras (alimoche...) peor</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 21.5.</strong> La simulacion del desbalance completa: para cada especie, precision@k de recuperar la misma; las clases raras, con pocos ejemplos, recuperan peor.</p>
+<section id="la-demostración-una-consulta-de-identificación" class="level3">
+<h3 class="anchored" data-anchor-id="la-demostración-una-consulta-de-identificación">La demostración: una consulta de identificación</h3>
+<p>Fiel a la convención del libro —y como cierre de todas las demostraciones— el módulo termina con una consulta completa: dada una observación, recuperar las más parecidas <em>del mismo hábitat</em>, devolviendo su especie (listado&nbsp;21.6). Es la arquitectura entera en una función: prefiltro relacional por hábitat, orden por similitud vectorial, proyección del documento con sus metadatos.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:art21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:art21-1"><a href="#lst:art21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demostracion(n<span class="op">=</span><span class="dv">20000</span>, dim<span class="op">=</span><span class="dv">64</span>, k<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="lst:art21-2"><a href="#lst:art21-2" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> _corpus(n, dim, rng)</span>
+<span id="lst:art21-3"><a href="#lst:art21-3" aria-hidden="true" tabindex="-1"></a>    emb, esp, hab <span class="op">=</span> c[<span class="st">"emb"</span>], c[<span class="st">"esp"</span>], c[<span class="st">"hab"</span>]</span>
+<span id="lst:art21-4"><a href="#lst:art21-4" aria-hidden="true" tabindex="-1"></a>    qi <span class="op">=</span> <span class="bu">int</span>(rng.integers(<span class="dv">0</span>, n))</span>
+<span id="lst:art21-5"><a href="#lst:art21-5" aria-hidden="true" tabindex="-1"></a>    qs <span class="op">=</span> <span class="bu">int</span>(hab[qi])</span>
+<span id="lst:art21-6"><a href="#lst:art21-6" aria-hidden="true" tabindex="-1"></a>    mismo <span class="op">=</span> np.where(hab <span class="op">==</span> qs)[<span class="dv">0</span>]                <span class="co"># prefiltro: mismo habitat</span></span>
+<span id="lst:art21-7"><a href="#lst:art21-7" aria-hidden="true" tabindex="-1"></a>    orden <span class="op">=</span> mismo[np.argsort(<span class="op">-</span>(emb[mismo] <span class="op">@</span> emb[qi]))[:k <span class="op">+</span> <span class="dv">1</span>]]</span>
+<span id="lst:art21-8"><a href="#lst:art21-8" aria-hidden="true" tabindex="-1"></a>    orden <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> orden <span class="cf">if</span> i <span class="op">!=</span> qi][:k]     <span class="co"># excluir la consulta</span></span>
+<span id="lst:art21-9"><a href="#lst:art21-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [(ESPECIES[esp[i]], HABITATS[hab[i]]) <span class="cf">for</span> i <span class="kw">in</span> orden]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 21.6.</strong> La demostracion: dada una observacion, recuperar las mas parecidas del mismo habitat (prefiltro relacional + similitud vectorial) y devolver su especie.</p>
+<p>La salida (listado&nbsp;21.7) muestra la consulta resuelta: de las veinte mil observaciones, el prefiltro deja las del hábitat consultado, y entre ellas la similitud ordena las cinco más parecidas, cada una con su especie y su hábitat. Es la tesis del libro, ejecutándose: el filtro acotó a un hábitat, la similitud ordenó por parecido, y el resultado trae lo que el ornitólogo pidió —observaciones comparables, en el lugar correcto, con su especie a la vista—.</p>
+<pre class="{#lst:salida21}"><code>consulta: observacion en 'matorral' (especie: gorrion_comun)
+candidatos del mismo habitat: 3324 de 20000
+rango  similitud  especie          habitat
+1      +0.4235    mirlo_comun      matorral
+2      +0.3776    mirlo_comun      matorral
+3      +0.3774    gorrion_comun    matorral
+4      +0.3645    gorrion_comun    matorral
+5      +0.3629    gorrion_comun    matorral</code></pre>
+<p><strong>Listado 21.7.</strong> La salida de la demostracion: el prefiltro deja las observaciones del mismo habitat y la similitud ordena las cinco mas parecidas, con su especie.</p>
+</section>
+<section id="lo-que-la-práctica-enseña-y-lo-que-no" class="level3">
+<h3 class="anchored" data-anchor-id="lo-que-la-práctica-enseña-y-lo-que-no">Lo que la práctica enseña, y lo que no</h3>
+<p>El módulo enseña, con fidelidad, la <em>dirección</em> de los fenómenos del caso: que ni el filtro ni la similitud bastan solos, que el postfiltrado se hunde en lo raro, que la interacción tardía recupera la señal local que el vector único diluye, que el desbalance penaliza al caso de interés. Lo que no debe leerse en él son las cifras como veredicto: los embeddings son sintéticos —cúmulos por especie más ruido, no un ViT real sobre imágenes—, el corpus es de juguete, y la magnitud depende de todo eso. Lo que el módulo captura, y captura bien, es <em>por qué</em> cada fenómeno ocurre y <em>qué</em> decisión de diseño implica. Las cifras de un sistema real se obtienen con imágenes reales, un codificador del dominio y una evaluación sobre el terreno; el criterio para construirlo y juzgarlo —que es lo que el libro enseña— es lo que esta práctica deja. La dirección es robusta; la magnitud, ilustrativa, como ha sido en todo el libro.</p>
+<p>Conviene un apunte sobre la <em>reproducibilidad</em>, que cierra el círculo metodológico del libro. El módulo fija la semilla, no usa servicios externos, no exige GPU ni modelos descargados, y vuelca sus resultados a ficheros que las gráficas leen: cualquiera que lo ejecute obtiene exactamente las cifras de las figuras de este capítulo, en su propia máquina, en segundos. Esa reproducibilidad no es un detalle de higiene: es lo que permite que el lector <em>verifique</em> en vez de creer, que es justo la actitud que el libro ha querido cultivar. Un sistema real de identificación de especies añade capas —datos sensibles de localización, modelos pesados, validación de expertos— que esta práctica no puede reproducir; pero la <em>forma</em> de razonar sobre él —medir, comparar, ablacionar, declarar límites— es la misma que el módulo encarna con medios mínimos. La práctica es de juguete; el método que enseña, no.</p>
+</section>
+</section>
+<section id="el-alcance-del-sistema-usos-generalidad-y-límites" class="level2">
+<h2 class="anchored" data-anchor-id="el-alcance-del-sistema-usos-generalidad-y-límites">El alcance del sistema: usos, generalidad y límites</h2>
+<section id="el-sistema-como-herramienta-de-formación" class="level3">
+<h3 class="anchored" data-anchor-id="el-sistema-como-herramienta-de-formación">El sistema como herramienta de formación</h3>
+<p>Hay un uso del sistema que no es de identificación y que conviene no pasar por alto, porque amplía su valor y suaviza sus riesgos: la <em>formación</em>. Un aprendiz que se inicia en la ornitología necesita ver muchas observaciones —es así como se educa el ojo en el campo— y un sistema que, dada una observación, recupera las observaciones comparables con su especie confirmada es, sin cambiar nada, una herramienta de estudio: el aprendiz propone su juicio, consulta las observaciones parecidas, y compara su impresión con las identificaciones reales. La similitud vectorial, aquí, no apoya una decisión de campo con un ave delante, sino que acelera el aprendizaje mostrando la variedad que una sola estación de campo tardaría años en ofrecer.</p>
+<p>Este uso tiene una virtud ética: en formación, el coste del error desaparece —no hay una identificación que comprometer—, de modo que el sistema puede usarse con libertad para explorar especies raras, plumajes atípicos, los límites de la identificación, sin el riesgo que tendría en el terreno. Y tiene un efecto de vuelta sobre el sistema: los aprendices que lo usan reportan observaciones mal recuperadas, plumajes que confunden al codificador, etiquetas dudosas —una fuente de mejora del corpus que la sección&nbsp;21.3.1 agradece—. El mismo motor de recuperación sirve, pues, a dos propósitos —apoyar al experto y formar al aprendiz— con exigencias distintas, y diseñarlo consciente de ambos lo hace más valioso. Es un recordatorio de que un buen sistema de datos suele servir a más usos de los que motivaron construirlo, y de que la recuperación de lo comparable —la capacidad que este libro ha perseguido— es útil siempre que alguien necesite aprender de lo que ya se sabe.</p>
+</section>
+<section id="más-allá-de-las-aves-la-generalidad-del-patrón" class="level3">
+<h3 class="anchored" data-anchor-id="más-allá-de-las-aves-la-generalidad-del-patrón">Más allá de las aves: la generalidad del patrón</h3>
+<p>Conviene, antes de la síntesis, levantar la vista del caso concreto, porque su valor no se agota en la identificación de aves: la arquitectura es <em>general</em>, y reconocerlo es ver hasta dónde llega lo que el libro ha construido. Cámbiese «imagen de un ave» por «registro acústico de un canto», «huella genética», «espectro de polen» o «imagen satelital de un hábitat», y el sistema es el mismo: un codificador que vectoriza la imagen, metadatos que filtran, un índice que recupera por parecido, un documento que se devuelve. La bioacústica, la genética de campo, la teledetección comparten la forma del problema —recuperar observaciones comparables para apoyar un juicio— y por tanto la arquitectura. Lo que cambia es el codificador (entrenado en el dominio), los metadatos relevantes y el criterio de relevancia; la estructura, no.</p>
+<p>Y la generalidad trasciende la biología. Un sistema de propiedad intelectual que busca patentes parecidas, uno jurídico que recupera sentencias análogas, uno de soporte técnico que halla incidencias similares, uno de control de calidad que compara piezas con defectos catalogados: todos son el mismo patrón —filtrar por atributos, ordenar por similitud, devolver el documento— sobre dominios distintos. El caso de identificación de aves es un <em>ejemplar</em>, no una excepción: se eligió porque sus exigencias —el valor de la decisión, la explicabilidad, la protección de la ubicación de especies amenazadas, el desbalance— son severas y obligan a tomarse en serio cada decisión, pero las decisiones mismas se trasladan a cualquier dominio donde haga falta recuperar lo comparable. Por eso el libro termina aquí y no en otro caso: la identificación de aves es un campo de pruebas exigente, y un sistema que supera sus exigencias enseña a construir los demás. La tesis —filtro y similitud, juntos— es del caso de identificación de aves tanto como de cualquier sistema serio de recuperación.</p>
+</section>
+<section id="los-límites-de-lo-que-hemos-construido" class="level3">
+<h3 class="anchored" data-anchor-id="los-límites-de-lo-que-hemos-construido">Los límites de lo que hemos construido</h3>
+<p>La honestidad que ha guiado el libro exige, antes de la síntesis, nombrar lo que la recuperación por similitud <em>no</em> resuelve, porque conocer los límites de una herramienta es parte de dominarla. El primero: la similitud recupera lo <em>parecido</em>, no necesariamente lo <em>correcto</em>. Que cuatro de las cinco observaciones más parecidas a un ave fueran gorriones comunes no prueba que esta lo sea —la quinta, el mirlo común, podría ser el verdadero análogo—. La recuperación informa el juicio, pero no encierra la verdad; confundir «lo más parecido» con «la respuesta» es el error de fondo que ningún recall alto corrige.</p>
+<p>El segundo: la similitud no <em>razona</em>. Recupera observaciones análogas, pero no explica por qué se parecen ni infiere consecuencias —para eso hacen falta el grafo y el modelo del capítulo&nbsp;19, y aun ellos con sus límites—. Un sistema de recuperación es una memoria asociativa, no un razonador; pedirle que deduzca es pedirle lo que no es. El tercero: todo descansa en el codificador, y el codificador hereda los sesgos y los huecos de sus datos de entrenamiento —lo que no vio, no lo representa bien, y lo que vio sesgado, lo recupera sesgado—. La calidad de la representación es un techo que ningún índice ni filtro levanta.</p>
+<p>El cuarto, más filosófico pero real: la similitud es <em>relativa al espacio</em> que el codificador define, y ese espacio codifica una noción de «parecido» que puede no ser la del usuario. Dos observaciones «parecidas» para el modelo pueden ser de especies distintas, y al revés; la geometría del espacio es una hipótesis sobre el significado, no el significado mismo. Reconocer estos límites no debilita lo construido: lo sitúa. La recuperación vectorial es una herramienta poderosa para una tarea concreta —encontrar lo cercano a escala— y un desastre si se le pide ser un oráculo, un razonador o una verdad. Saber para qué sirve, y para qué no, es la última forma del criterio que el libro ha querido dar: ni despreciar la herramienta, ni pedirle lo que no puede. El entusiasmo sin límites y el escepticismo sin matices fallan igual; entre ellos está el juicio, que es lo que hace falta.</p>
+</section>
+</section>
+<section id="síntesis-el-libro-entero-en-una-pieza" class="level2">
+<h2 class="anchored" data-anchor-id="síntesis-el-libro-entero-en-una-pieza">Síntesis: el libro entero en una pieza</h2>
+<p>Este capítulo ha tomado todo lo construido y lo ha puesto a funcionar sobre un sistema de identificación de especies real, demostrando sobre una pieza única la tesis que ha vertebrado el libro: el filtrado estructurado acota, la similitud vectorial ordena, y ninguno basta por separado. Lo ha medido —la consulta híbrida bate a cada estrato solo—; ha mostrado por qué el prefiltrado es, en el trabajo de campo, un requisito de fiabilidad y no una preferencia; ha contrastado el vector único con la interacción tardía para el detalle que importa; ha sacado a la luz el desbalance que penaliza a la especie rara; y ha situado todo bajo la gobernanza —protección de la ubicación de especies amenazadas, sesgo, el papel del ornitólogo— que un sistema que toca la conservación exige.</p>
+<p>Conviene mirar, por última vez, el arco completo, porque el sistema de identificación lo recorre entero. La <em>imagen</em> entra como un dato no estructurado que ninguna tabla sabía consultar —el problema que abrió la tercera parte—; el <em>codificador</em> la vuelve un vector, geometría del significado —capítulos&nbsp;11 y&nbsp;12—; la <em>distancia</em> mide el parecido, con la cautela de la dimensión —capítulo&nbsp;13—; el <em>índice</em> hace viable buscar a escala —capítulos&nbsp;14 a&nbsp;16—; el <em>filtro híbrido</em> la combina con los metadatos relacionales del primer estrato —capítulo&nbsp;17—; la <em>evaluación</em> la juzga con honestidad —capítulo&nbsp;18—; el <em>patrón</em> la integra en un sistema que sirve al ornitólogo —capítulo&nbsp;19—; y la <em>convergencia</em> la aloja en un único motor donde el vector convive con el dato —capítulo&nbsp;20—. El sistema de identificación no es un capítulo más: es el libro entero, ejecutándose sobre una pieza.</p>
+<p>Y en el centro de esa pieza está la frase que ha sido el hilo desde la primera página: del «igual a» al «cercano a». El filtro por hábitat es un «igual a» —exacto, booleano, heredado de Codd—; la similitud entre observaciones es un «cercano a» —gradual, geométrico, aprendido por un modelo—; y la consulta de campo útil los necesita a la vez, porque el ornitólogo quiere lo <em>exactamente</em> de este hábitat y lo <em>parecido</em> a esta observación. El viaje del libro no fue de un paradigma a otro que lo sustituye, sino de uno a dos que se complementan, y este caso final lo demuestra sobre algo que importa: ayudar a un ornitólogo a recordar, entre todas las observaciones que ha visto la ornitología, las pocas que se parecen a la que tiene delante. Esa es, en una pieza, la promesa de las bases de datos que van del modelo relacional a la recuperación vectorial.</p>
+<p>Conviene, al cerrar, separar lo que el libro ha enseñado de lo que pronto caducará. Las herramientas concretas —este codificador, aquel índice, tal extensión de tal motor— cambiarán; algunas ya habrán cambiado cuando estas páginas se lean. Lo que no caduca es el <em>criterio</em>: saber que una consulta seria combina el filtro exacto y la similitud aproximada; que el coste de la similitud está en la dimensión y se doma con índices y cuantización; que recall y tarea no son lo mismo; que el promedio engaña y hay que medir por subgrupo; que acumular no es recordar; que integrar simplifica pero traslada costes de consistencia; que ninguna estructura basta sola. Ese criterio es transferible: quien lo tenga sabrá evaluar la herramienta que aún no existe, porque sabrá qué preguntarle. El libro ha sido, más que un catálogo de técnicas, un entrenamiento del juicio para elegirlas.</p>
+<p>Hay también una manera de trabajar que el libro ha intentado encarnar en cada capítulo, y que importa tanto como su contenido: medir antes de afirmar. Cada tesis ha venido con su número, cada número con su código reproducible, cada código con la honestidad de decir qué captura y qué no. Esa disciplina —desconfiar de la afirmación sin medida, preferir la dirección robusta a la cifra absoluta, declarar los límites de lo que se mide— no es exclusiva de las bases de datos vectoriales; es la actitud que distingue la ingeniería del entusiasmo. Si el lector se queda con una sola cosa, que sea esta: ante cualquier promesa sobre datos o similitud, pedir la medida, mirar el mecanismo, y sospechar de lo que no se deja medir.</p>
+<p>El libro empezó con una tabla y una pregunta exacta —¿qué filas cumplen esta condición?— y termina con una imagen de un ave y una pregunta gradual —¿qué observaciones se parecen a esta?—. Entre una y otra hay un viaje de veintiún capítulos que ha ido del «igual a» al «cercano a» sin abandonar lo primero al alcanzar lo segundo. El modelo relacional no se ha vuelto obsoleto: sigue siendo el estrato que filtra con precisión, y el caso de identificación de aves lo ha usado en cada consulta. La recuperación vectorial no lo ha sustituido: ha añadido la capacidad de preguntar por el parecido donde antes solo cabía la coincidencia. El futuro, como mostró el capítulo&nbsp;20, es de los dos juntos, y el caso de identificación de aves ha sido la prueba de que juntos resuelven lo que separados no podían.</p>
+<p>Si este capítulo ha cumplido su función, el lector verá ahora cualquier sistema de datos —un buscador, un asistente, una ficha de observación— como una composición de estratos que filtran, guardan, ordenan por parecido y razonan, y sabrá preguntarse, ante cada uno, qué estrato resuelve qué, dónde está el cuello de botella, qué cuesta mantenerlo y cómo medir si funciona. Esa mirada —ver el sistema entero y sus piezas a la vez— es el destino del viaje. El «igual a» y el «cercano a» no eran dos paradigmas en pugna, sino las dos preguntas que, juntas, agotan lo que se le puede pedir a una base de datos: dame lo que es exactamente así, y dame lo que se le parece. Saber cuándo usar cada una, y cómo combinarlas, es lo que este libro ha querido enseñar.</p>
+<p>Queda una última reflexión, sobre por qué este viaje importa más allá de la técnica. Durante décadas, las bases de datos respondieron solo preguntas exactas, y eso moldeó lo que nos atrevíamos a preguntarles: dábamos por hecho que para encontrar algo había que saber describirlo con precisión —su clave, su categoría, su valor exacto—. La recuperación vectorial cambia eso: permite preguntar por el <em>parecido</em>, que es como pregunta la mente humana —«algo así», «como aquello», «que me recuerde a»—. El caso de identificación de aves lo encarna: el ornitólogo no busca «el registro con identificador 4471», busca «aves como esta», y por primera vez la base de datos entiende la pregunta. Esa es la transformación de fondo que el libro ha narrado a través de su técnica: no solo una nueva estructura de datos, sino una nueva clase de pregunta que ahora podemos hacerle a la información que guardamos.</p>
+<p>Y, sin embargo, el «cercano a» no llegó para destronar al «igual a», sino para completarlo, porque las preguntas humanas son de las dos clases: queremos lo exacto —la observación con este número de registro, la especie con este nombre científico— y lo parecido —observaciones como esta, plumajes como aquellos—. Una base de datos a la altura de quien la consulta debe responder ambas, y combinarlas en una sola pregunta cuando hace falta, que es casi siempre. El sistema de identificación de este capítulo es la prueba modesta y concreta de esa madurez: filtra con la precisión heredada de Codd y ordena con la similitud aprendida por un modelo, y en esa unión —no en ninguna de las dos sola— está el futuro que el libro ha querido mostrar. Del modelo relacional a la recuperación vectorial no hay un salto, sino un puente; y cruzarlo, en ambos sentidos según la pregunta lo pida, es lo que significa entender hoy las bases de datos.</p>
+</section>
+<section id="ejercicios-propuestos" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="ejercicios-propuestos">Ejercicios propuestos</h2>
+</section>
+<section id="lecturas-recomendadas" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecturas-recomendadas">Lecturas recomendadas</h2>
+<ul>
+<li><p><span class="citation" data-cites="dosovitskiy2021"><span class="nocase">Dosovitskiy et&nbsp;al.</span> (<a href="#ref-dosovitskiy2021" role="doc-biblioref">2021</a>)</span>: el <em>vision transformer</em>, el codificador que lleva la imagen del ave al espacio vectorial donde la proximidad significa parecido.</p></li>
+<li><p><span class="citation" data-cites="vanhorn2018">Van Horn et&nbsp;al. (<a href="#ref-vanhorn2018" role="doc-biblioref">2018</a>)</span>: la identificación de especies a gran escala en condiciones de campo, prueba de que una red puede aprender los rasgos relevantes para la identificación de un ave.</p></li>
+<li><p><span class="citation" data-cites="wah2011">Wah et&nbsp;al. (<a href="#ref-wah2011" role="doc-biblioref">2011</a>)</span>: el conjunto CUB-200 de imágenes de aves, ejemplo del dato etiquetado que hace posible especializar el codificador del dominio.</p></li>
+<li><p><span class="citation" data-cites="colpali2024">Faysse et&nbsp;al. (<a href="#ref-colpali2024" role="doc-biblioref">2024</a>)</span>: ColPali, la interacción tardía sobre documentos visuales, modelo de la variante a nivel de región del sistema.</p></li>
+<li><p><span class="citation" data-cites="khattab2020">Khattab y Zaharia (<a href="#ref-khattab2020" role="doc-biblioref">2020</a>)</span>: la interacción tardía original (ColBERT), el max-sim sobre representaciones por región que el capítulo lleva a la imagen.</p></li>
+<li><p><span class="citation" data-cites="radford2021"><span class="nocase">Radford et&nbsp;al.</span> (<a href="#ref-radford2021" role="doc-biblioref">2021</a>)</span>: el modelo contrastivo imagen-texto (CLIP), base de la representación multimodal que permite recuperar por imagen y por texto en un espacio común.</p></li>
+<li><p><span class="citation" data-cites="malkov2018">Malkov y Yashunin (<a href="#ref-malkov2018" role="doc-biblioref">2020</a>)</span>: el índice HNSW, la estructura de vecinos aproximados elegida para el rango de escala del sistema de identificación por su recall alto a baja latencia.</p></li>
+<li><p><span class="citation" data-cites="johnson2019">Johnson et&nbsp;al. (<a href="#ref-johnson2019" role="doc-biblioref">2021</a>)</span>: la búsqueda de similitud a escala, referencia para la implementación eficiente del índice que sostiene la recuperación.</p></li>
+</ul>
+<p><em>Aquí termina el recorrido de este manual: de la tabla y la coincidencia exacta a la imagen y el parecido, pasando por todo lo que hace falta para preguntar por lo cercano a escala. Los ejercicios de los veintiún capítulos y sus soluciones desarrolladas forman el volumen acompañante, </em>Ejercicios y Soluciones<em>, para quien quiera practicar y contrastar su razonamiento. Cierran este manual los apéndices de referencia: el repaso de álgebra lineal y de probabilidad, y la documentación del entorno reproducible.</em></p>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referencias</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-dosovitskiy2021" class="csl-entry" role="listitem">
+<span class="nocase">Dosovitskiy, Alexey, Lucas Beyer, Alexander Kolesnikov, et&nbsp;al.</span> 2021. <span>«An Image Is Worth 16x16 Words: Transformers for Image Recognition at Scale»</span>. <em>International Conference on Learning Representations (ICLR)</em>.
+</div>
+<div id="ref-colpali2024" class="csl-entry" role="listitem">
+Faysse, Manuel, Hugues Sibille, Tony Wu, et&nbsp;al. 2024. <span>«<span>ColPali</span>: Efficient Document Retrieval with Vision Language Models»</span>. <em>arXiv preprint arXiv:2407.01449</em>.
+</div>
+<div id="ref-johnson2019" class="csl-entry" role="listitem">
+Johnson, Jeff, Matthijs Douze, y Hervé Jégou. 2021. <span>«Billion-Scale Similarity Search with <span>GPUs</span>»</span>. <em>IEEE Transactions on Big Data</em> 7 (3).
+</div>
+<div id="ref-khattab2020" class="csl-entry" role="listitem">
+Khattab, Omar, y Matei Zaharia. 2020. <span>«<span>ColBERT</span>: Efficient and Effective Passage Search via Contextualized Late Interaction over <span>BERT</span>»</span>. <em>ACM SIGIR Conference on Research and Development in Information Retrieval</em>.
+</div>
+<div id="ref-lewis2020" class="csl-entry" role="listitem">
+Lewis, Patrick, Ethan Perez, Aleksandra Piktus, et&nbsp;al. 2020. <span>«Retrieval-Augmented Generation for Knowledge-Intensive <span>NLP</span> Tasks»</span>. <em>Advances in Neural Information Processing Systems (NeurIPS)</em>.
+</div>
+<div id="ref-malkov2018" class="csl-entry" role="listitem">
+Malkov, Yu A., y D. A. Yashunin. 2020. <span>«Efficient and Robust Approximate Nearest Neighbor Search Using Hierarchical Navigable Small World Graphs»</span>. <em>IEEE Transactions on Pattern Analysis and Machine Intelligence</em> 42 (4).
+</div>
+<div id="ref-mcmahan2017" class="csl-entry" role="listitem">
+McMahan, Brendan, Eider Moore, Daniel Ramage, Seth Hampson, y Blaise Agüera y Arcas. 2017. <span>«Communication-Efficient Learning of Deep Networks from Decentralized Data»</span>. <em>International Conference on Artificial Intelligence and Statistics (AISTATS)</em>, Proceedings of Machine Learning Research, vol. 54: 1273-82.
+</div>
+<div id="ref-radford2021" class="csl-entry" role="listitem">
+<span class="nocase">Radford, Alec, Jong Wook Kim, Chris Hallacy, et&nbsp;al.</span> 2021. <span>«Learning Transferable Visual Models from Natural Language Supervision»</span>. <em>International Conference on Machine Learning (ICML)</em>.
+</div>
+<div id="ref-vanhorn2018" class="csl-entry" role="listitem">
+Van Horn, Grant, Oisin Mac Aodha, Yang Song, et&nbsp;al. 2018. <span>«The <span>iNaturalist</span> species classification and detection dataset»</span>. <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</em>, 8769-78.
+</div>
+<div id="ref-wah2011" class="csl-entry" role="listitem">
+Wah, Catherine, Steve Branson, Peter Welinder, Pietro Perona, y Serge Belongie. 2011. <em>The <span>Caltech-UCSD</span> <span>Birds-200-2011</span> Dataset</em>. CNS-TR-2011-001. California Institute of Technology.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cap20.html" class="pagination-link" aria-label="Capítulo 20. El futuro híbrido">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Capítulo 20. El futuro híbrido</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 Manuel Muñoz Plá · Edición web bajo licencia <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es">CC BY-NC-ND 4.0</a> (uso académico con atribución; sin uso comercial ni obras derivadas) · El código va aparte bajo licencia MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

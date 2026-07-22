@@ -1,0 +1,6 @@
+# latencia (ms) de prefiltrado vs posfiltrado y resultados del posfiltrado segun selectividad del filtro de anio (n=20000)
+selectividad  prefiltro_ms  posfiltro_ms  result_posfiltro
+12.5  0.35  1.638  9.8
+25.0  1.414  0.868  10.0
+50.0  2.657  2.072  10.0
+100.0  6.129  1.893  10.0

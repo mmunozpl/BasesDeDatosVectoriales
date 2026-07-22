@@ -1,0 +1,5 @@
+# precision@10 de recuperar la misma especie Y habitat con solo similitud, solo filtro (mismo habitat) y filtro+similitud (n=20000)
+estrategia  precision
+solo_similitud  0.1663
+solo_filtro  0.3662
+filtro+similitud  0.4902

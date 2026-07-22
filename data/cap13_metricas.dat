@@ -1,0 +1,7 @@
+# desacuerdo del top-10 con el coseno segun variabilidad de la norma (d=64)
+var_norma  euclidea  prod_interno
+0.0  0.0  0.0
+0.3  0.7525  0.494
+0.6  0.732  0.688
+1.0  0.7395  0.768
+1.5  0.7035  0.8645

@@ -1,0 +1,115 @@
+# motores como servicios. los capitulos tempranos solo necesitan postgres;
+# el resto vive tras un "profile" para no arrancar (ni descargar) mas de lo
+# necesario. uso por capitulo:
+#   cap. 1-5    docker compose up -d                 # solo postgres
+#   cap. 6,8    docker compose --profile nosql up -d
+#   cap. 8      docker compose --profile timeseries up -d
+#   cap. 16     docker compose --profile vector up -d
+services:
+
+  # ---- relacional, base de los cap. 1-5 (imagen con pgvector ya incluido,
+  #      necesario desde el cap. 14; en los primeros capitulos no se usa) ----
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: libro
+      POSTGRES_PASSWORD: libro
+      POSTGRES_DB: libro
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U libro -d libro"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ---- familias nosql (cap. 6 y 8) ----
+  redis:
+    image: redis:7
+    profiles: ["nosql"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    profiles: ["nosql"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # ---- serie temporal (cap. 8) ----
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    profiles: ["timeseries"]
+    environment:
+      POSTGRES_USER: libro
+      POSTGRES_PASSWORD: libro
+      POSTGRES_DB: serie
+    ports:
+      - "5433:5432"
+    volumes:
+      - ts_data:/var/lib/postgresql/data
+
+  # ---- motores vectoriales dedicados (cap. 16) ----
+  qdrant:
+    image: qdrant/qdrant
+    profiles: ["vector"]
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.5
+    profiles: ["vector"]
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    volumes:
+      - etcd_data:/etcd
+
+  minio:
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    profiles: ["vector"]
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    command: minio server /minio_data
+    volumes:
+      - minio_data:/minio_data
+
+  milvus:
+    image: milvusdb/milvus:v2.5.4
+    profiles: ["vector"]
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    depends_on:
+      - etcd
+      - minio
+    volumes:
+      - milvus_data:/var/lib/milvus
+
+volumes:
+  pg_data:
+  mongo_data:
+  ts_data:
+  qdrant_data:
+  etcd_data:
+  minio_data:
+  milvus_data:

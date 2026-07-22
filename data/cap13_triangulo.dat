@@ -1,0 +1,4 @@
+# fraccion de triples que violan la desigualdad triangular (d=32)
+distancia  violaciones
+coseno_1menoscos  1e-05
+angular_arccos  0.0

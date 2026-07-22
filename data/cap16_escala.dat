@@ -1,0 +1,7 @@
+# latencia (ms) de una consulta por la API del motor (indice flat) segun el tamano de la coleccion (dim 256)
+n  latencia_ms
+10000  1.238
+50000  1.999
+100000  5.284
+200000  13.857
+500000  35.794

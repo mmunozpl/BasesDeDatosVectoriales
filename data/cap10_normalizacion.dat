@@ -1,0 +1,5 @@
+# precision media (AP) segun el preprocesado del texto
+paso  modo  ap
+1  exacto  0.9187
+2  sin_vacias  0.875
+3  stem  1.0

@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Capítulo 13. Geometría del espacio métrico – Bases de datos</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cap14.html" rel="next">
+<link href="./cap12.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-654c8d80848ee01bf5d57418afe456c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cap13.html">Capítulo 13. Geometría del espacio métrico</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Bases de datos</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Alternar modo lector">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 1. La persistencia y la disciplina de gestión de datos</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 2. El modelo relacional</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 3. SQL: del DML declarativo a las extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 4. Diseño y normalización</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 5. Transacciones, concurrencia y recuperación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 6. Límites del relacional y el movimiento NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 7. Consistencia distribuida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 8. Las familias NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 9. Mecánica de la distribución</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 10. Recuperación de información clásica</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 11. De la representación dispersa a la densa</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 12. Deep learning para embeddings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap13.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Capítulo 13. Geometría del espacio métrico</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 14. Anatomía de una base de datos vectorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 15. Índices de vecino aproximado</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 16. Motores: dedicados frente a extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 17. Consulta híbrida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 18. Evaluación y operación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 19. Recuperación aumentada y memoria de agentes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 20. El futuro híbrido</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 21. Caso de estudio integral</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#las-distancias" id="toc-las-distancias" class="nav-link active" data-scroll-target="#las-distancias">Las distancias</a>
+  <ul class="collapse">
+  <li><a href="#un-ejemplo-a-mano" id="toc-un-ejemplo-a-mano" class="nav-link" data-scroll-target="#un-ejemplo-a-mano">Un ejemplo a mano</a></li>
+  </ul></li>
+  <li><a href="#más-familias-de-distancias" id="toc-más-familias-de-distancias" class="nav-link" data-scroll-target="#más-familias-de-distancias">Más familias de distancias</a>
+  <ul class="collapse">
+  <li><a href="#otras-familias-de-minkowski-a-los-conjuntos" id="toc-otras-familias-de-minkowski-a-los-conjuntos" class="nav-link" data-scroll-target="#otras-familias-de-minkowski-a-los-conjuntos">Otras familias: de Minkowski a los conjuntos</a></li>
+  <li><a href="#adaptar-la-distancia-a-los-datos-de-mahalanobis-a-aprenderla" id="toc-adaptar-la-distancia-a-los-datos-de-mahalanobis-a-aprenderla" class="nav-link" data-scroll-target="#adaptar-la-distancia-a-los-datos-de-mahalanobis-a-aprenderla">Adaptar la distancia a los datos: de Mahalanobis a aprenderla</a></li>
+  </ul></li>
+  <li><a href="#normalización-y-su-efecto-sobre-la-métrica" id="toc-normalización-y-su-efecto-sobre-la-métrica" class="nav-link" data-scroll-target="#normalización-y-su-efecto-sobre-la-métrica">Normalización y su efecto sobre la métrica</a>
+  <ul class="collapse">
+  <li><a href="#coseno-y-euclídea-son-lo-mismo-en-la-esfera" id="toc-coseno-y-euclídea-son-lo-mismo-en-la-esfera" class="nav-link" data-scroll-target="#coseno-y-euclídea-son-lo-mismo-en-la-esfera">Coseno y euclídea son lo mismo en la esfera</a></li>
+  <li><a href="#una-recuperación-en-miniatura" id="toc-una-recuperación-en-miniatura" class="nav-link" data-scroll-target="#una-recuperación-en-miniatura">Una recuperación en miniatura</a></li>
+  </ul></li>
+  <li><a href="#propiedades-de-los-espacios-de-alta-dimensión" id="toc-propiedades-de-los-espacios-de-alta-dimensión" class="nav-link" data-scroll-target="#propiedades-de-los-espacios-de-alta-dimensión">Propiedades de los espacios de alta dimensión</a>
+  <ul class="collapse">
+  <li><a href="#las-distancias-se-concentran" id="toc-las-distancias-se-concentran" class="nav-link" data-scroll-target="#las-distancias-se-concentran">Las distancias se concentran</a></li>
+  <li><a href="#casi-todo-es-perpendicular-y-el-volumen-huye-a-la-cáscara" id="toc-casi-todo-es-perpendicular-y-el-volumen-huye-a-la-cáscara" class="nav-link" data-scroll-target="#casi-todo-es-perpendicular-y-el-volumen-huye-a-la-cáscara">Casi todo es perpendicular y el volumen huye a la cáscara</a></li>
+  <li><a href="#los-hubs-y-por-qué-el-coseno-no-es-una-métrica" id="toc-los-hubs-y-por-qué-el-coseno-no-es-una-métrica" class="nav-link" data-scroll-target="#los-hubs-y-por-qué-el-coseno-no-es-una-métrica">Los hubs, y por qué el coseno no es una métrica</a></li>
+  </ul></li>
+  <li><a href="#cómo-la-estructura-salva-la-búsqueda" id="toc-cómo-la-estructura-salva-la-búsqueda" class="nav-link" data-scroll-target="#cómo-la-estructura-salva-la-búsqueda">Cómo la estructura salva la búsqueda</a></li>
+  <li><a href="#de-la-geometría-al-índice" id="toc-de-la-geometría-al-índice" class="nav-link" data-scroll-target="#de-la-geometría-al-índice">De la geometría al índice</a>
+  <ul class="collapse">
+  <li><a href="#el-producto-interno-no-es-una-distancia-pero-se-puede-convertir" id="toc-el-producto-interno-no-es-una-distancia-pero-se-puede-convertir" class="nav-link" data-scroll-target="#el-producto-interno-no-es-una-distancia-pero-se-puede-convertir">El producto interno no es una distancia, pero se puede convertir</a></li>
+  <li><a href="#qué-pide-cada-fenómeno-al-índice-y-dónde-cortar" id="toc-qué-pide-cada-fenómeno-al-índice-y-dónde-cortar" class="nav-link" data-scroll-target="#qué-pide-cada-fenómeno-al-índice-y-dónde-cortar">Qué pide cada fenómeno al índice, y dónde cortar</a></li>
+  </ul></li>
+  <li><a href="#práctica-la-geometría-medida" id="toc-práctica-la-geometría-medida" class="nav-link" data-scroll-target="#práctica-la-geometría-medida">Práctica: la geometría, medida</a>
+  <ul class="collapse">
+  <li><a href="#el-módulo-y-el-buscador-en-miniatura" id="toc-el-módulo-y-el-buscador-en-miniatura" class="nav-link" data-scroll-target="#el-módulo-y-el-buscador-en-miniatura">El módulo y el buscador en miniatura</a></li>
+  <li><a href="#la-demostración-y-las-diez-medidas-de-un-vistazo" id="toc-la-demostración-y-las-diez-medidas-de-un-vistazo" class="nav-link" data-scroll-target="#la-demostración-y-las-diez-medidas-de-un-vistazo">La demostración y las diez medidas de un vistazo</a></li>
+  <li><a href="#lo-que-la-práctica-enseña-y-los-errores-comunes-al-medir-parecido" id="toc-lo-que-la-práctica-enseña-y-los-errores-comunes-al-medir-parecido" class="nav-link" data-scroll-target="#lo-que-la-práctica-enseña-y-los-errores-comunes-al-medir-parecido">Lo que la práctica enseña, y los errores comunes al medir parecido</a></li>
+  </ul></li>
+  <li><a href="#casos-de-diseño-la-métrica-en-tres-sistemas" id="toc-casos-de-diseño-la-métrica-en-tres-sistemas" class="nav-link" data-scroll-target="#casos-de-diseño-la-métrica-en-tres-sistemas">Casos de diseño: la métrica en tres sistemas</a>
+  <ul class="collapse">
+  <li><a href="#un-buscador-semántico-y-un-recomendador-de-productos" id="toc-un-buscador-semántico-y-un-recomendador-de-productos" class="nav-link" data-scroll-target="#un-buscador-semántico-y-un-recomendador-de-productos">Un buscador semántico y un recomendador de productos</a></li>
+  <li><a href="#un-detector-de-duplicados-y-la-lección-común" id="toc-un-detector-de-duplicados-y-la-lección-común" class="nav-link" data-scroll-target="#un-detector-de-duplicados-y-la-lección-común">Un detector de duplicados, y la lección común</a></li>
+  </ul></li>
+  <li><a href="#nota-histórica-y-de-perspectiva" id="toc-nota-histórica-y-de-perspectiva" class="nav-link" data-scroll-target="#nota-histórica-y-de-perspectiva">Nota histórica y de perspectiva</a></li>
+  <li><a href="#síntesis-y-puente-a-la-cuarta-parte" id="toc-síntesis-y-puente-a-la-cuarta-parte" class="nav-link" data-scroll-target="#síntesis-y-puente-a-la-cuarta-parte">Síntesis y puente a la cuarta parte</a></li>
+  <li><a href="#ejercicios-propuestos" id="toc-ejercicios-propuestos" class="nav-link" data-scroll-target="#ejercicios-propuestos">Ejercicios propuestos</a></li>
+  <li><a href="#lecturas-recomendadas" id="toc-lecturas-recomendadas" class="nav-link" data-scroll-target="#lecturas-recomendadas">Lecturas recomendadas</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Capítulo 13. Geometría del espacio métrico</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Los tres capítulos anteriores construyeron el vector: la idea de comparar por proximidad (capítulo&nbsp;10), la representación densa que captura el significado (capítulo&nbsp;11) y el codificador neuronal que la produce con calidad (capítulo&nbsp;12). En todos ellos se ha invocado, una y otra vez, una palabra sin definirla del todo: <em>cerca</em>. Se ha dicho que buscar es encontrar los vectores más próximos, que dos cosas parecidas quedan cerca, que el coseno mide el parecido. Pero ¿qué es, exactamente, la cercanía? Hay más de una forma de medirla, no todas dicen lo mismo, y el espacio de alta dimensión donde viven los embeddings se comporta de maneras profundamente contraintuitivas. Este capítulo —el último teórico antes de construir el sistema— estudia esa geometría: las distancias, el efecto de la normalización y las rarezas de la alta dimensión.</p>
+<p>No es un capítulo accesorio, sino el que fija la <em>primera decisión de diseño</em> de cualquier base de datos vectorial: qué métrica usar. Elegir mal la distancia hace que la búsqueda devuelva lo que no es, por bueno que sea el codificador y por rápido que sea el índice. Y entender las propiedades de la alta dimensión —por qué las distancias se concentran, por qué casi todo el volumen vive en la superficie, por qué surgen «hubs»— es lo que explica por qué buscar el vecino más próximo a escala es difícil, y por qué la cuarta parte necesita índices aproximados en lugar de comparar contra todos. La geometría es, en el fondo, el terreno sobre el que se levantará toda la ingeniería que viene.</p>
+<p>Merece la pena detenerse en por qué este capítulo es la bisagra de todo el libro. La primera mitad de la obra vivía bajo el signo del <em>igual a</em>: dos filas coincidían si compartían una clave, dos documentos se encontraban si contenían el mismo término, y la maquinaria —índices B-tree, índices invertidos, hashes— estaba toda al servicio de la coincidencia exacta. La segunda mitad cambia de régimen al <em>cercano a</em>: dos textos se parecen si sus vectores apuntan en direcciones afines, aunque no compartan una sola palabra. Ese salto, del igual al cercano, es el hilo conductor del libro entero, y es aquí donde se formaliza: la «cercanía» deja de ser una metáfora y se convierte en una distancia concreta, medible, con propiedades que se pueden estudiar. Sin este capítulo, el «cercano a» sería un eslogan; con él, es ingeniería.</p>
+<p>Como siempre, la geometría se mide. El módulo de la práctica —numpy, CPU— compara las tres distancias sobre los mismos datos, demuestra que la normalización reconcilia algunas de ellas, y reproduce los fenómenos de la alta dimensión: la concentración de las distancias, la casi-ortogonalidad, el volumen que huye a la cáscara, los hubs que emergen. El lector saldrá con el criterio para elegir métrica —coseno, euclídea o producto interno— y con la intuición, calibrada por las medidas, de por qué el espacio de los embeddings no se comporta como el espacio de tres dimensiones en que vivimos. Ese criterio y esa intuición son lo que la cuarta parte da por supuesto.</p>
+<section id="las-distancias" class="level2">
+<h2 class="anchored" data-anchor-id="las-distancias">Las distancias</h2>
+<p>Medir el parecido entre dos vectores es medir, de algún modo, lo «juntos» que están, y hay tres formas de uso común, que no siempre coinciden (figura&nbsp;13.1). La <em>distancia euclídea</em> (o <span class="math inline">\(L_2\)</span>) es la más intuitiva: la longitud del segmento recto que une las puntas de los dos vectores, <span class="math inline">\(\lVert a-b\rVert = \sqrt{\sum_i (a_i-b_i)^2}\)</span>. La <em>similitud coseno</em> mide el <em>ángulo</em> entre los vectores, <span class="math inline">\(\cos\theta = (a\cdot b)/(\lVert a\rVert\,\lVert b\rVert)\)</span>, ignorando sus longitudes. Y el <em>producto interno</em> (o producto escalar) es <span class="math inline">\(a\cdot b = \sum_i a_i b_i = \lVert a\rVert\,\lVert
+b\rVert\cos\theta\)</span>, que combina el ángulo <em>y</em> las longitudes (listado&nbsp;13.1).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_01.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.1.</strong> Las tres medidas sobre los mismos dos vectores. La euclídea mide la longitud del segmento entre las puntas; el coseno, el ángulo entre ellos; el producto interno, la proyección —el ángulo pesado por las longitudes.</figcaption>
+</figure>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:distancias"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:distancias-1"><a href="#lst:distancias-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="lst:distancias-2"><a href="#lst:distancias-2" aria-hidden="true" tabindex="-1"></a>euclidea <span class="op">=</span> np.linalg.norm(a <span class="op">-</span> b)            <span class="co"># longitud del segmento</span></span>
+<span id="lst:distancias-3"><a href="#lst:distancias-3" aria-hidden="true" tabindex="-1"></a>producto <span class="op">=</span> a <span class="op">@</span> b                            <span class="co"># angulo y longitudes</span></span>
+<span id="lst:distancias-4"><a href="#lst:distancias-4" aria-hidden="true" tabindex="-1"></a>coseno   <span class="op">=</span> (a <span class="op">@</span> b) <span class="op">/</span> (np.linalg.norm(a) <span class="op">*</span> np.linalg.norm(b))  <span class="co"># angulo</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.1.</strong> Las tres medidas de parecido entre dos vectores.</p>
+<p>La diferencia clave entre ellas es qué hacen con la <em>norma</em> (la longitud) de los vectores. El coseno la ignora por completo: solo le importa la dirección, así que dos vectores que apuntan al mismo sitio tienen coseno <span class="math inline">\(1\)</span> aunque uno mida diez veces más que el otro. La euclídea y el producto interno, en cambio, sí dependen de la norma. Cuándo importa esa diferencia es la primera pregunta de diseño.</p>
+<section id="un-ejemplo-a-mano" class="level3">
+<h3 class="anchored" data-anchor-id="un-ejemplo-a-mano">Un ejemplo a mano</h3>
+<p>Conviene ver los números antes de las gráficas, porque toda la intuición del capítulo cabe en un caso de dos dimensiones que se calcula con lápiz. Sea la consulta <span class="math inline">\(q=(1,\,0)\)</span> —un vector que apunta al este, de norma uno— y dos candidatos: <span class="math inline">\(u=(10,\,1)\)</span>, que apunta casi al este pero es <em>largo</em>, y <span class="math inline">\(v=(0{,}5,\,0{,}5)\)</span>, que apunta a <span class="math inline">\(45^\circ\)</span> y es <em>corto</em>. La pregunta «¿cuál se parece más a <span class="math inline">\(q\)</span>?» tiene dos respuestas distintas según la métrica, y eso es justo lo que hay que entender.</p>
+<p>El coseno mira solo la dirección. La de <span class="math inline">\(u\)</span> casi coincide con la de <span class="math inline">\(q\)</span> (apenas un grado de diferencia), así que <span class="math inline">\(\cos(q,u)=10/\sqrt{101}\approx 0{,}995\)</span>; la de <span class="math inline">\(v\)</span> está a <span class="math inline">\(45^\circ\)</span>, así que <span class="math inline">\(\cos(q,v)=0{,}5/\sqrt{0{,}5}\approx 0{,}707\)</span>. Por el coseno, <em>gana <span class="math inline">\(u\)</span></em>. La euclídea mira la posición en el plano: <span class="math inline">\(u\)</span> está lejísimos de <span class="math inline">\(q\)</span> —<span class="math inline">\(\lVert q-u\rVert=\sqrt{81+1}=\sqrt{82}\approx 9{,}06\)</span>, arrastrado por su norma— mientras que <span class="math inline">\(v\)</span> está a un paso —<span class="math inline">\(\lVert q-v\rVert=\sqrt{0{,}25+0{,}25}\approx
+0{,}707\)</span>—. Por la euclídea, <em>gana <span class="math inline">\(v\)</span></em>. El producto interno, que pesa el ángulo por las longitudes, da <span class="math inline">\(q\cdot u=10\)</span> y <span class="math inline">\(q\cdot v=0{,}5\)</span>: como el coseno, prefiere a <span class="math inline">\(u\)</span>, y por goleada (tabla&nbsp;13.1).</p>
+<table class="caption-top table">
+<caption>El mismo par de candidatos, tres veredictos. El coseno y el producto interno eligen a <span class="math inline">\(u\)</span> (misma dirección que <span class="math inline">\(q\)</span>); la euclídea elige a <span class="math inline">\(v\)</span> (más cerca en el plano). La norma es la culpable del desacuerdo.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Candidato</th>
+<th style="text-align: center;">norma</th>
+<th style="text-align: center;">coseno</th>
+<th style="text-align: center;">euclídea</th>
+<th style="text-align: center;">prod.&nbsp;interno</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(u=(10,\,1)\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(10{,}05\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0{,}995}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(9{,}06\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{10{,}0}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(v=(0{,}5,\,0{,}5)\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0{,}71\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0{,}707\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0{,}707}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0{,}5\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Ese desacuerdo —coseno y producto interno por un lado, euclídea por otro— no es un accidente del ejemplo: es la consecuencia inevitable de que las normas difieran. Si se normalizan los tres vectores a longitud uno antes de medir, el desacuerdo desaparece, como se verá en la sección&nbsp;13.3. Y nótese de paso que coseno y producto interno coinciden aquí en el <em>ranking</em> pero no en la <em>escala</em>: el producto interno premia la norma alta de <span class="math inline">\(u\)</span>, de modo que en cuanto hubiera un tercer candidato con la dirección de <span class="math inline">\(v\)</span> pero norma enorme, podría adelantar a <span class="math inline">\(u\)</span> por producto interno sin hacerlo por coseno. Tres medidas, tres criterios; la elección es de diseño, no de gusto.</p>
+<p>Si todos los vectores tienen la <em>misma</em> norma, las tres medidas ordenan igual: con longitudes fijas, solo varía el ángulo, y las tres son funciones del ángulo. Pero en cuanto las normas <em>difieren</em>, se separan, y la práctica lo mide (figura&nbsp;13.2). Partiendo de vectores de igual norma —donde el desacuerdo es cero— y aumentando la variabilidad de las normas, el ranking de los diez vecinos más próximos según la euclídea y según el producto interno se aleja cada vez más del que da el coseno: con normas muy dispares, hasta tres cuartas partes del top-10 difieren. La elección de métrica, lejos de ser un detalle, cambia <em>qué documentos</em> se consideran los más parecidos.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_02.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.2.</strong> Desacuerdo del top-10 con el coseno al crecer la variabilidad de las normas. Con normas iguales (<span class="math inline">\(\sigma=0\)</span>) las tres medidas coinciden; al diferir las normas, la euclídea y el producto interno se apartan del coseno. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>Si las tres medidas difieren por la norma, la pregunta es qué significa esa norma, porque de ahí sale cuál usar. En muchos embeddings la norma de un vector <em>codifica información</em>: puede reflejar la frecuencia o la importancia de un término, la longitud de un documento, o la <em>confianza</em> del modelo en su representación —un texto claro y rico produce un vector de norma mayor que uno breve o ambiguo—. Cuando la norma lleva esa señal y se quiere usar, el producto interno es la métrica adecuada, porque premia a los vectores largos: en una recomendación, un producto popular (norma alta) sube en el ranking frente a otro igual de afín pero menos popular. Esa búsqueda —ordenar por producto interno— tiene nombre propio, <em>MIPS</em> (<em>maximum inner product search</em>), y es la que usan muchos sistemas de recomendación (figura&nbsp;13.3).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_03.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.3.</strong> La primera decisión de cualquier índice: si la magnitud (la norma) lleva señal que se quiere usar, producto interno (MIPS); si solo importa la dirección —el significado—, coseno, equivalente a la euclídea sobre vectores normalizados.</figcaption>
+</figure>
+</div>
+<p>Cuando, en cambio, la norma es ruido —o no se quiere que pese— y solo importa la <em>dirección</em> (el significado), el coseno es la elección, y es la más común en búsqueda semántica de texto: que un documento sea largo no debe hacerlo más relevante. La regla práctica es directa: el coseno cuando importa de qué trata el vector, el producto interno cuando importa además cuánto pesa. Y la euclídea, como se verá en la sección siguiente, se vuelve equivalente al coseno en cuanto se normaliza, de modo que el verdadero eje de decisión es uno solo: usar la norma o no usarla.</p>
+</section>
+</section>
+<section id="más-familias-de-distancias" class="level2">
+<h2 class="anchored" data-anchor-id="más-familias-de-distancias">Más familias de distancias</h2>
+<section id="otras-familias-de-minkowski-a-los-conjuntos" class="level3">
+<h3 class="anchored" data-anchor-id="otras-familias-de-minkowski-a-los-conjuntos">Otras familias: de Minkowski a los conjuntos</h3>
+<p>La euclídea no es la única distancia «de segmento». Pertenece a la familia <span class="math inline">\(L_p\)</span>, las distancias de Minkowski, <span class="math inline">\(\lVert a-b\rVert_p = (\sum_i |a_i-b_i|^p)^{1/p}\)</span>: para <span class="math inline">\(p=2\)</span> es la euclídea, para <span class="math inline">\(p=1\)</span> es la <em>Manhattan</em> (la suma de las diferencias absolutas, como recorrer una cuadrícula de calles), y en el límite <span class="math inline">\(p\to\infty\)</span> es la <em>Chebyshev</em> (la mayor diferencia en una sola coordenada) (listado&nbsp;13.2). En baja dimensión la elección entre ellas importa poco; en alta dimensión, curiosamente, las distancias con <span class="math inline">\(p\)</span> pequeño —incluso fraccionario— discriminan algo mejor, un efecto relacionado con la concentración que la sección&nbsp;13.4 estudia <span class="citation" data-cites="aggarwal2001">(<a href="#ref-aggarwal2001" role="doc-biblioref">Aggarwal et&nbsp;al. 2001</a>)</span>. Para los embeddings, sin embargo, el debate práctico se reduce casi siempre a coseno frente a producto interno; la euclídea aparece, normalizada, como cara del coseno.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:minkowski"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:minkowski-1"><a href="#lst:minkowski-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> minkowski(a, b, p):</span>
+<span id="lst:minkowski-2"><a href="#lst:minkowski-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (np.<span class="bu">abs</span>(a <span class="op">-</span> b) <span class="op">**</span> p).<span class="bu">sum</span>() <span class="op">**</span> (<span class="dv">1</span> <span class="op">/</span> p)</span>
+<span id="lst:minkowski-3"><a href="#lst:minkowski-3" aria-hidden="true" tabindex="-1"></a><span class="co"># p=1: Manhattan   p=2: euclidea   p-&gt;inf: Chebyshev (max|a-b|)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.2.</strong> La familia de distancias de Minkowski: Manhattan, euclidea y Chebyshev como casos de un mismo parametro p.</p>
+<p>La forma más vívida de ver en qué se diferencian es dibujar su <em>bola unidad</em>: el conjunto de puntos a distancia exactamente uno del origen (figura&nbsp;13.4). Para la euclídea es el círculo de toda la vida; para la Manhattan es un rombo —girando <span class="math inline">\(45^\circ\)</span>, con las puntas en los ejes—; para la Chebyshev es un cuadrado. La misma frase «a distancia uno» dibuja figuras distintas, y por eso la elección de <span class="math inline">\(p\)</span> cambia qué puntos quedan «dentro» de un radio dado. Con un ejemplo concreto se ve la jerarquía: para <span class="math inline">\(a=(0,0)\)</span> y <span class="math inline">\(b=(3,4)\)</span>, la Manhattan da <span class="math inline">\(|3|+|4|=7\)</span>, la euclídea <span class="math inline">\(\sqrt{9+16}=5\)</span> y la Chebyshev <span class="math inline">\(\max(3,4)=4\)</span>. Siempre se cumple <span class="math inline">\(L_\infty\le L_2\le L_1\)</span>: cuanto mayor es <span class="math inline">\(p\)</span>, más domina la coordenada más grande y menor sale la distancia.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_04.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.4.</strong> Las bolas unidad —los puntos a distancia uno del origen— de las tres distancias de Minkowski en el plano: rombo para la Manhattan (<span class="math inline">\(L_1\)</span>), círculo para la euclídea (<span class="math inline">\(L_2\)</span>) y cuadrado para la Chebyshev (<span class="math inline">\(L_\infty\)</span>). La misma «distancia uno», tres figuras.</figcaption>
+</figure>
+</div>
+<p>Reunir las medidas en un módulo deja a la vista que todas comparten una estructura —restar, combinar, agregar— y que el coseno es la única que normaliza (listado&nbsp;13.3). Tenerlas juntas hace fácil cambiar de criterio en un experimento y comparar, que es lo que hace la práctica del capítulo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:metricas_todas"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:metricas_todas-1"><a href="#lst:metricas_todas-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="lst:metricas_todas-2"><a href="#lst:metricas_todas-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:metricas_todas-3"><a href="#lst:metricas_todas-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> euclidea(a, b):</span>
+<span id="lst:metricas_todas-4"><a href="#lst:metricas_todas-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.sqrt(((a <span class="op">-</span> b) <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>())       <span class="co"># L2: el segmento</span></span>
+<span id="lst:metricas_todas-5"><a href="#lst:metricas_todas-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:metricas_todas-6"><a href="#lst:metricas_todas-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> manhattan(a, b):</span>
+<span id="lst:metricas_todas-7"><a href="#lst:metricas_todas-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.<span class="bu">abs</span>(a <span class="op">-</span> b).<span class="bu">sum</span>()                 <span class="co"># L1: la cuadricula</span></span>
+<span id="lst:metricas_todas-8"><a href="#lst:metricas_todas-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:metricas_todas-9"><a href="#lst:metricas_todas-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chebyshev(a, b):</span>
+<span id="lst:metricas_todas-10"><a href="#lst:metricas_todas-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.<span class="bu">abs</span>(a <span class="op">-</span> b).<span class="bu">max</span>()                 <span class="co"># L_inf: la mayor coord.</span></span>
+<span id="lst:metricas_todas-11"><a href="#lst:metricas_todas-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:metricas_todas-12"><a href="#lst:metricas_todas-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> producto(a, b):</span>
+<span id="lst:metricas_todas-13"><a href="#lst:metricas_todas-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">float</span>(a <span class="op">@</span> b)                        <span class="co"># angulo y longitudes</span></span>
+<span id="lst:metricas_todas-14"><a href="#lst:metricas_todas-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:metricas_todas-15"><a href="#lst:metricas_todas-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> coseno(a, b):</span>
+<span id="lst:metricas_todas-16"><a href="#lst:metricas_todas-16" aria-hidden="true" tabindex="-1"></a>    na, nb <span class="op">=</span> np.linalg.norm(a), np.linalg.norm(b)</span>
+<span id="lst:metricas_todas-17"><a href="#lst:metricas_todas-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">float</span>(a <span class="op">@</span> b) <span class="op">/</span> (na <span class="op">*</span> nb)            <span class="co"># solo el angulo</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.3.</strong> Las medidas de parecido reunidas en un modulo: todas restan y agregan; solo el coseno divide por las normas.</p>
+<p>Las tres distancias anteriores —y la familia <span class="math inline">\(L_p\)</span>— suponen vectores <em>densos</em> de números reales, que es la representación de los capítulos 11 y 12. Pero la primera parte de la travesía vivía en lo <em>disperso</em>: las bolsas de palabras y los índices invertidos del capítulo&nbsp;10, donde un documento es un conjunto de términos presentes o ausentes. Para esa clase de datos hay medidas propias que conviene tener a mano, porque la elección de métrica también depende de la representación, no solo de la aplicación.</p>
+<p>La <em>similitud de Jaccard</em> compara dos <em>conjuntos</em> por el tamaño de su intersección dividido por el de su unión, <span class="math inline">\(J(A,B)=|A\cap B|/|A\cup B|\)</span>: cuántos términos comparten frente a cuántos términos distintos tienen en total. Vale uno si son idénticos y cero si no comparten nada, y es la medida natural cuando lo que importa es la <em>coincidencia de elementos</em> y no su frecuencia —detección de duplicados, solapamiento de etiquetas, parecido de conjuntos de términos—. La <em>distancia de Hamming</em>, por su parte, cuenta en cuántas posiciones difieren dos vectores <em>binarios</em> de la misma longitud, y es la medida de los códigos y las huellas digitales: dos documentos con huellas binarias parecidas difieren en pocos bits (listado&nbsp;13.4).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:jaccard"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:jaccard-1"><a href="#lst:jaccard-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> jaccard(a, b):</span>
+<span id="lst:jaccard-2"><a href="#lst:jaccard-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># a, b: conjuntos de terminos (presencia, no frecuencia)</span></span>
+<span id="lst:jaccard-3"><a href="#lst:jaccard-3" aria-hidden="true" tabindex="-1"></a>    inter <span class="op">=</span> <span class="bu">len</span>(a <span class="op">&amp;</span> b)</span>
+<span id="lst:jaccard-4"><a href="#lst:jaccard-4" aria-hidden="true" tabindex="-1"></a>    union <span class="op">=</span> <span class="bu">len</span>(a <span class="op">|</span> b)</span>
+<span id="lst:jaccard-5"><a href="#lst:jaccard-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> inter <span class="op">/</span> union <span class="cf">if</span> union <span class="cf">else</span> <span class="fl">0.0</span>     <span class="co"># 1 = identicos</span></span>
+<span id="lst:jaccard-6"><a href="#lst:jaccard-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:jaccard-7"><a href="#lst:jaccard-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hamming(a, b):</span>
+<span id="lst:jaccard-8"><a href="#lst:jaccard-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># a, b: vectores binarios de igual longitud</span></span>
+<span id="lst:jaccard-9"><a href="#lst:jaccard-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">int</span>((a <span class="op">!=</span> b).<span class="bu">sum</span>())                 <span class="co"># bits que difieren</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.4.</strong> Medidas para datos dispersos o binarios: Jaccard sobre conjuntos, Hamming sobre vectores binarios.</p>
+<p>La conexión con lo ya visto es directa: la similitud coseno entre dos bolsas de palabras <em>binarias</em> —unos y ceros según presencia— es, salvo un factor, pariente cercana de la Jaccard, y por eso en el capítulo&nbsp;10 el coseno sobre TF-IDF y la intuición de «cuántos términos comparten» apuntaban en la misma dirección. La diferencia con los embeddings densos es de fondo: en lo disperso, dos documentos solo se parecen si comparten <em>exactamente</em> los mismos términos —el «igual a» del título del libro—; en lo denso, pueden parecerse aunque no compartan ninguna palabra, porque el parecido vive en la dirección del vector —el «cercano a»—. La métrica adecuada cambia con la representación, y este capítulo se ocupa sobre todo de la densa, que es la que la cuarta parte indexa.</p>
+</section>
+<section id="adaptar-la-distancia-a-los-datos-de-mahalanobis-a-aprenderla" class="level3">
+<h3 class="anchored" data-anchor-id="adaptar-la-distancia-a-los-datos-de-mahalanobis-a-aprenderla">Adaptar la distancia a los datos: de Mahalanobis a aprenderla</h3>
+<p>Hay un supuesto callado en la euclídea que conviene sacar a la luz: trata todas las coordenadas por igual, como si midieran lo mismo y fueran independientes. Pero no siempre es así. Si una coordenada varía en un rango de miles y otra entre cero y uno, la primera domina la distancia y la segunda no cuenta; y si dos coordenadas están <em>correlacionadas</em> —se mueven juntas—, la euclídea las cuenta dos veces. La <em>distancia de Mahalanobis</em> corrige ambos defectos midiendo la distancia <em>tras</em> descontar la escala y la correlación de los datos, mediante la matriz de covarianza <span class="math inline">\(\Sigma\)</span>: <span class="math inline">\(d_M(a,b)=\sqrt{(a-b)^\top\Sigma^{-1}(a-b)}\)</span> (listado&nbsp;13.5).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:mahalanobis"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:mahalanobis-1"><a href="#lst:mahalanobis-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mahalanobis(a, b, cov):</span>
+<span id="lst:mahalanobis-2"><a href="#lst:mahalanobis-2" aria-hidden="true" tabindex="-1"></a>    delta <span class="op">=</span> a <span class="op">-</span> b</span>
+<span id="lst:mahalanobis-3"><a href="#lst:mahalanobis-3" aria-hidden="true" tabindex="-1"></a>    inv <span class="op">=</span> np.linalg.inv(cov)              <span class="co"># descuenta escala y correlacion</span></span>
+<span id="lst:mahalanobis-4"><a href="#lst:mahalanobis-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">float</span>(np.sqrt(delta <span class="op">@</span> inv <span class="op">@</span> delta))</span>
+<span id="lst:mahalanobis-5"><a href="#lst:mahalanobis-5" aria-hidden="true" tabindex="-1"></a><span class="co"># con cov = identidad, Mahalanobis se reduce a la euclidea</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.5.</strong> Distancia de Mahalanobis: mide tras descontar la escala y la correlacion de los datos (la matriz de covarianza).</p>
+<p>Intuitivamente, Mahalanobis estira y rota el espacio para que los datos queden «redondos» —varianza uno en todas las direcciones y sin correlación— y entonces mide la euclídea de siempre. Cuando la covarianza es la identidad —coordenadas independientes y de igual escala— coincide exactamente con la euclídea, de modo que la euclídea es el caso particular de Mahalanobis sobre datos ya «redondos». En la práctica de los embeddings rara vez se usa Mahalanobis directamente —es cara: exige estimar e invertir una matriz de covarianza grande— pero su idea reaparece disfrazada: normalizar cada coordenada, blanquear (<em>whiten</em>) los vectores antes de indexarlos, o aprender una transformación lineal que mejore las distancias son todas variantes de «descontar la estructura antes de medir». Es la misma lección de la sección anterior vista desde el otro lado: la métrica adecuada depende de la forma de los datos.</p>
+<p>Si la métrica adecuada depende de los datos, el paso natural —y el que dio el deep learning del capítulo&nbsp;12— es dejar de <em>elegirla</em> a mano y pasar a <em>aprenderla</em>. En vez de fijar coseno o Mahalanobis, se entrena el codificador para que la distancia que interesa salga directamente: que los pares que deben parecerse queden cerca y los que no, lejos. Es el <em>aprendizaje de métrica</em> (<em>metric learning</em>), y su forma más conocida es la <em>pérdida de tripletes</em>: para un ancla, un ejemplo positivo (que debe estar cerca) y uno negativo (que debe estar lejos), se penaliza que el positivo no esté más cerca que el negativo por un margen (listado&nbsp;13.6).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:triplete"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:triplete-1"><a href="#lst:triplete-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perdida_triplete(ancla, pos, neg, margen<span class="op">=</span><span class="fl">0.2</span>):</span>
+<span id="lst:triplete-2"><a href="#lst:triplete-2" aria-hidden="true" tabindex="-1"></a>    d_pos <span class="op">=</span> np.linalg.norm(ancla <span class="op">-</span> pos)     <span class="co"># debe ser pequena</span></span>
+<span id="lst:triplete-3"><a href="#lst:triplete-3" aria-hidden="true" tabindex="-1"></a>    d_neg <span class="op">=</span> np.linalg.norm(ancla <span class="op">-</span> neg)     <span class="co"># debe ser grande</span></span>
+<span id="lst:triplete-4"><a href="#lst:triplete-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(<span class="fl">0.0</span>, d_pos <span class="op">-</span> d_neg <span class="op">+</span> margen) <span class="co"># 0 si pos mas cerca + margen</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.6.</strong> Perdida de tripletes: empuja al positivo cerca del ancla y al negativo lejos, por un margen. La distancia se aprende, no se elige.</p>
+<p>Esto cierra el círculo del capítulo. Las primeras secciones tomaban los vectores como dados y discutían qué distancia aplicarles; el aprendizaje de métrica le da la vuelta a la pregunta y <em>moldea los vectores</em> para que una distancia fija —casi siempre el coseno— funcione. Los codificadores de frases del capítulo&nbsp;12 son, en el fondo, aprendices de métrica: se entrenan con pares de frases parecidas y distintas precisamente para que el coseno entre sus embeddings mida el parecido semántico. Por eso la elección de métrica en una base vectorial suele reducirse al coseno: no porque sea mágica, sino porque el codificador se entrenó para que lo fuera. La geometría y el aprendizaje se encuentran aquí: el modelo aprende a colocar los puntos donde la distancia que el índice sabe calcular dice la verdad.</p>
+</section>
+</section>
+<section id="normalización-y-su-efecto-sobre-la-métrica" class="level2">
+<h2 class="anchored" data-anchor-id="normalización-y-su-efecto-sobre-la-métrica">Normalización y su efecto sobre la métrica</h2>
+<p><em>Normalizar</em> un vector es dividirlo por su norma, <span class="math inline">\(\hat a = a/\lVert a\rVert\)</span>, lo que lo lleva a la <em>esfera unidad</em>: todos los vectores normalizados tienen longitud <span class="math inline">\(1\)</span> y se diferencian solo en la dirección (figura&nbsp;13.5). Es una operación barata y de enormes consecuencias geométricas, la principal de las cuales reconcilia dos de las tres métricas.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_05.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.5.</strong> Normalizar proyecta cada vector a la esfera unidad —divide por su norma—, descartando la longitud y conservando solo la dirección. Sobre la esfera, ordenar por distancia euclídea y por coseno es lo mismo.</figcaption>
+</figure>
+</div>
+<section id="coseno-y-euclídea-son-lo-mismo-en-la-esfera" class="level3">
+<h3 class="anchored" data-anchor-id="coseno-y-euclídea-son-lo-mismo-en-la-esfera">Coseno y euclídea son lo mismo en la esfera</h3>
+<p>La identidad clave es sencilla de deducir. Para dos vectores normalizados <span class="math inline">\(\hat a\)</span> y <span class="math inline">\(\hat b\)</span> (de norma <span class="math inline">\(1\)</span>), el cuadrado de su distancia euclídea es <span class="math display">\[\lVert \hat a - \hat b\rVert^2 = \lVert\hat a\rVert^2 + \lVert\hat b\rVert^2 - 2\,\hat a\cdot\hat b
+  = 2 - 2\cos\theta .\]</span> Es decir, la distancia euclídea entre vectores normalizados es una función <em>monótona decreciente</em> del coseno: a mayor coseno (más parecido), menor distancia euclídea. Por tanto, <em>ordenar por coseno y ordenar por distancia euclídea sobre vectores normalizados da exactamente el mismo ranking</em>. La práctica lo confirma de forma tajante (figura&nbsp;13.6): sin normalizar, el acuerdo entre la euclídea y el coseno se desploma cuando las normas varían; tras normalizar, el acuerdo es perfecto —uno exacto— sea cual sea la variabilidad de las normas.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_06.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.6.</strong> Acuerdo entre el ranking euclídeo y el del coseno. Sin normalizar, se desploma al variar las normas; tras normalizar a la esfera, es perfecto siempre, porque <span class="math inline">\(\lVert\hat a-\hat b\rVert^2 =
+    2-2\cos\theta\)</span>. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>Conviene comprobar la identidad con números, porque es la bisagra de toda la sección. Retomemos los vectores del ejemplo a mano: <span class="math inline">\(u=(10,1)\)</span> y <span class="math inline">\(v=(0{,}5,\,0{,}5)\)</span>, cuyas direcciones forman un ángulo cuyo coseno es <span class="math inline">\(\cos(u,v)=(5+0{,}5)/(\sqrt{101}\cdot\sqrt{0{,}5})\approx 0{,}774\)</span>. Normalizados quedan <span class="math inline">\(\hat u\approx(0{,}995,\,0{,}0995)\)</span> y <span class="math inline">\(\hat v\approx(0{,}707,\,0{,}707)\)</span>, ambos de norma uno. Su distancia euclídea al cuadrado es <span class="math inline">\(\lVert\hat u-\hat v\rVert^2\approx(0{,}288)^2+(0{,}608)^2\approx 0{,}453\)</span>, y la fórmula predice <span class="math inline">\(2-2\cos\theta=2-2(0{,}774)=0{,}452\)</span>: coinciden salvo el redondeo. La distancia euclídea sobre la esfera <em>es</em>, literalmente, una reescritura del coseno (listado&nbsp;13.7).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:verif_norm"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:verif_norm-1"><a href="#lst:verif_norm-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> normalizar(v):</span>
+<span id="lst:verif_norm-2"><a href="#lst:verif_norm-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> v <span class="op">/</span> np.linalg.norm(v)</span>
+<span id="lst:verif_norm-3"><a href="#lst:verif_norm-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:verif_norm-4"><a href="#lst:verif_norm-4" aria-hidden="true" tabindex="-1"></a>a, b <span class="op">=</span> normalizar(u), normalizar(v)</span>
+<span id="lst:verif_norm-5"><a href="#lst:verif_norm-5" aria-hidden="true" tabindex="-1"></a>izq <span class="op">=</span> ((a <span class="op">-</span> b) <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>()          <span class="co"># ||a - b||^2</span></span>
+<span id="lst:verif_norm-6"><a href="#lst:verif_norm-6" aria-hidden="true" tabindex="-1"></a>der <span class="op">=</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> (a <span class="op">@</span> b)               <span class="co"># 2 - 2 cos(a, b)</span></span>
+<span id="lst:verif_norm-7"><a href="#lst:verif_norm-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">abs</span>(izq <span class="op">-</span> der) <span class="op">&lt;</span> <span class="fl">1e-12</span>       <span class="co"># son lo mismo, siempre</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.7.</strong> Verificacion de la identidad: sobre la esfera, la euclidea al cuadrado es 2-2cos. Las dos columnas coinciden para cualquier par.</p>
+<p>Esta equivalencia tiene una consecuencia práctica de peso para la cuarta parte: un índice construido para la distancia euclídea sirve, sin cambios, para el coseno, sin más que normalizar los vectores antes de indexarlos. Por eso muchas bases vectoriales normalizan por defecto y ofrecen «coseno» y «euclídea» como la misma operación bajo el capó. La normalización es el puente entre las dos métricas más usadas.</p>
+<p>La decisión de normalizar es, por tanto, la misma que la de elegir métrica, vista del revés. Normalizar <em>descarta la norma</em>, así que se normaliza cuando la norma es ruido o no se quiere que pese —el caso habitual de la búsqueda semántica— y se deja sin normalizar cuando la norma lleva una señal que se quiere conservar —la popularidad en una recomendación, la confianza del modelo—. Normalizar antes de una búsqueda por producto interno la convierte, de hecho, en una búsqueda por coseno: se pierde justo lo que el producto interno aportaba. La regla, una vez más: normalizar si solo importa la dirección, no normalizar si importa la magnitud (listado&nbsp;13.8).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:normalizar"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:normalizar-1"><a href="#lst:normalizar-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> normalizar(v):</span>
+<span id="lst:normalizar-2"><a href="#lst:normalizar-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> v <span class="op">/</span> np.linalg.norm(v)</span>
+<span id="lst:normalizar-3"><a href="#lst:normalizar-3" aria-hidden="true" tabindex="-1"></a><span class="co"># tras normalizar: ||a-b||^2 = 2 - 2 cos(a,b)  -&gt; mismo orden que el coseno</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.8.</strong> Normalizar a la esfera unidad: tras ello, euclidea y coseno ordenan igual.</p>
+</section>
+<section id="una-recuperación-en-miniatura" class="level3">
+<h3 class="anchored" data-anchor-id="una-recuperación-en-miniatura">Una recuperación en miniatura</h3>
+<p>Vale la pena juntar todo lo anterior en una recuperación diminuta que se sigue a mano. Imaginemos tres «documentos» representados como vectores en el plano y una consulta <span class="math inline">\(q=(1,\,1)\)</span> —que apunta en diagonal, de norma <span class="math inline">\(\sqrt2\)</span>—. El documento <span class="math inline">\(d_1=(2,\,2)\)</span> apunta justo igual que la consulta pero es el doble de largo; <span class="math inline">\(d_2=(1,\,0)\)</span> apunta a <span class="math inline">\(45^\circ\)</span> de ella y es corto; <span class="math inline">\(d_3=(5,\,4)\)</span> es largo y apunta casi, pero no exactamente, como la consulta. ¿Cuál se recupera primero? Depende de la métrica, y de si se normaliza (tabla&nbsp;13.2).</p>
+<table class="caption-top table">
+<caption>Recuperación en miniatura para la consulta <span class="math inline">\(q=(1,1)\)</span>. Sin normalizar, las métricas discrepan sobre el primer resultado; tras normalizar, euclídea y coseno coinciden en <span class="math inline">\(d_1\)</span>, el de dirección idéntica a la consulta.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Documento</th>
+<th style="text-align: center;">coseno</th>
+<th style="text-align: center;">euclídea (orden)</th>
+<th style="text-align: center;">prod.&nbsp;interno</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(d_1=(2,2)\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1{,}000\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1{,}41\)</span> (2.º)</td>
+<td style="text-align: center;"><span class="math inline">\(4{,}0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(d_2=(1,0)\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0{,}707\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1{,}00\)</span> (1.º)</td>
+<td style="text-align: center;"><span class="math inline">\(1{,}0\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(d_3=(5,4)\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0{,}995\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5{,}00\)</span> (3.º)</td>
+<td style="text-align: center;"><span class="math inline">\(9{,}0\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Léase la tabla despacio, porque cada columna cuenta una historia distinta. Por <em>coseno</em>, gana <span class="math inline">\(d_1\)</span> (coseno exacto <span class="math inline">\(1\)</span>: misma dirección que <span class="math inline">\(q\)</span>), seguido muy de cerca por <span class="math inline">\(d_3\)</span> (<span class="math inline">\(0{,}995\)</span>, casi la misma dirección) y por último <span class="math inline">\(d_2\)</span> (<span class="math inline">\(0{,}707\)</span>, a <span class="math inline">\(45^\circ\)</span>). Por <em>producto interno</em>, gana <span class="math inline">\(d_3\)</span> (<span class="math inline">\(9{,}0\)</span>): aunque su dirección no es perfecta, su norma alta lo empuja al primer puesto —la magnitud manda—. Y por <em>euclídea sin normalizar</em>, gana <span class="math inline">\(d_2\)</span> (<span class="math inline">\(1{,}0\)</span> de distancia): es el más cercano en el plano, porque <span class="math inline">\(d_1\)</span> y <span class="math inline">\(d_3\)</span>, al ser largos, quedan lejos de la consulta pese a apuntar parecido. Tres métricas, tres ganadores distintos sobre los mismos tres documentos.</p>
+<p>La moraleja llega al normalizar. Si se llevan los cuatro vectores a la esfera unidad, <span class="math inline">\(d_1\)</span> y <span class="math inline">\(q\)</span> se vuelven <em>el mismo punto</em> (dirección idéntica), de modo que la euclídea sobre la esfera coloca a <span class="math inline">\(d_1\)</span> el primero, igual que el coseno: las dos métricas se reconcilian, como predice <span class="math inline">\(\lVert\hat a-\hat
+b\rVert^2=2-2\cos\theta\)</span>. La decisión de diseño —normalizar o no, y qué métrica— no es teórica: cambia literalmente qué documento ve primero el usuario. Esta miniatura es el capítulo entero en tres vectores.</p>
+</section>
+</section>
+<section id="propiedades-de-los-espacios-de-alta-dimensión" class="level2">
+<h2 class="anchored" data-anchor-id="propiedades-de-los-espacios-de-alta-dimensión">Propiedades de los espacios de alta dimensión</h2>
+<p>Los embeddings viven en espacios de cientos o miles de dimensiones, y la intuición geométrica —formada en tres dimensiones— falla estrepitosamente allí. Esta sección reúne los fenómenos contraintuitivos de la alta dimensión que más afectan a la búsqueda por similitud, todos medidos. No son curiosidades: son la razón de ser de la ingeniería de la cuarta parte.</p>
+<section id="las-distancias-se-concentran" class="level3">
+<h3 class="anchored" data-anchor-id="las-distancias-se-concentran">Las distancias se concentran</h3>
+<p>El fenómeno central, ya asomado en el capítulo&nbsp;11, es la <em>concentración de las distancias</em>: al crecer la dimensión, la distancia del punto más cercano y la del más lejano se igualan (figura&nbsp;13.7). La práctica mide el <em>contraste</em> —la diferencia entre la distancia máxima y la mínima de un punto al resto, dividida por la mínima— al crecer la dimensión (figura&nbsp;13.8): de un contraste de más de cien en dimensión dos baja a una quinta parte en dimensión quinientos. Cuando el más cercano y el más lejano están casi a la misma distancia, la pregunta «¿cuál es el más parecido?» pierde nitidez, porque la respuesta es «casi todos por igual». Es el resultado de <span class="citation" data-cites="beyer1999">Beyer et&nbsp;al. (<a href="#ref-beyer1999" role="doc-biblioref">1999</a>)</span>, y la amenaza de fondo de toda búsqueda por proximidad a escala.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_07.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.7.</strong> En dimensión baja, el vecino más cercano de <span class="math inline">\(q\)</span> destaca; en dimensión alta, las distancias se concentran en una franja estrecha y todos los puntos quedan a una distancia parecida.</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_08.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.8.</strong> Contraste <span class="math inline">\((d_{\max}-d_{\min})/d_{\min}\)</span> de las distancias de un punto al resto, según la dimensión (log-log). Cae sin freno: en alta dimensión, «cerca» y «lejos» se desdibujan. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>Que las distancias se concentren no es magia, sino la ley de los grandes números disfrazada. La distancia euclídea al cuadrado entre dos puntos es una <em>suma</em> de las diferencias al cuadrado coordenada a coordenada: <span class="math inline">\(\lVert a-b\rVert^2=\sum_{i=1}^{d}(a_i-b_i)^2\)</span>. Cuando las coordenadas son independientes, esa suma de <span class="math inline">\(d\)</span> términos parecidos crece, en promedio, proporcionalmente a <span class="math inline">\(d\)</span>, mientras que su <em>variación</em> relativa —cuánto se desvía un par de otro— crece solo como <span class="math inline">\(\sqrt{d}\)</span>. Al dividir, la dispersión <em>relativa</em> de la distancia decae como <span class="math inline">\(1/\sqrt{d}\)</span>: las distancias se aprietan alrededor de su media cada vez más al crecer la dimensión, y por eso la máxima y la mínima se acercan (listado&nbsp;13.9).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:concentra_intuicion"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:concentra_intuicion-1"><a href="#lst:concentra_intuicion-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> d <span class="kw">in</span> (<span class="dv">2</span>, <span class="dv">16</span>, <span class="dv">128</span>, <span class="dv">1024</span>):</span>
+<span id="lst:concentra_intuicion-2"><a href="#lst:concentra_intuicion-2" aria-hidden="true" tabindex="-1"></a>    pts <span class="op">=</span> rng.standard_normal((<span class="dv">2000</span>, d))</span>
+<span id="lst:concentra_intuicion-3"><a href="#lst:concentra_intuicion-3" aria-hidden="true" tabindex="-1"></a>    dist <span class="op">=</span> np.linalg.norm(pts <span class="op">-</span> pts[<span class="dv">0</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="lst:concentra_intuicion-4"><a href="#lst:concentra_intuicion-4" aria-hidden="true" tabindex="-1"></a>    rel <span class="op">=</span> dist.std() <span class="op">/</span> dist.mean()      <span class="co"># dispersion relativa</span></span>
+<span id="lst:concentra_intuicion-5"><a href="#lst:concentra_intuicion-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(d, <span class="bu">round</span>(rel, <span class="dv">4</span>))             <span class="co"># cae ~ 1/sqrt(d)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.9.</strong> La concentracion como ley de los grandes numeros: la dispersion relativa de las distancias decae como 1/raiz(d).</p>
+<p>La práctica lo confirma midiéndolo (figura&nbsp;13.9): la dispersión relativa de las distancias cae al crecer la dimensión siguiendo <em>la misma pendiente</em> que <span class="math inline">\(1/\sqrt{d}\)</span> —la curva medida y la referencia teórica son paralelas en escala log-log—, con un desfase constante que solo depende de la distribución de los datos. Esa pendiente común es la firma de la ley de los grandes números: no es que las distancias se acorten, es que se aprietan unas contra otras alrededor de su valor típico, y por eso la máxima y la mínima —el más lejano y el más cercano— se vuelven indistinguibles.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_09.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.9.</strong> Dispersión relativa de las distancias (desviación entre media) según la dimensión, frente a la referencia <span class="math inline">\(1/\sqrt{d}\)</span> (log-log). Ambas comparten pendiente: la concentración es la ley de los grandes números aplicada a la suma de diferencias coordenada a coordenada. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>Dicho en palabras: en muchas dimensiones, cada par de puntos «promedia» tantas diferencias coordenada a coordenada que casi todos acaban con una distancia parecida a la típica; los muy cercanos y los muy lejanos se vuelven rarezas estadísticas. Es el mismo motivo por el que la media de mil tiradas de un dado varía mucho menos que una sola tirada. Y es también la razón profunda de que la casi-ortogonalidad y la concentración sean dos caras de lo mismo: si las direcciones se reparten uniformemente y cada coordenada aporta su grano, ni los ángulos ni las distancias dejan margen para destacar. La buena noticia, ya vista, es que los datos reales no tienen coordenadas independientes —están correlacionadas, estructuradas— y por eso escapan en parte a esta ley.</p>
+</section>
+<section id="casi-todo-es-perpendicular-y-el-volumen-huye-a-la-cáscara" class="level3">
+<h3 class="anchored" data-anchor-id="casi-todo-es-perpendicular-y-el-volumen-huye-a-la-cáscara">Casi todo es perpendicular y el volumen huye a la cáscara</h3>
+<p>El segundo fenómeno, pariente del primero, es que en alta dimensión dos vectores tomados al azar son casi siempre <em>casi ortogonales</em>. La práctica mide el coseno entre vectores aleatorios al crecer la dimensión (figura&nbsp;13.10): tanto su media en valor absoluto como su desviación caen hacia cero —de un <span class="math inline">\(|\cos|\)</span> medio de <span class="math inline">\(0{,}63\)</span> en dimensión dos a <span class="math inline">\(0{,}04\)</span> en dimensión quinientos—. En un espacio de dimensión alta hay «sitio» para muchísimas direcciones mutuamente casi perpendiculares, así que dos vectores cualesquiera rara vez se parecen por azar. Esto es, a la vez, una bendición —cabe colocar muchísimos conceptos distintos sin que se estorben— y una maldición —refuerza la concentración: si casi todo es perpendicular, casi todo está a una distancia parecida.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_10.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.10.</strong> <span class="math inline">\(|\cos|\)</span> medio y desviación del coseno entre vectores aleatorios, según la dimensión (log-log). Se concentran en cero: en alta dimensión, dos vectores cualesquiera son casi perpendiculares. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>La casi-ortogonalidad tiene una consecuencia constructiva que la cuarta parte explota a fondo. Si dos direcciones tomadas al azar son casi perpendiculares, entonces una <em>proyección aleatoria</em> casi nunca confunde dos puntos distintos, y eso es justo lo que hacen las funciones de <em>hashing sensible a la localidad</em> (LSH) <span class="citation" data-cites="indyk1998">(<a href="#ref-indyk1998" role="doc-biblioref">Indyk y Motwani 1998</a>)</span>: trocear el espacio con hiperplanos aleatorios de modo que los vectores parecidos caigan, con alta probabilidad, en el mismo cubo. Lo que en la concentración es una maldición —todo se parece a todo— en el hashing es una bendición —hay sitio de sobra para separar—. Es el mismo fenómeno visto con otra luz, y reaparecerá cuando se construyan los índices: la geometría que dificulta la búsqueda exacta es la que habilita la aproximada. La forma más simple de hashing por proyección aleatoria firma cada vector con el <em>signo</em> de su producto con unos cuantos vectores aleatorios: vectores parecidos comparten casi todos los signos, y la firma sirve de cubo (listado&nbsp;13.10).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:lsh"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:lsh-1"><a href="#lst:lsh-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> firma_lsh(v, planos):</span>
+<span id="lst:lsh-2"><a href="#lst:lsh-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># planos: matriz (bits, d) de hiperplanos aleatorios</span></span>
+<span id="lst:lsh-3"><a href="#lst:lsh-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">tuple</span>((planos <span class="op">@</span> v <span class="op">&gt;</span> <span class="dv">0</span>).astype(<span class="bu">int</span>))   <span class="co"># un bit por plano</span></span>
+<span id="lst:lsh-4"><a href="#lst:lsh-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:lsh-5"><a href="#lst:lsh-5" aria-hidden="true" tabindex="-1"></a>planos <span class="op">=</span> rng.standard_normal((<span class="dv">16</span>, d))            <span class="co"># 16 bits de firma</span></span>
+<span id="lst:lsh-6"><a href="#lst:lsh-6" aria-hidden="true" tabindex="-1"></a>firma_a <span class="op">=</span> firma_lsh(a, planos)</span>
+<span id="lst:lsh-7"><a href="#lst:lsh-7" aria-hidden="true" tabindex="-1"></a>firma_b <span class="op">=</span> firma_lsh(b, planos)</span>
+<span id="lst:lsh-8"><a href="#lst:lsh-8" aria-hidden="true" tabindex="-1"></a><span class="co"># si a y b se parecen, sus firmas coinciden en casi todos los bits</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.10.</strong> Hashing sensible a la localidad por hiperplanos aleatorios: la firma es el signo del producto con vectores al azar; los parecidos coinciden.</p>
+<p>El tercer fenómeno es aún más extraño. En una bola de alta dimensión, casi todo el volumen está pegado a la <em>superficie</em>: el interior está, en términos relativos, vacío (figura&nbsp;13.11). La razón es que el volumen crece con el radio elevado a la dimensión, así que la corona exterior —aunque fina— acumula casi todo. La práctica lo mide con la fracción del volumen que está en el 10 % más externo del radio, que es <span class="math inline">\(1-0{,}9^d\)</span> (figura&nbsp;13.12): en dimensión diez ya es el 65 %, y en dimensión cien, el 100 %. Dicho de otro modo: dos puntos aleatorios de una bola de alta dimensión están, casi seguro, ambos cerca de la superficie y lejos del centro y entre sí.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_11.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.11.</strong> Por qué el volumen huye a la cáscara: como crece con el radio a la potencia de la dimensión, la corona exterior —aunque fina— acumula casi todo el volumen, y el interior queda vacío.</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_12.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.12.</strong> Fracción del volumen de la bola que está en su 10 % exterior (<span class="math inline">\(1-0{,}9^d\)</span>), según la dimensión. Tiende a uno: casi todo el volumen vive en la cáscara. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>Relacionado con esto, el <em>volumen</em> de la bola unidad —la de radio <span class="math inline">\(1\)</span>— hace algo sorprendente al crecer la dimensión (figura&nbsp;13.13): aumenta hasta la dimensión cinco, donde alcanza un máximo, y a partir de ahí se <em>desploma</em> hacia cero. En dimensión veinte, la bola unidad tiene un volumen ínfimo. El espacio de alta dimensión es, en este sentido, casi todo «esquinas»: el cubo que contiene a la bola conserva volumen, pero la bola inscrita se encoge a nada. Es otra cara de que los datos no llenan el espacio —viven en una variedad de baja dimensión, como vimos en el capítulo&nbsp;11—, y de por qué la reducción de dimensión es tan eficaz.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_13.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.13.</strong> Volumen de la bola unidad según la dimensión. Crece, alcanza un máximo hacia <span class="math inline">\(d=5\)</span> y se desploma hacia cero: en alta dimensión, la bola es ínfima frente al cubo que la contiene. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>Conviene ver estos dos efectos en una tabla de números concretos, porque sorprenden más leídos que descritos (tabla&nbsp;13.3). La fracción del volumen en el 10 % exterior, <span class="math inline">\(1-0{,}9^d\)</span>, pasa de un modesto 10 % en una dimensión a más del 99 % en cuarenta y cuatro; el volumen de la bola unidad, <span class="math inline">\(\pi^{d/2}/\Gamma(d/2+1)\)</span>, sube hasta un máximo de <span class="math inline">\(5{,}26\)</span> en dimensión cinco y luego cae a una millonésima en dimensión treinta. Son la misma historia contada con dos varas de medir: el espacio de alta dimensión es casi todo frontera y casi nada interior.</p>
+<table class="caption-top table">
+<caption>Los dos efectos del volumen, en números. La cáscara acapara casi todo el volumen al crecer la dimensión; la bola unidad, tras un máximo en <span class="math inline">\(d=5\)</span>, se desvanece. Datos de <code>src/cap13_distancias.py</code>.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Dimensión <span class="math inline">\(d\)</span></th>
+<th style="text-align: center;">Volumen en el 10 % exterior</th>
+<th style="text-align: center;">Volumen de la bola unidad</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: center;"><span class="math inline">\(0{,}10\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2{,}00\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td style="text-align: center;"><span class="math inline">\(0{,}41\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5{,}26\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">10</td>
+<td style="text-align: center;"><span class="math inline">\(0{,}65\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2{,}55\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">20</td>
+<td style="text-align: center;"><span class="math inline">\(0{,}88\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0{,}026\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">50</td>
+<td style="text-align: center;"><span class="math inline">\(0{,}99\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\approx\!10^{-13}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">100</td>
+<td style="text-align: center;"><span class="math inline">\(1{,}00\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\approx\!10^{-40}\)</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="los-hubs-y-por-qué-el-coseno-no-es-una-métrica" class="level3">
+<h3 class="anchored" data-anchor-id="los-hubs-y-por-qué-el-coseno-no-es-una-métrica">Los hubs, y por qué el coseno no es una métrica</h3>
+<p>El cuarto fenómeno es el más relevante para la búsqueda y el menos conocido: la <em>hubness</em> <span class="citation" data-cites="radovanovic2010">(<a href="#ref-radovanovic2010" role="doc-biblioref">Radovanović et&nbsp;al. 2010</a>)</span>. En alta dimensión, la relación «ser vecino más próximo» deja de ser simétrica y equilibrada: ciertos puntos —los <em>hubs</em>— se convierten en el vecino más próximo de muchísimos otros, mientras otros —los <em>anti-hubs</em>— no son vecinos de nadie (figura&nbsp;13.14). La práctica mide la <em>asimetría</em> de la distribución de la <span class="math inline">\(k\)</span>-ocurrencia —cuántas veces cada punto aparece entre los <span class="math inline">\(k\)</span> vecinos de los demás— al crecer la dimensión (figura&nbsp;13.15): de una distribución casi simétrica en dimensión dos a una muy sesgada en dimensión alta, con hubs que son vecinos de más de doscientos puntos. La hubness distorsiona la búsqueda —los hubs aparecen como resultado de casi cualquier consulta, sean o no relevantes— y es un quebradero de cabeza real para los sistemas de recomendación y recuperación, que aplican correcciones específicas para mitigarla.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_14.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.14.</strong> Hubness: en alta dimensión, ciertos puntos (hubs) se vuelven el vecino más próximo de muchísimos otros, mientras otros no son vecinos de nadie. La relación «ser vecino» se rompe.</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_15.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.15.</strong> Asimetría de la distribución de la <span class="math inline">\(k\)</span>-ocurrencia según la dimensión. Crece con la dimensión: emergen hubs (vecinos de muchísimos) y anti-hubs (de nadie). Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>Frente a la hubness no hay que cruzarse de brazos: existen correcciones bien estudiadas. La más simple es exigir vecindad <em>mutua</em> —contar a dos puntos como vecinos solo si cada uno está entre los más próximos del otro—, lo que desactiva a los hubs, que son vecinos de muchos pero rara vez recíprocos. Otras técnicas reescalan las distancias localmente o las convierten en rangos para nivelar el terreno. Conviene saber que la hubness existe y se mide —la figura&nbsp;13.15 la cuantifica— porque un sistema de recuperación que devuelve siempre los mismos pocos resultados, sea cual sea la consulta, probablemente esté sufriéndola sin que nadie la haya nombrado. Reconocer el síntoma es el primer paso para corregirlo. La corrección por vecindad mutua se programa en unas pocas líneas: aceptar a <span class="math inline">\(b\)</span> como vecino de <span class="math inline">\(a\)</span> solo si <span class="math inline">\(a\)</span> también está entre los vecinos de <span class="math inline">\(b\)</span> (listado&nbsp;13.11).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:mutuo"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:mutuo-1"><a href="#lst:mutuo-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vecinos_mutuos(vecinos_de):</span>
+<span id="lst:mutuo-2"><a href="#lst:mutuo-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># vecinos_de[x]: conjunto de los k vecinos mas proximos de x</span></span>
+<span id="lst:mutuo-3"><a href="#lst:mutuo-3" aria-hidden="true" tabindex="-1"></a>    mutuos <span class="op">=</span> {}</span>
+<span id="lst:mutuo-4"><a href="#lst:mutuo-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> a, vs <span class="kw">in</span> vecinos_de.items():</span>
+<span id="lst:mutuo-5"><a href="#lst:mutuo-5" aria-hidden="true" tabindex="-1"></a>        mutuos[a] <span class="op">=</span> {b <span class="cf">for</span> b <span class="kw">in</span> vs <span class="cf">if</span> a <span class="kw">in</span> vecinos_de[b]}</span>
+<span id="lst:mutuo-6"><a href="#lst:mutuo-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mutuos</span>
+<span id="lst:mutuo-7"><a href="#lst:mutuo-7" aria-hidden="true" tabindex="-1"></a><span class="co"># un hub aparece en muchas listas pero rara vez es correspondido</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.11.</strong> Mitigar la hubness exigiendo vecindad mutua: b es vecino de a solo si a tambien lo es de b. Desactiva a los hubs, vecinos de muchos pero recibidos por pocos.</p>
+<p>Una sutileza final, importante para los índices. No toda «distancia» es una <em>métrica</em> en el sentido matemático: una métrica debe cumplir la desigualdad triangular, <span class="math inline">\(d(a,c)\le d(a,b)+d(b,c)\)</span>, y muchos índices se apoyan en ella para podar el espacio de búsqueda. La «distancia coseno» definida como <span class="math inline">\(1-\cos\theta\)</span> <em>no</em> cumple la desigualdad triangular —la práctica encuentra triples que la violan— así que no es una métrica verdadera (figura&nbsp;13.16). La <em>distancia angular</em>, en cambio, definida como el ángulo mismo <span class="math inline">\(\arccos(\cos\theta)\)</span> —la longitud del arco sobre la esfera—, sí es una métrica, y nunca viola el triángulo. La tabla&nbsp;13.4 lo cuantifica. La distinción importa porque algunos índices exigen una métrica verdadera; con la distancia coseno hay que usar su forma angular o un índice que no dependa del triángulo.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_16.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.16.</strong> La distancia angular —el arco sobre la esfera, <span class="math inline">\(\arccos(\cos\theta)\)</span>— es una métrica verdadera y cumple la desigualdad triangular; la distancia coseno <span class="math inline">\(1-\cos\theta\)</span> no.</figcaption>
+</figure>
+</div>
+<table class="caption-top table">
+<caption>Fracción de triples aleatorios que violan la desigualdad triangular (<span class="math inline">\(d=32\)</span>). La distancia coseno la viola; la angular, nunca. Datos de <code>src/cap13_distancias.py</code>.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Distancia</th>
+<th style="text-align: center;">Violaciones del triángulo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Coseno (<span class="math inline">\(1-\cos\theta\)</span>)</td>
+<td style="text-align: center;">sí (ocurren)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Angular (<span class="math inline">\(\arccos\cos\theta\)</span>)</td>
+<td style="text-align: center;">ninguna</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="cómo-la-estructura-salva-la-búsqueda" class="level2">
+<h2 class="anchored" data-anchor-id="cómo-la-estructura-salva-la-búsqueda">Cómo la estructura salva la búsqueda</h2>
+<p>Hasta aquí, un panorama desolador: en alta dimensión las distancias se concentran, todo es perpendicular, el volumen huye y emergen hubs. Si así fuera siempre, la búsqueda por similitud sería inútil más allá de unas pocas dimensiones, y los embeddings de 768 o 1 536 dimensiones del capítulo anterior no servirían de nada. Pero hay un detalle decisivo que los experimentos anteriores ocultan: todos usan puntos <em>uniformemente aleatorios</em>, ruido sin estructura. Los datos reales no son ruido. Tienen <em>estructura</em>: se agrupan en cúmulos —temas, categorías, entidades— y viven en una variedad de dimensión mucho menor que la del espacio que los contiene, como se vio en el capítulo&nbsp;11.</p>
+<p>La práctica lo mide directamente, contrastando el mismo indicador —el contraste de distancias— sobre datos uniformes y sobre datos <em>estructurados</em> en diez cúmulos separados (figura&nbsp;13.17). El resultado es contundente: mientras el contraste de los datos uniformes se desploma de más de cien en dimensión dos a menos de <span class="math inline">\(0{,}2\)</span> en dimensión quinientos —la maldición en toda su crudeza—, el de los datos estructurados se mantiene por encima de <em>cinco</em> incluso en dimensión quinientos, casi treinta veces mayor. La estructura preserva el contraste: si los puntos relevantes están en el cúmulo de la consulta y el resto en otros cúmulos, la distancia al cúmulo propio sigue siendo netamente menor que la distancia a los demás, por alta que sea la dimensión.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_17.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.17.</strong> Contraste de distancias según la dimensión, en datos uniformes (ruido) y estructurados (cúmulos). El de los datos uniformes se desploma; el de los estructurados se mantiene alto. La estructura de los datos reales es lo que salva a la búsqueda de la maldición. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>¿Cuánta estructura tienen los datos reales? Una forma de medirlo es la <em>dimensión intrínseca</em>: cuántas direcciones de verdad hacen falta para describirlos, frente a las muchas del espacio que los contiene. La práctica la estima por análisis de componentes principales —cuántas componentes explican el 90 % de la varianza— sobre datos uniformes y sobre datos que viven en un subespacio de dimensión diez (figura&nbsp;13.18). El contraste es nítido: los datos uniformes necesitan casi tantas componentes como dimensiones tiene el espacio —trescientas ochenta y nueve de quinientas doce—, mientras que los estructurados se describen con apenas nueve, <em>por alta que sea la dimensión aparente</em>. Es la variedad de baja dimensión del capítulo&nbsp;11, medida: los datos reales habitan un pliegue delgado de un espacio enorme, y esa es exactamente la propiedad que la búsqueda y los índices aprovechan.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_18.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.18.</strong> Dimensión intrínseca (componentes PCA para el 90 % de la varianza) según la dimensión aparente. Los datos uniformes la llenan; los estructurados se describen con unas pocas componentes sea cual sea el espacio. La estructura es de baja dimensión. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<p>Esta es la conciliación entre la teoría sombría y la práctica funcional. La maldición de la dimensión es real —no es un mito— pero ataca al ruido, no a la señal. Los embeddings de un buen codificador no llenan uniformemente el espacio: lo pueblan de forma estructurada, con los textos parecidos agrupados y los distintos apartados. Por eso la búsqueda por proximidad sigue siendo útil con vectores de cientos de dimensiones, y por eso —importante para la cuarta parte— los índices aproximados, que explotan precisamente esa estructura agrupando vecinos, pueden encontrar los más próximos sin recorrer todo. Sin estructura no habría nada que indexar; con ella, la geometría vuelve a ser amigable.</p>
+<p>Si los datos viven en una variedad de baja dimensión, cabe preguntar si se puede <em>reducir</em> la dimensión sin estropear las distancias —lo que aligeraría el almacenamiento y la búsqueda—. La respuesta, sorprendente y profunda, es que sí, y la da el <em>lema de Johnson-Lindenstrauss</em> <span class="citation" data-cites="johnson1984">(<a href="#ref-johnson1984" role="doc-biblioref">Johnson y Lindenstrauss 1984</a>)</span>: una proyección <em>aleatoria</em> a un número de dimensiones sorprendentemente bajo conserva todas las distancias por pares con poco error, y ese número no depende de la dimensión de partida, solo de cuántos puntos hay y de cuánta distorsión se tolera. No hace falta ni mirar los datos: multiplicar por una matriz de números aleatorios basta.</p>
+<p>La práctica lo comprueba proyectando puntos de dimensión quinientos a dimensiones cada vez menores y midiendo cuánto se distorsionan las distancias (figura&nbsp;13.19). Con solo treinta y dos dimensiones de destino, la distorsión media es del 10 %; con ciento veintiocho, baja del 5 %. Es decir: se puede tirar tres cuartas partes de las dimensiones y conservar las distancias casi intactas (listado&nbsp;13.12). El mecanismo es el reverso de la casi-ortogonalidad: como en alta dimensión hay sitio para muchísimas direcciones casi perpendiculares, una proyección aleatoria rara vez «aplasta» dos puntos distintos en el mismo sitio.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap13/fig_19.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;13.19.</strong> Distorsión media de las distancias al proyectar de quinientas dimensiones a <span class="math inline">\(k\)</span> mediante una matriz aleatoria (Johnson-Lindenstrauss). Cae deprisa: con unas decenas de dimensiones, las distancias se conservan casi intactas. Datos de <code>src/cap13_distancias.py</code>.</figcaption>
+</figure>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:jl"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:jl-1"><a href="#lst:jl-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> proyectar(X, k, rng):</span>
+<span id="lst:jl-2"><a href="#lst:jl-2" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> X.shape[<span class="dv">1</span>]</span>
+<span id="lst:jl-3"><a href="#lst:jl-3" aria-hidden="true" tabindex="-1"></a>    R <span class="op">=</span> rng.standard_normal((d, k)) <span class="op">/</span> np.sqrt(k)  <span class="co"># matriz aleatoria</span></span>
+<span id="lst:jl-4"><a href="#lst:jl-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X <span class="op">@</span> R                                   <span class="co"># de d a k dimensiones</span></span>
+<span id="lst:jl-5"><a href="#lst:jl-5" aria-hidden="true" tabindex="-1"></a><span class="co"># las distancias por pares se conservan con poco error, sin mirar X</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.12.</strong> Proyeccion aleatoria de d a k dimensiones: una matriz de ruido escalada conserva las distancias (Johnson-Lindenstrauss).</p>
+<p>Este resultado es el fundamento teórico de buena parte de la cuarta parte. Justifica que se almacenen los vectores reducidos —por proyección aleatoria, por PCA o por la propia capa final del codificador— sin arruinar la búsqueda; explica por qué la cuantización y la compresión de vectores funcionan; y conecta con la idea, ya vista, de que la dimensión <em>intrínseca</em> de los datos es mucho menor que la aparente. La alta dimensión castiga al ruido, pero a la señal se le puede quitar ropaje sin que pierda la forma.</p>
+</section>
+<section id="de-la-geometría-al-índice" class="level2">
+<h2 class="anchored" data-anchor-id="de-la-geometría-al-índice">De la geometría al índice</h2>
+<p>Antes de cerrar conviene hilar explícitamente lo que esta geometría implica para el sistema que viene, porque cada fenómeno de las secciones anteriores se traduce en una decisión de ingeniería de la cuarta parte. La geometría no es un preámbulo teórico: es el pliego de condiciones del índice.</p>
+<p>La forma más simple de encontrar el vecino más próximo de una consulta es compararla con <em>todos</em> los vectores y quedarse con el menor: la búsqueda <em>lineal</em> o por fuerza bruta. Su coste es proporcional al número de vectores por la dimensión, <span class="math inline">\(O(n\cdot d)\)</span>, y para colecciones pequeñas es perfectamente razonable —es exacta y trivial de implementar (listado&nbsp;13.13)—. El problema es la escala: con cientos de millones de vectores de mil dimensiones, cada consulta exige cientos de miles de millones de multiplicaciones, y eso, repetido por cada consulta de cada usuario, es inviable en milisegundos. La concentración de distancias agrava el cuadro: como en alta dimensión casi todos los puntos están a una distancia parecida, no hay un «cono» estrecho de candidatos al que limitarse, y muchas técnicas clásicas de poda —los árboles <span class="math inline">\(k\)</span>-d y similares— degeneran a recorrer casi todo. La fuerza bruta es exacta pero no escala; los árboles exactos no sobreviven a la alta dimensión.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:fuerzabruta"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:fuerzabruta-1"><a href="#lst:fuerzabruta-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vecino_mas_proximo(consulta, base):</span>
+<span id="lst:fuerzabruta-2"><a href="#lst:fuerzabruta-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># base: matriz (n, d) de vectores normalizados</span></span>
+<span id="lst:fuerzabruta-3"><a href="#lst:fuerzabruta-3" aria-hidden="true" tabindex="-1"></a>    sims <span class="op">=</span> base <span class="op">@</span> consulta            <span class="co"># n productos escalares</span></span>
+<span id="lst:fuerzabruta-4"><a href="#lst:fuerzabruta-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">int</span>(sims.argmax())         <span class="co"># el de mayor coseno</span></span>
+<span id="lst:fuerzabruta-5"><a href="#lst:fuerzabruta-5" aria-hidden="true" tabindex="-1"></a><span class="co"># coste O(n*d): con n y d grandes, demasiado por consulta</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.13.</strong> Busqueda por fuerza bruta: exacta, simple y O(n*d). Correcta para colecciones pequenas; inviable a gran escala.</p>
+<section id="el-producto-interno-no-es-una-distancia-pero-se-puede-convertir" class="level3">
+<h3 class="anchored" data-anchor-id="el-producto-interno-no-es-una-distancia-pero-se-puede-convertir">El producto interno no es una distancia, pero se puede convertir</h3>
+<p>Hay una incomodidad con el producto interno que afecta de lleno a los índices. La mayoría de los índices de vecindad —árboles, grafos, particiones— se construyen para <em>distancias</em>, que cumplen que un punto está a distancia cero de sí mismo y que la distancia crece al alejarse. El producto interno no es así: un vector no maximiza el producto interno consigo mismo (otro más largo en la misma dirección lo supera), y no cumple la desigualdad triangular. Buscar el <em>máximo</em> producto interno (MIPS) no es, por tanto, buscar el vecino más próximo en ninguna distancia, y eso complica reutilizar los índices.</p>
+<p>El truco, elegante y muy usado, es <em>convertir</em> MIPS en una búsqueda por vecino más próximo euclídeo añadiendo una dimensión extra a cada vector (listado&nbsp;13.14). Se aumenta cada vector de la base con una coordenada que compensa su norma —de modo que todos los aumentados queden a la misma norma— y la consulta con un cero. Tras la transformación, el vector de mayor producto interno con la consulta es <em>exactamente</em> el de menor distancia euclídea, y se puede usar cualquier índice euclídeo sin cambios. Es la misma idea de la normalización —llevar los vectores a una norma común— pero conservando la información de magnitud en la dimensión añadida en vez de tirarla.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:mips_truco"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:mips_truco-1"><a href="#lst:mips_truco-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> aumentar_base(base):</span>
+<span id="lst:mips_truco-2"><a href="#lst:mips_truco-2" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> np.linalg.norm(base, axis<span class="op">=</span><span class="dv">1</span>).<span class="bu">max</span>()</span>
+<span id="lst:mips_truco-3"><a href="#lst:mips_truco-3" aria-hidden="true" tabindex="-1"></a>    extra <span class="op">=</span> np.sqrt(m <span class="op">**</span> <span class="dv">2</span> <span class="op">-</span> (base <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="lst:mips_truco-4"><a href="#lst:mips_truco-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.hstack([base, extra[:, <span class="va">None</span>]])   <span class="co"># norma comun = m</span></span>
+<span id="lst:mips_truco-5"><a href="#lst:mips_truco-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:mips_truco-6"><a href="#lst:mips_truco-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> aumentar_consulta(q):</span>
+<span id="lst:mips_truco-7"><a href="#lst:mips_truco-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.hstack([q, <span class="fl">0.0</span>])                  <span class="co"># la consulta lleva un 0</span></span>
+<span id="lst:mips_truco-8"><a href="#lst:mips_truco-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ahora: argmax(producto interno) == argmin(distancia euclidea)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.14.</strong> Convertir MIPS en vecino mas proximo euclideo: una dimension extra iguala las normas y el de mayor producto pasa a ser el mas cercano.</p>
+<p>Este truco es la razón de que muchas bases vectoriales ofrezcan «producto interno» como métrica aunque por dentro usen un índice euclídeo: lo reducen a vecino más próximo con la dimensión extra. Conviene conocerlo porque explica por qué, pese a que el producto interno «no es una distancia», los sistemas de recomendación que lo necesitan se construyen sobre la misma maquinaria que los de búsqueda semántica. La geometría se dobla para encajar en la ingeniería disponible.</p>
+</section>
+<section id="qué-pide-cada-fenómeno-al-índice-y-dónde-cortar" class="level3">
+<h3 class="anchored" data-anchor-id="qué-pide-cada-fenómeno-al-índice-y-dónde-cortar">Qué pide cada fenómeno al índice, y dónde cortar</h3>
+<p>La salida es renunciar a la exactitud perfecta: los <em>índices aproximados de vecinos más próximos</em> (ANN) devuelven <em>casi siempre</em> los verdaderos vecinos, a cambio de ser cientos de veces más rápidos. Y todo lo medido en este capítulo dicta cómo deben construirse (tabla&nbsp;13.5). La estructura en cúmulos —lo que salva el contraste— es justo lo que explotan los índices basados en particionar el espacio o en tejer un grafo de vecindad: agrupan lo cercano para no mirar lo lejano. La reducción de dimensión de Johnson-Lindenstrauss justifica comprimir y cuantizar los vectores para que quepan en memoria. La equivalencia coseno-euclídea tras normalizar permite que un mismo índice sirva ambas métricas. Y la hubness obliga a correcciones específicas, porque si no los hubs contaminan todos los resultados. La geometría de este capítulo es, literalmente, la lista de requisitos del capítulo que viene.</p>
+<table class="caption-top table">
+<caption>De cada propiedad geométrica a su consecuencia para el índice de la cuarta parte. La teoría de este capítulo es el pliego de condiciones de la ingeniería que sigue.</caption>
+<colgroup>
+<col style="width: 29%">
+<col style="width: 68%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Propiedad geométrica</th>
+<th style="text-align: left;">Consecuencia para el índice</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Concentración de distancias</td>
+<td style="text-align: left;">La poda exacta degenera; hace falta búsqueda aproximada (ANN).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Estructura en cúmulos</td>
+<td style="text-align: left;">Se explota particionando el espacio o tejiendo grafos de vecindad.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Johnson-Lindenstrauss</td>
+<td style="text-align: left;">Se pueden comprimir y cuantizar los vectores sin arruinar las distancias.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Coseno <span class="math inline">\(=\)</span> euclídea (esfera)</td>
+<td style="text-align: left;">Un mismo índice sirve ambas métricas si se normaliza.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">El coseno no es métrica</td>
+<td style="text-align: left;">Usar la forma angular o un índice que no dependa del triángulo.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hubness</td>
+<td style="text-align: left;">Hacen falta correcciones para que los hubs no contaminen los resultados.</td>
+</tr>
+</tbody>
+</table>
+<p>Una pregunta práctica que la geometría ilumina y que aparece en todo sistema real: además de ordenar por parecido, a menudo hace falta un <em>umbral</em> —¿a partir de qué coseno dos textos son «el mismo tema»? ¿de qué similitud para abajo se descarta un resultado?—. La tentación es fijar un número redondo —«coseno mayor que <span class="math inline">\(0{,}8\)</span>»— y olvidarse, pero la casi-ortogonalidad de la alta dimensión advierte de que ese número no es universal. Como entre vectores aleatorios el coseno se concentra cerca de cero, un coseno de <span class="math inline">\(0{,}3\)</span> que parecería bajo puede ser, en dimensión alta, una señal fortísima de parecido real, muy por encima del ruido (listado&nbsp;13.15).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:umbral"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:umbral-1"><a href="#lst:umbral-1" aria-hidden="true" tabindex="-1"></a>ruido <span class="op">=</span> []</span>
+<span id="lst:umbral-2"><a href="#lst:umbral-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10000</span>):</span>
+<span id="lst:umbral-3"><a href="#lst:umbral-3" aria-hidden="true" tabindex="-1"></a>    a, b <span class="op">=</span> rng.standard_normal(d), rng.standard_normal(d)</span>
+<span id="lst:umbral-4"><a href="#lst:umbral-4" aria-hidden="true" tabindex="-1"></a>    ruido.append(a <span class="op">@</span> b <span class="op">/</span> (norm(a) <span class="op">*</span> norm(b)))</span>
+<span id="lst:umbral-5"><a href="#lst:umbral-5" aria-hidden="true" tabindex="-1"></a>umbral <span class="op">=</span> np.mean(ruido) <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> np.std(ruido)   <span class="co"># 4 sigmas sobre el ruido</span></span>
+<span id="lst:umbral-6"><a href="#lst:umbral-6" aria-hidden="true" tabindex="-1"></a><span class="co"># todo coseno por encima del umbral es parecido genuino, no azar</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.15.</strong> Calibrar el umbral frente al ruido: medir la distribucion del coseno entre pares aleatorios y fijar el umbral muy por encima de ella.</p>
+<p>La forma honesta de fijar el umbral es, por tanto, <em>relativa al ruido</em>: medir la distribución del parecido entre pares que se sabe no relacionados y poner el listón varias desviaciones por encima, no en un número absoluto traído de otra colección. El umbral depende de la dimensión, del codificador y de los datos, y trasplantarlo de un sistema a otro es una fuente clásica de errores —un umbral que en un modelo de 768 dimensiones separa bien, en otro de 384 deja pasar ruido o descarta aciertos—. La geometría de este capítulo no solo dice cómo ordenar; también dice dónde cortar.</p>
+</section>
+</section>
+<section id="práctica-la-geometría-medida" class="level2">
+<h2 class="anchored" data-anchor-id="práctica-la-geometría-medida">Práctica: la geometría, medida</h2>
+<p>Las gráficas de este capítulo salen de <code>src/cap13_distancias.py</code> —numpy, sin GPU—, que compara las tres distancias y reproduce los fenómenos de la alta dimensión. El núcleo es simple: generar puntos al azar, medir, y observar cómo cambia el comportamiento con la dimensión y con la variabilidad de las normas (listado&nbsp;13.16). La concentración, por ejemplo, es una sola línea —el contraste entre la distancia máxima y la mínima— evaluada a dimensiones crecientes.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:nucleo13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:nucleo13-1"><a href="#lst:nucleo13-1" aria-hidden="true" tabindex="-1"></a>dist <span class="op">=</span> np.linalg.norm(pts <span class="op">-</span> q, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="lst:nucleo13-2"><a href="#lst:nucleo13-2" aria-hidden="true" tabindex="-1"></a>contraste <span class="op">=</span> (dist.<span class="bu">max</span>() <span class="op">-</span> dist.<span class="bu">min</span>()) <span class="op">/</span> dist.<span class="bu">min</span>()   <span class="co"># -&gt; 0 al crecer d</span></span>
+<span id="lst:nucleo13-3"><a href="#lst:nucleo13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:nucleo13-4"><a href="#lst:nucleo13-4" aria-hidden="true" tabindex="-1"></a>a, b <span class="op">=</span> rng.standard_normal(d), rng.standard_normal(d)</span>
+<span id="lst:nucleo13-5"><a href="#lst:nucleo13-5" aria-hidden="true" tabindex="-1"></a>cos <span class="op">=</span> a <span class="op">@</span> b <span class="op">/</span> (norm(a) <span class="op">*</span> norm(b))                    <span class="co"># -&gt; 0 al crecer d</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.16.</strong> El nucleo de las medidas: el contraste de distancias y el coseno entre vectores aleatorios, segun la dimension.</p>
+<section id="el-módulo-y-el-buscador-en-miniatura" class="level3">
+<h3 class="anchored" data-anchor-id="el-módulo-y-el-buscador-en-miniatura">El módulo y el buscador en miniatura</h3>
+<p>El módulo sigue la misma estructura que el resto del libro: funciones de medida puras, una por fenómeno, que escriben sus datos en un fichero <code>.dat</code> que las gráficas leen, y una función <code>main</code> que las ejecuta todas con una semilla fija para que el resultado sea reproducible bit a bit (listado&nbsp;13.17). No hay estado oculto ni dependencia del orden: cada simulación genera sus propios datos sintéticos, mide y guarda. Reejecutar el módulo reproduce exactamente las once gráficas y la tabla&nbsp;13.6 de este capítulo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:organizacion13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:organizacion13-1"><a href="#lst:organizacion13-1" aria-hidden="true" tabindex="-1"></a>SEMILLA <span class="op">=</span> <span class="dv">13</span></span>
+<span id="lst:organizacion13-2"><a href="#lst:organizacion13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:organizacion13-3"><a href="#lst:organizacion13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_metricas():      ...  <span class="co"># divergencia con la norma</span></span>
+<span id="lst:organizacion13-4"><a href="#lst:organizacion13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_normalizacion(): ...  <span class="co"># reconciliacion en la esfera</span></span>
+<span id="lst:organizacion13-5"><a href="#lst:organizacion13-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_concentracion(): ...  <span class="co"># el contraste cae con d</span></span>
+<span id="lst:organizacion13-6"><a href="#lst:organizacion13-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_cosenos():       ...  <span class="co"># casi-ortogonalidad</span></span>
+<span id="lst:organizacion13-7"><a href="#lst:organizacion13-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_cascara():       ...  <span class="co"># el volumen huye a la corona</span></span>
+<span id="lst:organizacion13-8"><a href="#lst:organizacion13-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_volumen():       ...  <span class="co"># la bola unidad se encoge</span></span>
+<span id="lst:organizacion13-9"><a href="#lst:organizacion13-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_hubness():       ...  <span class="co"># emergen hubs y anti-hubs</span></span>
+<span id="lst:organizacion13-10"><a href="#lst:organizacion13-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_triangulo():     ...  <span class="co"># coseno no es metrica</span></span>
+<span id="lst:organizacion13-11"><a href="#lst:organizacion13-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_dispersion():    ...  <span class="co"># std/media ~ 1/raiz(d)</span></span>
+<span id="lst:organizacion13-12"><a href="#lst:organizacion13-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_estructura():    ...  <span class="co"># la estructura salva el contraste</span></span>
+<span id="lst:organizacion13-13"><a href="#lst:organizacion13-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_jl():            ...  <span class="co"># reducir dimension sin perder</span></span>
+<span id="lst:organizacion13-14"><a href="#lst:organizacion13-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_intrinseca():    ...  <span class="co"># dimension intrinseca por PCA</span></span>
+<span id="lst:organizacion13-15"><a href="#lst:organizacion13-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:organizacion13-16"><a href="#lst:organizacion13-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main():</span>
+<span id="lst:organizacion13-17"><a href="#lst:organizacion13-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> sim <span class="kw">in</span> (simular_metricas, simular_normalizacion,</span>
+<span id="lst:organizacion13-18"><a href="#lst:organizacion13-18" aria-hidden="true" tabindex="-1"></a>                simular_concentracion, simular_cosenos,</span>
+<span id="lst:organizacion13-19"><a href="#lst:organizacion13-19" aria-hidden="true" tabindex="-1"></a>                simular_cascara, simular_volumen,</span>
+<span id="lst:organizacion13-20"><a href="#lst:organizacion13-20" aria-hidden="true" tabindex="-1"></a>                simular_hubness, simular_triangulo,</span>
+<span id="lst:organizacion13-21"><a href="#lst:organizacion13-21" aria-hidden="true" tabindex="-1"></a>                simular_dispersion, simular_estructura,</span>
+<span id="lst:organizacion13-22"><a href="#lst:organizacion13-22" aria-hidden="true" tabindex="-1"></a>                simular_jl, simular_intrinseca):</span>
+<span id="lst:organizacion13-23"><a href="#lst:organizacion13-23" aria-hidden="true" tabindex="-1"></a>        sim()                <span class="co"># cada una escribe su .dat</span></span>
+<span id="lst:organizacion13-24"><a href="#lst:organizacion13-24" aria-hidden="true" tabindex="-1"></a>    demostracion(<span class="dv">15</span>)         <span class="co"># la muestra inspeccionable</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.17.</strong> La organizacion del modulo: una funcion de medida por fenomeno, todas con la misma semilla, orquestadas por main.</p>
+<p>Para ver la geometría en acción de cabo a rabo, el listado&nbsp;13.18 arma un buscador completo sobre una colección diminuta: construye una matriz de vectores, los normaliza, y ofrece la búsqueda por las tres métricas, devolviendo el ranking de cada una. Es deliberadamente ingenuo —compara contra todos, sin índice— porque su objetivo no es la velocidad sino dejar ver que cambiar de métrica es cambiar una línea, y que normalizar antes de buscar convierte la euclídea en el coseno. Toda la cuarta parte consistirá, en el fondo, en hacer que esta misma búsqueda sea rápida sin recorrer la colección entera.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:buscador13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:buscador13-1"><a href="#lst:buscador13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="lst:buscador13-2"><a href="#lst:buscador13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:buscador13-3"><a href="#lst:buscador13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Buscador:</span>
+<span id="lst:buscador13-4"><a href="#lst:buscador13-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, base, normalizar<span class="op">=</span><span class="va">False</span>):</span>
+<span id="lst:buscador13-5"><a href="#lst:buscador13-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.base <span class="op">=</span> base.astype(<span class="bu">float</span>)</span>
+<span id="lst:buscador13-6"><a href="#lst:buscador13-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> normalizar:                       <span class="co"># a la esfera unidad</span></span>
+<span id="lst:buscador13-7"><a href="#lst:buscador13-7" aria-hidden="true" tabindex="-1"></a>            n <span class="op">=</span> np.linalg.norm(<span class="va">self</span>.base, axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="lst:buscador13-8"><a href="#lst:buscador13-8" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.base <span class="op">=</span> <span class="va">self</span>.base <span class="op">/</span> n</span>
+<span id="lst:buscador13-9"><a href="#lst:buscador13-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.norm <span class="op">=</span> normalizar</span>
+<span id="lst:buscador13-10"><a href="#lst:buscador13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:buscador13-11"><a href="#lst:buscador13-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> por_coseno(<span class="va">self</span>, q):</span>
+<span id="lst:buscador13-12"><a href="#lst:buscador13-12" aria-hidden="true" tabindex="-1"></a>        b <span class="op">=</span> <span class="va">self</span>.base <span class="op">/</span> np.linalg.norm(<span class="va">self</span>.base, axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="lst:buscador13-13"><a href="#lst:buscador13-13" aria-hidden="true" tabindex="-1"></a>        q <span class="op">=</span> q <span class="op">/</span> np.linalg.norm(q)</span>
+<span id="lst:buscador13-14"><a href="#lst:buscador13-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.argsort(<span class="op">-</span>(b <span class="op">@</span> q))          <span class="co"># mayor coseno primero</span></span>
+<span id="lst:buscador13-15"><a href="#lst:buscador13-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:buscador13-16"><a href="#lst:buscador13-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> por_euclidea(<span class="va">self</span>, q):</span>
+<span id="lst:buscador13-17"><a href="#lst:buscador13-17" aria-hidden="true" tabindex="-1"></a>        d <span class="op">=</span> np.linalg.norm(<span class="va">self</span>.base <span class="op">-</span> q, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="lst:buscador13-18"><a href="#lst:buscador13-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.argsort(d)                 <span class="co"># menor distancia primero</span></span>
+<span id="lst:buscador13-19"><a href="#lst:buscador13-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:buscador13-20"><a href="#lst:buscador13-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> por_producto(<span class="va">self</span>, q):</span>
+<span id="lst:buscador13-21"><a href="#lst:buscador13-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.argsort(<span class="op">-</span>(<span class="va">self</span>.base <span class="op">@</span> q))  <span class="co"># mayor producto primero</span></span>
+<span id="lst:buscador13-22"><a href="#lst:buscador13-22" aria-hidden="true" tabindex="-1"></a><span class="co"># si base esta normalizada, por_euclidea == por_coseno (mismo orden)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.18.</strong> Un buscador en miniatura: las tres metricas sobre la misma coleccion; cambiar de criterio es cambiar una linea, y normalizar vuelve la euclidea coseno.</p>
+<p>Probar este buscador sobre la recuperación en miniatura de la sección&nbsp;13.3.2 reproduce, sin sorpresa, la tabla&nbsp;13.2: <code>por_coseno</code> y <code>por_producto</code> discrepan sobre el primer resultado, y <code>por_euclidea</code> cambia de veredicto según se haya normalizado o no la base al construirla. El mismo código, tres comportamientos; la diferencia está toda en la geometría, no en la implementación.</p>
+</section>
+<section id="la-demostración-y-las-diez-medidas-de-un-vistazo" class="level3">
+<h3 class="anchored" data-anchor-id="la-demostración-y-las-diez-medidas-de-un-vistazo">La demostración y las diez medidas de un vistazo</h3>
+<p>Fiel a la convención, el módulo muestra quince pares de vectores al azar con sus tres medidas de parecido (listado&nbsp;13.19). La muestra hace visible lo que la teoría dice: que las tres no coinciden cuando las normas varían. Un par puede tener coseno cercano a cero —direcciones casi perpendiculares— y, sin embargo, un producto interno muy negativo o muy positivo según las longitudes; y dos pares con coseno parecido pueden tener distancias euclídeas muy distintas si sus normas difieren. Ver esos números desalineados —y no solo leer que «las métricas difieren»— es el hábito de inspeccionar una muestra real que acompaña a todo el libro.</p>
+<pre class="{#lst:artefacto13}"><code>par  coseno   euclidea  prod_int
+  ---  -------  --------  --------
+  0     0.1579     7.412   4.667
+  1    -0.1205    40.875  -77.385
+  2     0.0557     7.958   1.720
+  3    -0.1227    21.294  -18.983
+  ...  ...        ...      ...</code></pre>
+<p><strong>Listado 13.19.</strong> Quince pares de vectores y sus tres medidas (muestra): coseno, euclidea y producto interno no coinciden cuando las normas varian.</p>
+<p>El módulo no produce una gráfica, sino diez, cada una aislando un fenómeno sobre los mismos datos sintéticos y con la misma semilla, de modo que todo es reproducible. La tabla&nbsp;13.6 las reúne con su resultado numérico clave, para que se lea de un golpe lo que el capítulo ha ido desgranando: la divergencia de las métricas con la norma, su reconciliación al normalizar, los cuatro fenómenos de la alta dimensión, el contrapunto de la estructura y la reducción de dimensión, y la cuestión de la métrica. Cada fila es una sección de este capítulo condensada en una cifra.</p>
+<table class="caption-top table">
+<caption>Las diez medidas de <code>src/cap13_distancias.py</code> y su resultado clave. Todas con la misma semilla; datos sintéticos. Cada fila condensa una sección del capítulo.</caption>
+<colgroup>
+<col style="width: 21%">
+<col style="width: 77%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Medida</th>
+<th style="text-align: left;">Resultado clave</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Métricas y norma</td>
+<td style="text-align: left;">El desacuerdo del top-10 con el coseno sube hasta <span class="math inline">\(\sim0{,}7\)</span> al variar la norma.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Normalización</td>
+<td style="text-align: left;">Tras normalizar, euclídea y coseno coinciden (acuerdo <span class="math inline">\(1{,}0\)</span>) siempre.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentración</td>
+<td style="text-align: left;">El contraste cae de <span class="math inline">\(&gt;\!100\)</span> (dim 2) a <span class="math inline">\(\sim0{,}2\)</span> (dim 512).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Casi-ortogonalidad</td>
+<td style="text-align: left;">El <span class="math inline">\(|\cos|\)</span> medio cae de <span class="math inline">\(0{,}63\)</span> (dim 2) a <span class="math inline">\(0{,}04\)</span> (dim 512).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cáscara</td>
+<td style="text-align: left;">La fracción en el 10 % exterior, <span class="math inline">\(1-0{,}9^d\)</span>, pasa de <span class="math inline">\(0{,}10\)</span> a <span class="math inline">\(1{,}0\)</span>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Volumen de la bola</td>
+<td style="text-align: left;">Crece hasta <span class="math inline">\(d=5\)</span> (máximo <span class="math inline">\(5{,}26\)</span>) y se desploma a <span class="math inline">\(0{,}03\)</span> en <span class="math inline">\(d=20\)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hubness</td>
+<td style="text-align: left;">La asimetría de la <span class="math inline">\(k\)</span>-ocurrencia sube de <span class="math inline">\(-0{,}4\)</span> a <span class="math inline">\(4{,}7\)</span>; un hub, <span class="math inline">\(&gt;\!200\)</span> veces.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Triángulo</td>
+<td style="text-align: left;">La distancia coseno viola el triángulo; la angular, nunca.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Estructura</td>
+<td style="text-align: left;">El contraste estructurado se mantiene <span class="math inline">\(&gt;\!5\)</span> donde el uniforme cae a <span class="math inline">\(0{,}2\)</span>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Johnson-Lindenstrauss</td>
+<td style="text-align: left;">Proyectar a 128 dim conserva las distancias con menos del 5 % de distorsión.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="lo-que-la-práctica-enseña-y-los-errores-comunes-al-medir-parecido" class="level3">
+<h3 class="anchored" data-anchor-id="lo-que-la-práctica-enseña-y-los-errores-comunes-al-medir-parecido">Lo que la práctica enseña, y los errores comunes al medir parecido</h3>
+<p>Las medidas reproducen con fidelidad los fenómenos —la divergencia de las métricas, la reconciliación por normalización, la concentración, la casi-ortogonalidad, la cáscara, la hubness— pero conviene la honestidad de costumbre. Los experimentos usan puntos <em>uniformemente aleatorios</em> o gaussianos, donde los fenómenos de la alta dimensión son máximos; los embeddings reales tienen estructura —viven en una variedad de baja dimensión— y por eso la búsqueda por proximidad sigue siendo útil en la práctica aun en dimensión alta, menos castigada de lo que estos experimentos sugieren. Lo que la práctica captura, y captura bien, es la <em>dirección</em> de cada fenómeno y <em>por qué</em> ocurre; lo que no debe leerse es que la búsqueda vectorial sea inútil —no lo es—, sino que la alta dimensión sin estructura es traicionera, y que la estructura de los datos reales es lo que la salva.</p>
+<p>La geometría de este capítulo se traduce en una lista corta de equivocaciones que aparecen una y otra vez en sistemas reales, y que conviene reconocer antes de construir nada (listado&nbsp;13.20). La primera es <em>mezclar métricas</em>: indexar con una distancia y consultar con otra —por ejemplo, construir el índice con producto interno y luego pedir el coseno— devuelve resultados incoherentes, porque el orden de vecindad no es el mismo. La segunda es <em>olvidar normalizar</em> cuando se quería el coseno: si los vectores no están en la esfera, la euclídea y el producto interno mezclan la norma, y un documento largo o un producto popular se cuela en los primeros puestos sin merecerlo por significado.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:errores13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:errores13-1"><a href="#lst:errores13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MAL: coseno «a mano» sin normalizar -&gt; mezcla la norma</span></span>
+<span id="lst:errores13-2"><a href="#lst:errores13-2" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> base <span class="op">@</span> consulta            <span class="co"># esto es producto interno, no coseno</span></span>
+<span id="lst:errores13-3"><a href="#lst:errores13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:errores13-4"><a href="#lst:errores13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># BIEN: normalizar una vez al indexar, y la consulta al buscar</span></span>
+<span id="lst:errores13-5"><a href="#lst:errores13-5" aria-hidden="true" tabindex="-1"></a>base <span class="op">=</span> base <span class="op">/</span> np.linalg.norm(base, axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="lst:errores13-6"><a href="#lst:errores13-6" aria-hidden="true" tabindex="-1"></a>consulta <span class="op">=</span> consulta <span class="op">/</span> np.linalg.norm(consulta)</span>
+<span id="lst:errores13-7"><a href="#lst:errores13-7" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> base <span class="op">@</span> consulta            <span class="co"># ahora si es coseno (orden correcto)</span></span>
+<span id="lst:errores13-8"><a href="#lst:errores13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:errores13-9"><a href="#lst:errores13-9" aria-hidden="true" tabindex="-1"></a><span class="co"># MAL: comparar magnitudes de productos internos entre consultas</span></span>
+<span id="lst:errores13-10"><a href="#lst:errores13-10" aria-hidden="true" tabindex="-1"></a><span class="co"># (cada consulta tiene su escala; no son comparables sin normalizar)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 13.20.</strong> Errores frecuentes al medir parecido y su correccion: normalizar cuando se quiere coseno, no mezclar metricas, cuidar la norma.</p>
+<p>La tercera trampa es <em>fiarse de la magnitud del parecido entre consultas distintas</em>: el producto interno de una consulta no es comparable con el de otra, porque cada una tiene su norma; un umbral fijo de «parecido mínimo» que funciona para una consulta falla para la siguiente. La cuarta es <em>ignorar la hubness</em>: si unos pocos ítems aparecen en casi todas las respuestas, probablemente sean hubs y no resultados genuinos, y conviene corregirlo. Y la quinta, más sutil, es <em>extrapolar la intuición de tres dimensiones</em> a la alta dimensión: «están cerca» y «apuntan parecido» dejan de ser sinónimos, y «el más cercano» puede no ser significativo si las distancias se han concentrado. Toda esta lista es, en el fondo, el capítulo aplicado: cada error es la otra cara de una de sus medidas.</p>
+</section>
+</section>
+<section id="casos-de-diseño-la-métrica-en-tres-sistemas" class="level2">
+<h2 class="anchored" data-anchor-id="casos-de-diseño-la-métrica-en-tres-sistemas">Casos de diseño: la métrica en tres sistemas</h2>
+<p>La teoría de este capítulo se vuelve concreta cuando se aplica a sistemas reales, donde la elección de métrica y de normalización no es un ejercicio académico sino la diferencia entre un producto que funciona y otro que devuelve sinsentidos. Recorramos tres escenarios típicos, cada uno con su decisión geométrica, para ver cómo las mismas preguntas —¿importa la magnitud o la dirección? ¿densos o dispersos? ¿hace falta una métrica verdadera?— llevan a respuestas distintas según el problema.</p>
+<section id="un-buscador-semántico-y-un-recomendador-de-productos" class="level3">
+<h3 class="anchored" data-anchor-id="un-buscador-semántico-y-un-recomendador-de-productos">Un buscador semántico y un recomendador de productos</h3>
+<p>Imaginemos un buscador sobre la documentación técnica de una empresa: el usuario escribe una pregunta en lenguaje natural y el sistema devuelve los fragmentos de manual más pertinentes. Cada fragmento se codifica con un modelo de frases como los del capítulo&nbsp;12, que produce embeddings densos de varios cientos de dimensiones. Aquí la magnitud no debe pesar: que un fragmento sea largo no lo hace más relevante, y un párrafo breve y exacto debe poder ganar a uno largo y vago. La decisión, por tanto, es <em>coseno</em>, lo que en la práctica significa normalizar todos los embeddings a la esfera unidad al indexarlos y normalizar también la consulta. Como la euclídea sobre vectores normalizados ordena igual que el coseno, el índice puede construirse para la euclídea —la métrica que mejor soportan muchas estructuras— sin perder nada. El umbral de «suficientemente pertinente», si el sistema decide no mostrar nada cuando no hay buen resultado, se calibra relativo al ruido, midiendo la distribución del coseno entre preguntas y fragmentos no relacionados, y nunca con un número absoluto traído de otro proyecto. Y conviene vigilar la hubness: si un mismo fragmento genérico —una página de bienvenida, un aviso legal— aparece en casi todas las respuestas, es un hub, y hay que corregirlo con vecindad mutua o filtrándolo.</p>
+<p>El segundo escenario es un recomendador de una tienda: dado lo que un usuario ha visto o comprado, sugerir productos afines. Cada producto se representa con un embedding aprendido de las interacciones, y aquí, a diferencia del buscador, la magnitud <em>sí</em> lleva señal: se entrena de modo que la norma del vector crezca con la popularidad o la calidad del producto, para que, a igualdad de afinidad, los productos más populares suban. La decisión es, pues, <em>producto interno</em> —búsqueda MIPS—, y precisamente <em>no</em> normalizar, porque normalizar tiraría la popularidad que se quiere conservar. Como muchos índices no manejan el producto interno de forma nativa, el sistema aplica el truco de la dimensión extra para convertir el MIPS en una búsqueda por vecino más próximo euclídeo y reutilizar la maquinaria habitual. La tentación de fijar un umbral absoluto de «producto interno mínimo» es aquí especialmente peligrosa, porque el producto interno no es comparable entre usuarios con vectores de distinta norma; si hace falta un corte, se calibra por usuario o se trabaja con rangos en vez de con valores absolutos.</p>
+</section>
+<section id="un-detector-de-duplicados-y-la-lección-común" class="level3">
+<h3 class="anchored" data-anchor-id="un-detector-de-duplicados-y-la-lección-común">Un detector de duplicados, y la lección común</h3>
+<p>El tercer escenario es distinto en su raíz: detectar documentos duplicados o casi idénticos en una gran colección —para deduplicar un corpus, detectar plagio o agrupar noticias repetidas—. Aquí lo que importa no es el parecido semántico difuso, sino la <em>coincidencia de contenido</em>, y la representación natural no es un embedding denso sino un conjunto de fragmentos o de <em>shingles</em> (subcadenas solapadas). La medida adecuada es la <em>similitud de Jaccard</em> entre esos conjuntos: dos documentos son casi duplicados si comparten casi todos sus fragmentos. Para escalar a millones de documentos sin comparar todos contra todos, se usa una variante de hashing sensible a la localidad pensada para Jaccard —el <em>MinHash</em>—, que estima la Jaccard a partir de firmas compactas, igual que los hiperplanos aleatorios estimaban el coseno. Este caso ilustra que la elección de métrica empieza antes de elegir la distancia: empieza al elegir la representación, y la representación dispersa de conjuntos pide medidas de conjuntos, no de vectores densos.</p>
+<p>Los tres sistemas comparten la maquinaria —codificar, indexar, buscar los más próximos— pero difieren en la geometría, y esa diferencia lo decide todo. El buscador normaliza y usa coseno porque solo le importa el significado; el recomendador no normaliza y usa producto interno porque le importa la magnitud; el detector de duplicados abandona los vectores densos y vuelve a los conjuntos porque le importa la coincidencia exacta. Ninguna de las tres decisiones es «la correcta» en abstracto: cada una responde a qué significa «parecido» en ese problema. Esa es la verdadera enseñanza del capítulo, la que sobrevive a cualquier biblioteca o base de datos concreta: antes de indexar, hay que entender la geometría del parecido que se busca, porque la métrica es la primera y más consecuente de las decisiones de diseño.</p>
+</section>
+</section>
+<section id="nota-histórica-y-de-perspectiva" class="level2">
+<h2 class="anchored" data-anchor-id="nota-histórica-y-de-perspectiva">Nota histórica y de perspectiva</h2>
+<p>Conviene situar lo aprendido en su historia, porque la relación de la informática con la alta dimensión ha ido de la fobia al aprovechamiento, y entender ese arco ayuda a calibrar dónde estamos. La expresión <em>maldición de la dimensión</em> la acuñó Richard Bellman en 1961, en el contexto de la optimización y la programación dinámica <span class="citation" data-cites="bellman1961">(<a href="#ref-bellman1961" role="doc-biblioref">Bellman 1961</a>)</span>: observó que el número de casos a considerar crecía de forma explosiva con el número de variables, de modo que los métodos que funcionaban con pocas dimensiones se volvían inviables con muchas. La expresión hizo fortuna y se extendió a todo fenómeno en que la alta dimensión arruina la intuición o el cómputo, incluida la búsqueda por proximidad que ocupa este capítulo.</p>
+<p>Durante décadas, la alta dimensión fue vista sobre todo como un enemigo. El trabajo de Beyer y sus colegas en 1999 le puso números a uno de sus rostros más inquietantes para las bases de datos: demostró, bajo condiciones bastante generales, que al crecer la dimensión la distancia al vecino más próximo y la distancia al más lejano se igualan, de modo que «el vecino más próximo» deja de ser un concepto significativo <span class="citation" data-cites="beyer1999">(<a href="#ref-beyer1999" role="doc-biblioref">Beyer et&nbsp;al. 1999</a>)</span>. Era un resultado demoledor para los índices espaciales clásicos —los árboles <span class="math inline">\(k\)</span>-d y sus parientes—, que se apoyaban precisamente en que unas regiones del espacio estuvieran claramente más cerca que otras. La conclusión que muchos sacaron entonces fue pesimista: la búsqueda por similitud en alta dimensión era, en el peor caso, irremediablemente cara.</p>
+<p>El descubrimiento de la hubness, ya en el siglo <span class="smallcaps">xxi</span>, añadió un matiz inesperado <span class="citation" data-cites="radovanovic2010">(<a href="#ref-radovanovic2010" role="doc-biblioref">Radovanović et&nbsp;al. 2010</a>)</span>. No solo las distancias se concentran: además, la relación de vecindad se desequilibra, con unos pocos puntos convertidos en vecinos de casi todos. Fue un recordatorio de que la alta dimensión no solo es difícil, sino <em>rara</em>, con fenómenos que no tienen análogo en las tres dimensiones de la intuición. Estos hallazgos podrían haber condenado a la búsqueda vectorial a ser una curiosidad teórica.</p>
+<p>Lo que cambió el panorama fue un giro de perspectiva: dejar de mirar el peor caso —datos uniformemente aleatorios— y mirar los datos reales, que tienen estructura. La constatación de que los datos de interés viven en variedades de baja dimensión intrínseca, de que las distancias se pueden preservar al proyectar a pocas dimensiones (Johnson-Lindenstrauss), y de que la propia casi-ortogonalidad que amenazaba la búsqueda exacta habilita el hashing aleatorio, convirtió la maldición en una oportunidad. La generación actual de índices aproximados —grafos de vecindad, particiones, cuantización— no lucha contra la geometría de la alta dimensión: la explota. El miedo de Bellman sigue siendo real para el ruido; para la señal estructurada, la ingeniería ha aprendido a convivir con la alta dimensión e incluso a sacarle partido. Ese es el estado del arte que la cuarta parte construye, y este capítulo ha sido su fundamento geométrico.</p>
+</section>
+<section id="síntesis-y-puente-a-la-cuarta-parte" class="level2">
+<h2 class="anchored" data-anchor-id="síntesis-y-puente-a-la-cuarta-parte">Síntesis y puente a la cuarta parte</h2>
+<p>Este capítulo ha fijado la geometría sobre la que se levantará la base de datos vectorial. Las tres distancias —euclídea, coseno y producto interno— difieren en qué hacen con la norma, y la elección entre ellas es la primera decisión de diseño: coseno cuando solo importa la dirección, producto interno cuando la magnitud lleva señal, euclídea como cara del coseno tras normalizar. La normalización a la esfera unidad reconcilia euclídea y coseno —pues <span class="math inline">\(\lVert\hat a-\hat b\rVert^2=2-2\cos\theta\)</span>— y es el puente que permite a un mismo índice servir ambas métricas. Y la alta dimensión, donde viven los embeddings, se comporta de maneras contraintuitivas que la práctica ha medido: las distancias se concentran, los vectores se vuelven casi ortogonales, el volumen huye a la cáscara, la bola se encoge a nada y emergen hubs que distorsionan la vecindad.</p>
+<p>Conviene condensar el criterio de elección en una sola tabla de bolsillo (tabla&nbsp;13.7), que es el destilado práctico del capítulo: ante un caso nuevo, las preguntas son siempre las mismas —¿importa la magnitud o solo la dirección? ¿los vectores son densos o dispersos? ¿el índice exige una métrica verdadera?— y de sus respuestas sale la distancia. Casi siempre, para embeddings densos de texto, el camino lleva al coseno, equivalente a la euclídea sobre vectores normalizados; el producto interno aparece cuando la magnitud lleva señal, y las medidas dispersas, cuando se vuelve a la representación de conjuntos.</p>
+<table class="caption-top table">
+<caption>Criterio de bolsillo para elegir la medida de parecido. La pregunta decisiva casi siempre es si importa la magnitud o solo la dirección.</caption>
+<colgroup>
+<col style="width: 54%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Situación</th>
+<th style="text-align: left;">Medida recomendada</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Solo importa la dirección (texto, búsqueda semántica)</td>
+<td style="text-align: left;">Coseno (o euclídea sobre normalizados).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">La magnitud lleva señal (popularidad, confianza)</td>
+<td style="text-align: left;">Producto interno (MIPS).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Coordenadas de escalas o correlaciones distintas</td>
+<td style="text-align: left;">Mahalanobis, o blanquear y usar euclídea.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vectores dispersos o conjuntos de términos</td>
+<td style="text-align: left;">Jaccard.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Vectores binarios o huellas digitales</td>
+<td style="text-align: left;">Hamming.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">El índice exige una métrica verdadera</td>
+<td style="text-align: left;">Distancia angular, no «distancia coseno».</td>
+</tr>
+</tbody>
+</table>
+<p>El lector cierra con esto la tercera parte y, con ella, todo el fundamento conceptual de lo vectorial. Sabe representar el significado como un vector (capítulos 11 y 12), sabe medir el parecido entre vectores (este), y entiende por qué hacerlo a escala es difícil (la alta dimensión de este capítulo). Lo que queda es construir el sistema: cómo almacenar millones de embeddings y encontrar los más próximos a una consulta en milisegundos, sin compararla con todos. Esa es la cuarta parte, y todo lo de esta —en especial la concentración de distancias y la hubness— es lo que explica por qué no basta la fuerza bruta y hacen falta los índices aproximados. La teoría está completa; toca el sistema que la encarna.</p>
+<p>Vale la pena recapitular el camino recorrido, porque el capítulo ha encadenado muchas piezas. Empezó por las tres distancias y por la pregunta que las separa —qué hacen con la norma—, y mostró, con un ejemplo de dos dimensiones que cabe en la cabeza, que la elección cambia qué documento gana. Siguió con la familia de Minkowski y con las medidas para datos dispersos, recordando que la métrica empieza al elegir la representación. Llegó la normalización, con su identidad limpia <span class="math inline">\(\lVert\hat a-\hat b\rVert^2=2-2\cos\theta\)</span>, que reconcilia euclídea y coseno y permite a un mismo índice servir ambas. Y después, el corazón del capítulo: los fenómenos de la alta dimensión —concentración, casi-ortogonalidad, cáscara, volumen que se desvanece, hubness— medidos uno a uno, con su aritmética común en la ley de los grandes números, y su contrapunto en la estructura de los datos reales, que tienen baja dimensión intrínseca y conservan el contraste. El capítulo cerró conectando cada propiedad con la ingeniería que viene y con tres sistemas concretos donde la geometría decide el diseño.</p>
+<p>Si hubiera que quedarse con una sola frase, sería esta: la distancia no es un detalle de implementación, sino la definición operativa de «parecido», y por tanto la primera decisión de cualquier sistema que busque por similitud. Todo lo demás —el codificador que produce los vectores, el índice que los organiza, el <em>hardware</em> que los almacena— sirve a esa definición. Equivocarla no se arregla con más cómputo ni con mejores modelos: si la métrica mide el parecido que no es, el sistema devolverá, deprisa y a escala, lo que no se buscaba.</p>
+<p>Antes de pasar página conviene retener la idea que hilvana todo el capítulo, porque es la bisagra entre las dos mitades del libro. La primera mitad medía el parecido por <em>coincidencia exacta</em>: dos cosas se parecían si compartían los mismos términos, las mismas claves, los mismos valores —el «igual a» del álgebra relacional y del índice invertido—. Este capítulo ha formalizado el otro régimen, el del <em>cercano a</em>: el parecido como proximidad en un espacio geométrico, donde dos textos pueden ser afines sin compartir una sola palabra. La distancia es la herramienta que hace operativo ese «cercano a», y la alta dimensión es el terreno, hostil pero domesticable, donde habita. Que la búsqueda por proximidad funcione pese a la maldición de la dimensión —porque los datos tienen estructura, porque se puede reducir la dimensión sin perder las distancias, porque el codificador aprende a colocar los puntos donde la métrica dice la verdad— es el milagro cotidiano sobre el que se levanta toda la cuarta parte. El resto del libro es ingeniería al servicio de esta geometría.</p>
+</section>
+<section id="ejercicios-propuestos" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="ejercicios-propuestos">Ejercicios propuestos</h2>
+</section>
+<section id="lecturas-recomendadas" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecturas-recomendadas">Lecturas recomendadas</h2>
+<ul>
+<li><p><span class="citation" data-cites="bellman1961">Bellman (<a href="#ref-bellman1961" role="doc-biblioref">1961</a>)</span>: el origen de la expresión «maldición de la dimensión». Aunque nació en el contexto de la programación dinámica y la optimización, es el marco conceptual con el que todavía hoy se nombran los fenómenos de la sección&nbsp;13.4; conviene leerlo para entender que la maldición es más antigua y más general que la búsqueda vectorial.</p></li>
+<li><p><span class="citation" data-cites="beyer1999">Beyer et&nbsp;al. (<a href="#ref-beyer1999" role="doc-biblioref">1999</a>)</span>: el análisis riguroso de la concentración de distancias y de cuándo el vecino más cercano deja de ser significativo. Es la referencia que conviene tener a mano para discutir, con fundamento, por qué los índices exactos clásicos fracasan en alta dimensión y por qué hace falta la búsqueda aproximada.</p></li>
+<li><p><span class="citation" data-cites="aggarwal2001">Aggarwal et&nbsp;al. (<a href="#ref-aggarwal2001" role="doc-biblioref">2001</a>)</span>: el estudio del comportamiento de las distancias <span class="math inline">\(L_p\)</span> en alta dimensión, con el sorprendente papel de los exponentes pequeños —incluso fraccionarios—, que discriminan mejor que la euclídea cuando la dimensión crece. Una lectura que matiza la idea de que «todas las distancias son iguales» en alta dimensión.</p></li>
+<li><p><span class="citation" data-cites="radovanovic2010">Radovanović et&nbsp;al. (<a href="#ref-radovanovic2010" role="doc-biblioref">2010</a>)</span>: el estudio de la hubness, los hubs que emergen en alta dimensión y su efecto sobre la vecindad. Imprescindible para quien construya sistemas de recomendación o recuperación, porque pone nombre y remedio a un problema que de otro modo se sufre sin entenderlo.</p></li>
+<li><p><span class="citation" data-cites="zezula2006">Zezula et&nbsp;al. (<a href="#ref-zezula2006" role="doc-biblioref">2006</a>)</span>: el tratamiento de la búsqueda por similitud desde la teoría de los espacios métricos, con el papel de la desigualdad triangular en la indexación. El puente natural entre la geometría de este capítulo y los índices de la cuarta parte.</p></li>
+<li><p><span class="citation" data-cites="manning2008">Manning et&nbsp;al. (<a href="#ref-manning2008" role="doc-biblioref">2008</a>)</span>: para repasar las medidas de similitud en recuperación de información, el contexto clásico de las distancias de este capítulo, y para enlazar con el coseno sobre TF-IDF del capítulo&nbsp;10.</p></li>
+</ul>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referencias</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-aggarwal2001" class="csl-entry" role="listitem">
+Aggarwal, Charu C., Alexander Hinneburg, y Daniel A. Keim. 2001. <span>«On the Surprising Behavior of Distance Metrics in High Dimensional Space»</span>. <em>International Conference on Database Theory (ICDT)</em>.
+</div>
+<div id="ref-bellman1961" class="csl-entry" role="listitem">
+Bellman, Richard. 1961. <em>Adaptive Control Processes: A Guided Tour</em>. Princeton University Press.
+</div>
+<div id="ref-beyer1999" class="csl-entry" role="listitem">
+Beyer, Kevin, Jonathan Goldstein, Raghu Ramakrishnan, y Uri Shaft. 1999. <span>«When Is <span>“Nearest Neighbor”</span> Meaningful?»</span> <em>International Conference on Database Theory (ICDT)</em>.
+</div>
+<div id="ref-indyk1998" class="csl-entry" role="listitem">
+Indyk, Piotr, y Rajeev Motwani. 1998. <span>«Approximate Nearest Neighbors: Towards Removing the Curse of Dimensionality»</span>. <em>ACM Symposium on Theory of Computing (STOC)</em>.
+</div>
+<div id="ref-johnson1984" class="csl-entry" role="listitem">
+Johnson, William B., y Joram Lindenstrauss. 1984. <span>«Extensions of <span>Lipschitz</span> Mappings into a <span>Hilbert</span> Space»</span>. <em>Contemporary Mathematics</em> 26: 189-206.
+</div>
+<div id="ref-manning2008" class="csl-entry" role="listitem">
+Manning, Christopher D., Prabhakar Raghavan, y Hinrich Schütze. 2008. <em>Introduction to Information Retrieval</em>. Cambridge University Press.
+</div>
+<div id="ref-radovanovic2010" class="csl-entry" role="listitem">
+Radovanović, Miloš, Alexandros Nanopoulos, y Mirjana Ivanović. 2010. <span>«Hubs in Space: Popular Nearest Neighbors in High-Dimensional Data»</span>. <em>Journal of Machine Learning Research</em> 11: 2487-531.
+</div>
+<div id="ref-zezula2006" class="csl-entry" role="listitem">
+Zezula, Pavel, Giuseppe Amato, Vlastislav Dohnal, y Michal Batko. 2006. <em>Similarity Search: The Metric Space Approach</em>. Springer.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cap12.html" class="pagination-link" aria-label="Capítulo 12. Deep learning para embeddings">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Capítulo 12. Deep learning para embeddings</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./cap14.html" class="pagination-link" aria-label="Capítulo 14. Anatomía de una base de datos vectorial">
+        <span class="nav-page-text">Capítulo 14. Anatomía de una base de datos vectorial</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 Manuel Muñoz Plá · Edición web bajo licencia <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es">CC BY-NC-ND 4.0</a> (uso académico con atribución; sin uso comercial ni obras derivadas) · El código va aparte bajo licencia MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

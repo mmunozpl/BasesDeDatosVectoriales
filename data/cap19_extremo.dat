@@ -1,0 +1,7 @@
+# recall del recuperador vs exito de la tarea (que exige las 3 piezas de la respuesta) segun k
+k  recall  exito
+3  0.1989  0.0067
+5  0.2956  0.0267
+10  0.3844  0.0567
+20  0.4833  0.14
+50  0.6644  0.2967

@@ -1,0 +1,8 @@
+# MRR tras reordenar segun la profundidad R de candidatos de la primera etapa (denso)
+R  mrr
+5  0.0667
+10  0.1228
+20  0.25
+50  0.5268
+100  0.627
+200  0.6802

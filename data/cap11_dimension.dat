@@ -1,0 +1,8 @@
+# fraccion de palabras con vecino del mismo tema segun la dimension del embedding
+dim  acierto
+1  0.2188
+2  1.0
+4  1.0
+8  1.0
+16  1.0
+32  1.0

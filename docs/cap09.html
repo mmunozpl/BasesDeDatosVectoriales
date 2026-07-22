@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Capítulo 9. Mecánica de la distribución – Bases de datos</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cap10.html" rel="next">
+<link href="./cap08.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-654c8d80848ee01bf5d57418afe456c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cap09.html">Capítulo 9. Mecánica de la distribución</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Bases de datos</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Alternar modo lector">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 1. La persistencia y la disciplina de gestión de datos</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 2. El modelo relacional</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 3. SQL: del DML declarativo a las extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 4. Diseño y normalización</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 5. Transacciones, concurrencia y recuperación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 6. Límites del relacional y el movimiento NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 7. Consistencia distribuida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 8. Las familias NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap09.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Capítulo 9. Mecánica de la distribución</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 10. Recuperación de información clásica</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 11. De la representación dispersa a la densa</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 12. Deep learning para embeddings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 13. Geometría del espacio métrico</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 14. Anatomía de una base de datos vectorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 15. Índices de vecino aproximado</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 16. Motores: dedicados frente a extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 17. Consulta híbrida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 18. Evaluación y operación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 19. Recuperación aumentada y memoria de agentes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 20. El futuro híbrido</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 21. Caso de estudio integral</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#particionado-rango-y-hash" id="toc-particionado-rango-y-hash" class="nav-link active" data-scroll-target="#particionado-rango-y-hash">Particionado: rango y hash</a></li>
+  <li><a href="#el-problema-del-módulo" id="toc-el-problema-del-módulo" class="nav-link" data-scroll-target="#el-problema-del-módulo">El problema del módulo</a></li>
+  <li><a href="#el-anillo-de-hashing-consistente" id="toc-el-anillo-de-hashing-consistente" class="nav-link" data-scroll-target="#el-anillo-de-hashing-consistente">El anillo de hashing consistente</a></li>
+  <li><a href="#réplicas-virtuales-para-equilibrar" id="toc-réplicas-virtuales-para-equilibrar" class="nav-link" data-scroll-target="#réplicas-virtuales-para-equilibrar">Réplicas virtuales para equilibrar</a></li>
+  <li><a href="#replicación-y-quórum" id="toc-replicación-y-quórum" class="nav-link" data-scroll-target="#replicación-y-quórum">Replicación y quórum</a>
+  <ul class="collapse">
+  <li><a href="#con-líder-y-sin-líder" id="toc-con-líder-y-sin-líder" class="nav-link" data-scroll-target="#con-líder-y-sin-líder">Con líder y sin líder</a></li>
+  <li><a href="#cuánta-durabilidad-compra-cada-réplica" id="toc-cuánta-durabilidad-compra-cada-réplica" class="nav-link" data-scroll-target="#cuánta-durabilidad-compra-cada-réplica">Cuánta durabilidad compra cada réplica</a></li>
+  </ul></li>
+  <li><a href="#map-reduce-y-procesamiento-distribuido" id="toc-map-reduce-y-procesamiento-distribuido" class="nav-link" data-scroll-target="#map-reduce-y-procesamiento-distribuido">Map-Reduce y procesamiento distribuido</a>
+  <ul class="collapse">
+  <li><a href="#el-modelo-map-reduce" id="toc-el-modelo-map-reduce" class="nav-link" data-scroll-target="#el-modelo-map-reduce">El modelo Map-Reduce</a></li>
+  <li><a href="#hasta-dónde-acelera-el-sesgo-y-el-rezagado" id="toc-hasta-dónde-acelera-el-sesgo-y-el-rezagado" class="nav-link" data-scroll-target="#hasta-dónde-acelera-el-sesgo-y-el-rezagado">Hasta dónde acelera: el sesgo y el rezagado</a></li>
+  </ul></li>
+  <li><a href="#un-clúster-de-principio-a-fin" id="toc-un-clúster-de-principio-a-fin" class="nav-link" data-scroll-target="#un-clúster-de-principio-a-fin">Un clúster, de principio a fin</a>
+  <ul class="collapse">
+  <li><a href="#escritura-lectura-y-trabajo-por-lotes" id="toc-escritura-lectura-y-trabajo-por-lotes" class="nav-link" data-scroll-target="#escritura-lectura-y-trabajo-por-lotes">Escritura, lectura y trabajo por lotes</a></li>
+  <li><a href="#coordinador-nodos-y-fallo" id="toc-coordinador-nodos-y-fallo" class="nav-link" data-scroll-target="#coordinador-nodos-y-fallo">Coordinador, nodos y fallo</a></li>
+  </ul></li>
+  <li><a href="#práctica-la-distribución-medida" id="toc-práctica-la-distribución-medida" class="nav-link" data-scroll-target="#práctica-la-distribución-medida">Práctica: la distribución, medida</a>
+  <ul class="collapse">
+  <li><a href="#la-demostración-quince-claves-y-su-nodo" id="toc-la-demostración-quince-claves-y-su-nodo" class="nav-link" data-scroll-target="#la-demostración-quince-claves-y-su-nodo">La demostración: quince claves y su nodo</a></li>
+  <li><a href="#lo-que-la-práctica-no-decide" id="toc-lo-que-la-práctica-no-decide" class="nav-link" data-scroll-target="#lo-que-la-práctica-no-decide">Lo que la práctica no decide</a></li>
+  </ul></li>
+  <li><a href="#el-precio-operativo-de-la-escala" id="toc-el-precio-operativo-de-la-escala" class="nav-link" data-scroll-target="#el-precio-operativo-de-la-escala">El precio operativo de la escala</a></li>
+  <li><a href="#síntesis-y-puente-a-la-tercera-parte" id="toc-síntesis-y-puente-a-la-tercera-parte" class="nav-link" data-scroll-target="#síntesis-y-puente-a-la-tercera-parte">Síntesis y puente a la tercera parte</a></li>
+  <li><a href="#ejercicios-propuestos" id="toc-ejercicios-propuestos" class="nav-link" data-scroll-target="#ejercicios-propuestos">Ejercicios propuestos</a></li>
+  <li><a href="#lecturas-recomendadas" id="toc-lecturas-recomendadas" class="nav-link" data-scroll-target="#lecturas-recomendadas">Lecturas recomendadas</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Capítulo 9. Mecánica de la distribución</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Las familias del capítulo anterior comparten el supuesto que las hizo nacer: que los datos no caben en una máquina y han de repartirse entre muchas. Pero «repartirse» se ha usado hasta aquí como una promesa, no como un mecanismo. Este capítulo, el más sistémico de la segunda parte, desvela la maquinaria común a cualquier almacén distribuido —sea clave-valor, documental o columnar— en tres piezas: el <em>particionado</em>, que decide qué dato vive en qué nodo; la <em>replicación</em>, que guarda cada dato en varios nodos para sobrevivir a los fallos; y el <em>procesamiento distribuido</em> tipo Map-Reduce, que computa sobre datos repartidos sin arrastrarlos todos a un sitio.</p>
+<p>Como en los capítulos anteriores, la maquinaria no se describe sin medirla. El módulo de la práctica —Python puro, ejecutable en el propio intérprete— implementa las cuatro mecánicas centrales y las cronometra, de modo que afirmaciones como «el hashing consistente mueve pocas claves» o «replicar más multiplica la durabilidad» dejan de ser eslóganes y se vuelven curvas con números. El lector saldrá entendiendo no solo cómo se distribuye, sino cuánto cuesta cada decisión: cuántas claves se reorganizan al crecer el clúster, cuánto se desequilibra la carga, cuánto baja el riesgo de pérdida con cada réplica y hasta dónde acelera de verdad un trabajo paralelo.</p>
+<p>Y este capítulo cierra la segunda parte con un doble cierre. Cierra el estrato NoSQL dejando claro que la escala no es gratis: se paga en complejidad operativa, la de coordinar muchas máquinas que fallan por separado. Y cierra el largo recorrido por el <em>igual a</em> que ha ocupado las dos primeras partes: hasta aquí, toda consulta —en álgebra relacional, en SQL, en una clave-valor o en un anillo de hashing— ha buscado una <em>coincidencia</em> exacta, un dato que es igual a otro. La tercera parte dará el giro que da título al libro: de la coincidencia a la similitud, del <em>igual a</em> al <em>cercano a</em>. Pero ese giro solo se entiende habiendo visto antes, hasta el final, lo que el paradigma de la coincidencia exacta sabe y cuesta hacer.</p>
+<section id="particionado-rango-y-hash" class="level2">
+<h2 class="anchored" data-anchor-id="particionado-rango-y-hash">Particionado: rango y hash</h2>
+<p><em>Particionar</em> (o <em>fragmentar</em>, o <em>shardear</em>) es repartir el conjunto de datos en trozos —particiones— que viven en nodos distintos, de modo que cada nodo guarda y sirve solo una parte (figura&nbsp;9.1). El objetivo es doble: que los datos quepan —la suma de las máquinas almacena lo que ninguna podría sola— y que la carga se reparta —cada nodo atiende solo las peticiones de su parte—. La pregunta central es cómo se decide qué clave va a qué nodo, porque de esa decisión dependen el equilibrio de la carga y, sobre todo, qué ocurre cuando el clúster cambia de tamaño.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_01.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.1.</strong> Particionado: una función de reparto envía cada clave a un nodo, troceando el conjunto en particiones que viven en máquinas distintas. Cada operación sobre una clave va directa al nodo que la guarda.</figcaption>
+</figure>
+</div>
+<p>Hay dos grandes criterios, ya asomados en el capítulo&nbsp;6 al hablar de la clave de fragmentación. El <em>reparto por rango</em> asigna intervalos de clave a cada nodo: hace eficientes las consultas por rango, pero arriesga puntos calientes si la carga se concentra en un intervalo. El <em>reparto por hash</em> aplica una función de dispersión a la clave y reparte por el resultado: distribuye la carga de manera uniforme, a costa de perder la localidad de los rangos. La forma más simple del reparto por hash es el módulo: el nodo de una clave es <span class="math inline">\(h(\text{clave}) \bmod N\)</span>, con <span class="math inline">\(N\)</span> el número de nodos. Funciona, pero esconde un defecto grave.</p>
+<p>La diferencia no es académica, y se mide. Cuando las claves están <em>sesgadas</em> —como las marcas de tiempo, donde lo reciente concentra casi toda la actividad—, el reparto por rango envía ese pico al mismo nodo y crea un <em>punto caliente</em>, mientras que el de hash lo dispersa (figura&nbsp;9.2). La práctica reparte cien mil claves con el 80 % concentrado en el 10 % más alto del espacio: por rango, el nodo más cargado recibe hasta ocho veces la media, y empeora al crecer el clúster; por hash, la carga se mantiene casi perfecta (desbalance <span class="math inline">\(\approx
+1\)</span>) sea cual sea el número de nodos. Es la razón por la que casi todos los almacenes distribuidos reparten por hash, aun a costa de perder las consultas por rango eficientes.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_02.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.2.</strong> Desbalance de carga con claves sesgadas: el reparto por rango concentra el pico en un nodo —un punto caliente que empeora con más nodos—; el de hash lo dispersa y mantiene la carga casi perfecta. Datos de <code>src/cap09_distribucion.py</code>.</figcaption>
+</figure>
+</div>
+<p>El listado&nbsp;9.1 contrapone los dos repartos, y la tabla&nbsp;9.1 resume el compromiso: el rango conserva la localidad y arriesga puntos calientes; el hash la sacrifica y reparte parejo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:repartos"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:repartos-1"><a href="#lst:repartos-1" aria-hidden="true" tabindex="-1"></a>nodo_por_rango <span class="op">=</span> clave <span class="op">//</span> (espacio <span class="op">//</span> n)   <span class="co"># claves vecinas, mismo nodo</span></span>
+<span id="lst:repartos-2"><a href="#lst:repartos-2" aria-hidden="true" tabindex="-1"></a>nodo_por_hash  <span class="op">=</span> h(clave) <span class="op">%</span> n              <span class="co"># vecinas, nodos dispersos</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.1.</strong> Los dos repartos: por rango conserva el orden; por hash lo dispersa.</p>
+<table class="caption-top table">
+<caption>Reparto por rango frente a por hash. Cada uno gana en un eje: localidad o equilibrio.</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: left;">Por rango</th>
+<th style="text-align: left;">Por hash</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Consultas por rango</td>
+<td style="text-align: left;">eficientes</td>
+<td style="text-align: left;">caras (datos dispersos)</td>
+</tr>
+<tr class="even">
+<td>Equilibrio de carga</td>
+<td style="text-align: left;">riesgo de pico</td>
+<td style="text-align: left;">parejo</td>
+</tr>
+<tr class="odd">
+<td>Claves sesgadas</td>
+<td style="text-align: left;">punto caliente</td>
+<td style="text-align: left;">se dispersan</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="el-problema-del-módulo" class="level2">
+<h2 class="anchored" data-anchor-id="el-problema-del-módulo">El problema del módulo</h2>
+<p>El defecto aparece al cambiar el número de nodos. Si el reparto es <span class="math inline">\(h(k) \bmod N\)</span> y se añade un nodo —se pasa a <span class="math inline">\(N+1\)</span>—, el divisor cambia, y con él cambia el resto para casi todas las claves: casi todo el conjunto ha de moverse de nodo a la vez. En un sistema con terabytes repartidos, eso significa un trasiego masivo de datos por la red cada vez que el clúster crece o mengua, justo cuando peor viene —al añadir capacidad porque hay mucha carga, o al perder un nodo por un fallo—. La práctica lo mide (figura&nbsp;9.3): al pasar de ocho nodos a nueve, el reparto por módulo mueve casi el 90 % de las claves, y la fracción solo empeora con más nodos. Reorganizar nueve de cada diez claves para añadir un nodo es inviable a escala.</p>
+<p>El problema es simétrico al <em>quitar</em> un nodo, que es lo que ocurre —sin avisar— cada vez que una máquina falla. Con el módulo, pasar de <span class="math inline">\(N\)</span> a <span class="math inline">\(N-1\)</span> vuelve a cambiar el divisor y a reubicar casi todo, justo en el peor momento: el clúster, ya bajo estrés por la pérdida, ha de encima mover montañas de datos. Con el anillo, en cambio, las claves del nodo que se va pasan solo a su sucesor, y el resto no se entera. Esa simetría —crecer y menguar baratos— es lo que permite a un clúster grande tratar los fallos como rutina y no como catástrofe, y es la propiedad que el hashing consistente aporta y el módulo no.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_03.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.3.</strong> Fracción de claves que cambian de nodo al añadir uno. El reparto por hash módulo <span class="math inline">\(N\)</span> reubica casi todas; el anillo de hashing consistente mueve solo la fracción que toca al nodo nuevo (en torno a <span class="math inline">\(1/N\)</span>). Datos de <code>src/cap09_distribucion.py</code>.</figcaption>
+</figure>
+</div>
+</section>
+<section id="el-anillo-de-hashing-consistente" class="level2">
+<h2 class="anchored" data-anchor-id="el-anillo-de-hashing-consistente">El anillo de hashing consistente</h2>
+<p>La solución, introducida por <span class="citation" data-cites="karger1997">Karger et&nbsp;al. (<a href="#ref-karger1997" role="doc-biblioref">1997</a>)</span> y popularizada por Dynamo <span class="citation" data-cites="dynamo2007">(<a href="#ref-dynamo2007" role="doc-biblioref"><span class="nocase">DeCandia et&nbsp;al.</span> 2007</a>)</span>, es el <em>hashing consistente</em>. La idea es elegante: en lugar de repartir por el resto módulo <span class="math inline">\(N\)</span>, se colocan tanto los nodos como las claves en un mismo espacio circular —un <em>anillo</em>— según su hash, y cada clave la sirve el primer nodo que se encuentra al avanzar en sentido horario (figura&nbsp;9.4). La consecuencia es la que arregla el problema del módulo: al añadir un nodo, este se inserta en un punto del anillo y solo les roba a su sucesor las claves del arco que ahora cubre; todas las demás siguen donde estaban. Mover, en promedio, <span class="math inline">\(1/N\)</span> de las claves en lugar de casi todas.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_04.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.4.</strong> El anillo de hashing consistente: nodos y claves se sitúan en un círculo por su hash, y cada clave la sirve el primer nodo en sentido horario. Al entrar el nodo D, solo cambian de dueño las claves del arco que va de su predecesor a él; el resto no se mueve.</figcaption>
+</figure>
+</div>
+<p>Una traza pequeña lo hace tangible (listado&nbsp;9.2). Con tres nodos en posiciones <span class="math inline">\(10\)</span>, <span class="math inline">\(50\)</span> y <span class="math inline">\(90\)</span> de un anillo de <span class="math inline">\(0\)</span> a <span class="math inline">\(99\)</span>, una clave en <span class="math inline">\(40\)</span> la sirve el nodo en <span class="math inline">\(50\)</span> —el primero a su derecha—; una en <span class="math inline">\(95\)</span> da la vuelta y la sirve el de <span class="math inline">\(10\)</span>. Al entrar un nodo en <span class="math inline">\(60\)</span>, solo las claves del arco <span class="math inline">\((50,60]\)</span> —antes del nodo en <span class="math inline">\(90\)</span>— cambian de dueño; las de <span class="math inline">\(40\)</span> y <span class="math inline">\(95\)</span> no se mueven. Esa es, en miniatura, la propiedad que la figura&nbsp;9.3 mide a gran escala.</p>
+<pre class="{#lst:trazaanillo}"><code>anillo: nodos en 10, 50, 90   (claves van al sucesor horario)
+  clave 40 -&gt; nodo 50      clave 95 -&gt; nodo 10 (da la vuelta)
+entra un nodo en 60:
+  clave 40 -&gt; nodo 50      (sin cambio)
+  clave 55 -&gt; nodo 60      (antes iba al 90: se mueve)
+  clave 95 -&gt; nodo 10      (sin cambio)</code></pre>
+<p><strong>Listado 9.2.</strong> Traza del anillo: a quien sirve cada clave, y que cambia al entrar un nodo en la posicion 60.</p>
+<p>El mecanismo cabe en unas pocas líneas (listado&nbsp;9.3): se guardan los puntos de los nodos ordenados por su posición en el anillo, y para encontrar el nodo de una clave se hace una búsqueda binaria del primer punto a su derecha, dando la vuelta si se llega al final. La misma búsqueda binaria sobre una lista ordenada que el B-árbol del capítulo&nbsp;3 usaba para localizar una fila, aquí localiza un nodo en el anillo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:anillo"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:anillo-1"><a href="#lst:anillo-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nodo(<span class="va">self</span>, clave):</span>
+<span id="lst:anillo-2"><a href="#lst:anillo-2" aria-hidden="true" tabindex="-1"></a>    pos <span class="op">=</span> h(clave)</span>
+<span id="lst:anillo-3"><a href="#lst:anillo-3" aria-hidden="true" tabindex="-1"></a>    lo, hi <span class="op">=</span> <span class="dv">0</span>, <span class="bu">len</span>(<span class="va">self</span>.puntos)</span>
+<span id="lst:anillo-4"><a href="#lst:anillo-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> lo <span class="op">&lt;</span> hi:                    <span class="co"># busqueda binaria del sucesor</span></span>
+<span id="lst:anillo-5"><a href="#lst:anillo-5" aria-hidden="true" tabindex="-1"></a>        mid <span class="op">=</span> (lo <span class="op">+</span> hi) <span class="op">//</span> <span class="dv">2</span></span>
+<span id="lst:anillo-6"><a href="#lst:anillo-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.puntos[mid][<span class="dv">0</span>] <span class="op">&lt;</span> pos:</span>
+<span id="lst:anillo-7"><a href="#lst:anillo-7" aria-hidden="true" tabindex="-1"></a>            lo <span class="op">=</span> mid <span class="op">+</span> <span class="dv">1</span></span>
+<span id="lst:anillo-8"><a href="#lst:anillo-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="lst:anillo-9"><a href="#lst:anillo-9" aria-hidden="true" tabindex="-1"></a>            hi <span class="op">=</span> mid</span>
+<span id="lst:anillo-10"><a href="#lst:anillo-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> lo <span class="op">==</span> <span class="bu">len</span>(<span class="va">self</span>.puntos):        <span class="co"># se da la vuelta al anillo</span></span>
+<span id="lst:anillo-11"><a href="#lst:anillo-11" aria-hidden="true" tabindex="-1"></a>        lo <span class="op">=</span> <span class="dv">0</span></span>
+<span id="lst:anillo-12"><a href="#lst:anillo-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">self</span>.puntos[lo][<span class="dv">1</span>]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.3.</strong> El nucleo del hashing consistente: el nodo de una clave es el primer punto del anillo a su derecha.</p>
+<p>La figura&nbsp;9.3 confirma la mejora: frente al casi 90 % del módulo, el anillo mueve solo el 14 % de las claves al pasar de ocho nodos a nueve, y la fracción <em>baja</em> con más nodos —al revés que el módulo—, hasta el 2,5 % con treinta y dos. Cuanto mayor es el clúster, más barato es crecer: justo la propiedad que la escala necesita.</p>
+<p>El anillo entero —con réplicas virtuales incluidas— cabe en una clase pequeña (listado&nbsp;9.4), y conviene verla completa porque es, casi sin cambios, el corazón de un Dynamo o un Cassandra. Construirla siembra <span class="math inline">\(V\)</span> puntos por nodo y los ordena; localizar una clave es la búsqueda binaria de antes. No hay más: el reparto de un almacén distribuido a escala planetaria es, en esencia, esta media página de Python.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:anilloclase"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:anilloclase-1"><a href="#lst:anilloclase-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Anillo:</span>
+<span id="lst:anilloclase-2"><a href="#lst:anilloclase-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, nodos, vnodos<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="lst:anilloclase-3"><a href="#lst:anilloclase-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.puntos <span class="op">=</span> []</span>
+<span id="lst:anilloclase-4"><a href="#lst:anilloclase-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> nodo <span class="kw">in</span> nodos:                  <span class="co"># cada nodo fisico...</span></span>
+<span id="lst:anilloclase-5"><a href="#lst:anilloclase-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> v <span class="kw">in</span> <span class="bu">range</span>(vnodos):         <span class="co"># ...siembra V puntos</span></span>
+<span id="lst:anilloclase-6"><a href="#lst:anilloclase-6" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>.puntos.append((h(<span class="ss">f"</span><span class="sc">{</span>nodo<span class="sc">}</span><span class="ss">#</span><span class="sc">{</span>v<span class="sc">}</span><span class="ss">"</span>), nodo))</span>
+<span id="lst:anilloclase-7"><a href="#lst:anilloclase-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.puntos.sort()                  <span class="co"># tabla ordenada de reparto</span></span>
+<span id="lst:anilloclase-8"><a href="#lst:anilloclase-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:anilloclase-9"><a href="#lst:anilloclase-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> nodo(<span class="va">self</span>, clave):</span>
+<span id="lst:anilloclase-10"><a href="#lst:anilloclase-10" aria-hidden="true" tabindex="-1"></a>        pos <span class="op">=</span> h(clave)</span>
+<span id="lst:anilloclase-11"><a href="#lst:anilloclase-11" aria-hidden="true" tabindex="-1"></a>        lo, hi <span class="op">=</span> <span class="dv">0</span>, <span class="bu">len</span>(<span class="va">self</span>.puntos)</span>
+<span id="lst:anilloclase-12"><a href="#lst:anilloclase-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> lo <span class="op">&lt;</span> hi:                      <span class="co"># sucesor por busqueda binaria</span></span>
+<span id="lst:anilloclase-13"><a href="#lst:anilloclase-13" aria-hidden="true" tabindex="-1"></a>            mid <span class="op">=</span> (lo <span class="op">+</span> hi) <span class="op">//</span> <span class="dv">2</span></span>
+<span id="lst:anilloclase-14"><a href="#lst:anilloclase-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="va">self</span>.puntos[mid][<span class="dv">0</span>] <span class="op">&lt;</span> pos:</span>
+<span id="lst:anilloclase-15"><a href="#lst:anilloclase-15" aria-hidden="true" tabindex="-1"></a>                lo <span class="op">=</span> mid <span class="op">+</span> <span class="dv">1</span></span>
+<span id="lst:anilloclase-16"><a href="#lst:anilloclase-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="lst:anilloclase-17"><a href="#lst:anilloclase-17" aria-hidden="true" tabindex="-1"></a>                hi <span class="op">=</span> mid</span>
+<span id="lst:anilloclase-18"><a href="#lst:anilloclase-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.puntos[lo <span class="op">%</span> <span class="bu">len</span>(<span class="va">self</span>.puntos)][<span class="dv">1</span>]  <span class="co"># da la vuelta</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.4.</strong> El anillo de hashing consistente completo, con replicas virtuales, en una clase.</p>
+</section>
+<section id="réplicas-virtuales-para-equilibrar" class="level2">
+<h2 class="anchored" data-anchor-id="réplicas-virtuales-para-equilibrar">Réplicas virtuales para equilibrar</h2>
+<p>El anillo desnudo tiene un defecto propio: con pocos nodos, el reparto es desigual, porque los arcos entre puntos consecutivos tienen tamaños muy distintos al azar, y un nodo con un arco grande recibe mucha más carga que otro con uno pequeño. La solución es dar a cada nodo físico <em>varias</em> posiciones en el anillo —<em>réplicas virtuales</em> o <em>vnodos</em>—, de modo que cada nodo cubra muchos arcos pequeños repartidos en lugar de uno grande (figura&nbsp;9.5). Cuantos más vnodos, más se promedian los arcos y más se iguala la carga.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_05.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.5.</strong> Réplicas virtuales: cada nodo físico se coloca en varios puntos del anillo, entremezclados, de modo que cubre muchos arcos pequeños repartidos. Así la carga se iguala aunque haya pocos nodos físicos.</figcaption>
+</figure>
+</div>
+<p>La práctica lo mide (figura&nbsp;9.6). Con un solo punto por nodo, el nodo más cargado recibe casi el triple de la media —un desbalance de 2,9—; con cincuenta réplicas virtuales por nodo baja a 1,16, y con doscientas, a 1,12: la carga queda casi perfectamente repartida. Esa es la razón de que los sistemas reales —Dynamo, Cassandra— usen del orden de cientos de vnodos por nodo: el coste es una tabla de puntos algo mayor, y la ganancia es un reparto equilibrado que ningún nodo convierte en cuello de botella.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_06.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.6.</strong> Desbalance de carga (carga del nodo más cargado dividida por la media) según las réplicas virtuales por nodo, con diez nodos. Más vnodos igualan la carga, que tiende al reparto perfecto. Datos de <code>src/cap09_distribucion.py</code>.</figcaption>
+</figure>
+</div>
+</section>
+<section id="replicación-y-quórum" class="level2">
+<h2 class="anchored" data-anchor-id="replicación-y-quórum">Replicación y quórum</h2>
+<p>Particionar reparte los datos, pero no los protege: si el nodo que guarda una partición cae, esa partición desaparece. Por eso, a la par que se particiona, se <em>replica</em>: cada dato se guarda en varios nodos a la vez. La replicación persigue tres fines distintos, y conviene no confundirlos. La <em>durabilidad</em>: que el dato sobreviva a la pérdida de un nodo, porque hay copias. La <em>disponibilidad</em>: que se pueda seguir leyendo y escribiendo aunque algún nodo esté caído, usando otra réplica. Y el <em>reparto de lecturas</em>: que muchas réplicas atiendan lecturas en paralelo, multiplicando la capacidad de lectura.</p>
+<section id="con-líder-y-sin-líder" class="level3">
+<h3 class="anchored" data-anchor-id="con-líder-y-sin-líder">Con líder y sin líder</h3>
+<p>Hay dos arquitecturas de replicación (figura&nbsp;9.7). En la replicación <em>con líder</em> (<em>leader-follower</em>), un nodo es el líder y recibe todas las escrituras, que propaga a los seguidores; las lecturas pueden ir a cualquiera. Da un orden de escritura claro y es fácil de razonar, pero el líder es un cuello de botella de escritura y un punto que, al caer, exige elegir uno nuevo. En la replicación <em>sin líder</em> (<em>leaderless</em>), la de Dynamo y Cassandra, cualquier réplica acepta escrituras, y la coherencia se gestiona por quórum —el <span class="math inline">\(R+W&gt;N\)</span> del capítulo&nbsp;7— con reconciliación de conflictos. Es más disponible y simétrica, al precio de los conflictos y la consistencia eventual que el capítulo&nbsp;7 estudió. La tabla&nbsp;9.2 contrapone los dos esquemas eje por eje.</p>
+<table class="caption-top table">
+<caption>Replicación con líder frente a sin líder. Cada esquema gana en un eje, y la elección sigue a la prioridad —orden claro o disponibilidad simétrica.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Eje</th>
+<th style="text-align: left;">Con líder</th>
+<th style="text-align: left;">Sin líder</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Escrituras</td>
+<td style="text-align: left;">solo al líder</td>
+<td style="text-align: left;">a cualquier réplica</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Orden</td>
+<td style="text-align: left;">claro (lo fija el líder)</td>
+<td style="text-align: left;">por quórum y versiones</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Punto de fallo</td>
+<td style="text-align: left;">el líder (hay que reelegir)</td>
+<td style="text-align: left;">ninguno (simétrico)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Conflictos</td>
+<td style="text-align: left;">raros</td>
+<td style="text-align: left;">posibles (reconciliar)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ejemplos</td>
+<td style="text-align: left;">PostgreSQL, MySQL</td>
+<td style="text-align: left;">Dynamo, Cassandra</td>
+</tr>
+</tbody>
+</table>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_07.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.7.</strong> Dos esquemas de replicación. Con líder, las escrituras van a un nodo que las propaga (orden claro, un punto de escritura); sin líder, cualquier réplica las acepta y se reconcilia por quórum (disponible, con los conflictos del capítulo&nbsp;7).</figcaption>
+</figure>
+</div>
+<p>El número de copias es el <em>factor de replicación</em> (RF). Sobre la coherencia entre ellas ya se dijo lo esencial en el capítulo&nbsp;7: la desigualdad <span class="math inline">\(R+W&gt;N\)</span> garantiza que lectura y escritura se solapan, y graduar <span class="math inline">\(R\)</span> y <span class="math inline">\(W\)</span> recorre el espectro entre consistencia fuerte y disponibilidad. Lo que aquí interesa medir es el otro efecto del RF, el que el capítulo&nbsp;7 no tocó: la durabilidad.</p>
+</section>
+<section id="cuánta-durabilidad-compra-cada-réplica" class="level3">
+<h3 class="anchored" data-anchor-id="cuánta-durabilidad-compra-cada-réplica">Cuánta durabilidad compra cada réplica</h3>
+<p>Una partición con RF réplicas se pierde solo si fallan <em>a la vez</em> sus RF nodos. Si cada nodo falla de forma independiente con probabilidad <span class="math inline">\(p\)</span>, la probabilidad de perder una partición dada cae aproximadamente como <span class="math inline">\(p^{RF}\)</span>: cada réplica añadida divide el riesgo por un factor. La práctica lo mide colocando muchas particiones, cada una con sus RF réplicas en nodos distintos al azar, y contando cuántas pierden todas sus copias bajo un fallo del 30 % de los nodos (figura&nbsp;9.8). El resultado es contundente: con una sola copia se pierde el 32 % de las particiones; con dos, el 9,6 %; con tres, el 2,3 %; con cinco, el 0,27 %. Por eso el factor de replicación tres es el ajuste por defecto de tantos sistemas: es el primero que lleva el riesgo a una fracción de un por ciento sin multiplicar en exceso el coste de almacenamiento.</p>
+<p>El núcleo de la medida es una sola línea (listado&nbsp;9.5): una partición se pierde si <em>todas</em> sus réplicas están entre los nodos caídos. La tabla&nbsp;9.3 pone los números uno al lado del otro, y se ve la caída geométrica —cada réplica divide el riesgo por un factor próximo a <span class="math inline">\(1/p\)</span>— junto a su coste, que crece solo de forma lineal: ese desajuste entre beneficio geométrico y coste lineal es lo que hace de replicar una ganga hasta cierto punto.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:nucleodur"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:nucleodur-1"><a href="#lst:nucleodur-1" aria-hidden="true" tabindex="-1"></a>replicas <span class="op">=</span> rng.sample(<span class="bu">range</span>(nodos), rf)        <span class="co"># RF nodos distintos</span></span>
+<span id="lst:nucleodur-2"><a href="#lst:nucleodur-2" aria-hidden="true" tabindex="-1"></a>perdida <span class="op">=</span> <span class="bu">all</span>(r <span class="kw">in</span> caidos <span class="cf">for</span> r <span class="kw">in</span> replicas)   <span class="co"># todas caidas?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.5.</strong> El nucleo de la durabilidad: se pierde la particion si caen sus RF replicas a la vez.</p>
+<table class="caption-top table">
+<caption>Probabilidad de perder una partición y coste de almacenamiento según el factor de replicación (fallo del 30 % de los nodos). El riesgo cae geométrico; el coste, lineal.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">RF</th>
+<th style="text-align: left;">Prob. de pérdida</th>
+<th style="text-align: left;">Coste de almacenamiento</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">32 %</td>
+<td style="text-align: left;"><span class="math inline">\(1\times\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">9,6 %</td>
+<td style="text-align: left;"><span class="math inline">\(2\times\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">2,3 %</td>
+<td style="text-align: left;"><span class="math inline">\(3\times\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">0,27 %</td>
+<td style="text-align: left;"><span class="math inline">\(5\times\)</span></td>
+</tr>
+</tbody>
+</table>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_08.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.8.</strong> Probabilidad de perder una partición según el factor de replicación, con un fallo independiente del 30 % de los nodos (eje <span class="math inline">\(y\)</span> logarítmico). Cada réplica añadida divide el riesgo: la durabilidad se compra en copias. Datos de <code>src/cap09_distribucion.py</code>.</figcaption>
+</figure>
+</div>
+<p><strong>Observación.</strong>&nbsp; Particionado y replicación se combinan, y su combinación es la del capítulo&nbsp;5 sobre la nube. Un sistema distribuido reparte cada dato en una partición (para que quepa y se equilibre) y guarda cada partición en RF nodos (para que sobreviva). En la nube, esa replicación se extiende a varias zonas de disponibilidad, de modo que la durabilidad ya no depende de un disco sino de un quórum de copias repartidas geográficamente —exactamente lo que el capítulo&nbsp;5 llamó «la base de datos es el registro» replicado—. El particionado y la replicación que aquí se miden son, así, la mecánica concreta detrás de la durabilidad-como-replicación de la nube.</p>
+<p>Esta conexión cierra un hilo que viene del capítulo&nbsp;1. Allí se presentó la jerarquía de almacenamiento —memoria rápida y volátil, disco lento y persistente— y se anunció que la nube le añadía un peldaño: el almacenamiento remoto y replicado, donde un dato dura no por vivir en un soporte fiable sino por vivir en muchas copias a la vez. Este capítulo ha mostrado la maquinaria de ese peldaño: el particionado que decide en qué nodos vive cada dato y la replicación que lo copia en varios. Cuando un servicio gestionado de la nube ofrece «durabilidad de once nueves», lo que hay debajo es exactamente esto —particionado por hash, replicación con factor tres o más, repartida entre zonas—, operado por el proveedor en lugar de por uno mismo. La nube no cambia la mecánica; la automatiza y la cobra.</p>
+</section>
+</section>
+<section id="map-reduce-y-procesamiento-distribuido" class="level2">
+<h2 class="anchored" data-anchor-id="map-reduce-y-procesamiento-distribuido">Map-Reduce y procesamiento distribuido</h2>
+<p>Queda la tercera pieza. Particionar y replicar resuelven <em>almacenar</em> a escala; falta <em>procesar</em> a escala: ¿cómo se computa algo —un recuento, una agregación, un índice— sobre datos repartidos en miles de nodos? Traerlos todos a una máquina para procesarlos anularía el propósito de haberlos repartido. La respuesta, que cambió la industria, es invertir el movimiento: <em>llevar el cómputo a los datos</em> en lugar de los datos al cómputo. Cada nodo procesa su parte localmente, y solo se mueve por la red el resultado, mucho más pequeño.</p>
+<section id="el-modelo-map-reduce" class="level3">
+<h3 class="anchored" data-anchor-id="el-modelo-map-reduce">El modelo Map-Reduce</h3>
+<p>Map-Reduce <span class="citation" data-cites="dean2004">(<a href="#ref-dean2004" role="doc-biblioref">Dean y Ghemawat 2004</a>)</span>, nacido en Google sobre su sistema de ficheros distribuido <span class="citation" data-cites="ghemawat2003">(<a href="#ref-ghemawat2003" role="doc-biblioref">Ghemawat et&nbsp;al. 2003</a>)</span>, formalizó ese principio en dos funciones que el programador escribe y un marco distribuye (figura&nbsp;9.9). La función <em>map</em> se aplica a cada trozo de la entrada, en el nodo donde ese trozo vive, y emite pares clave-valor. El <em>shuffle</em> agrupa todos los pares por clave y los reparte entre los nodos reductores. La función <em>reduce</em> recibe cada clave con todos sus valores y los agrega. El programador solo escribe map y reduce; el marco se encarga del reparto, el movimiento de datos y los fallos.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_09.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.9.</strong> El flujo Map-Reduce: cada <em>map</em> procesa un trozo de la entrada donde vive y emite pares; el <em>shuffle</em> los agrupa por clave; cada <em>reduce</em> agrega su grupo. El programador solo escribe map y reduce.</figcaption>
+</figure>
+</div>
+<p>El ejemplo canónico es el recuento de palabras, y en pequeño cabe entero, esta vez <em>repartido de verdad</em> entre <span class="math inline">\(W\)</span> trabajadores (listado&nbsp;9.6): el shuffle decide el reductor de cada clave por su hash —el mismo principio del particionado—, de modo que cada palabra cae siempre en el mismo reductor venga del map que venga. Esa función de reparto del shuffle es donde el sesgo de los datos se traduce en desequilibrio entre reductores, como se verá.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:mrreparto"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:mrreparto-1"><a href="#lst:mrreparto-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> map_reduce(textos, w):</span>
+<span id="lst:mrreparto-2"><a href="#lst:mrreparto-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># map: cada trozo emite pares (palabra, 1)</span></span>
+<span id="lst:mrreparto-3"><a href="#lst:mrreparto-3" aria-hidden="true" tabindex="-1"></a>    pares <span class="op">=</span> [(p, <span class="dv">1</span>) <span class="cf">for</span> trozo <span class="kw">in</span> textos <span class="cf">for</span> p <span class="kw">in</span> trozo]</span>
+<span id="lst:mrreparto-4"><a href="#lst:mrreparto-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># shuffle: repartir cada clave a su reductor por hash</span></span>
+<span id="lst:mrreparto-5"><a href="#lst:mrreparto-5" aria-hidden="true" tabindex="-1"></a>    cubos <span class="op">=</span> [<span class="bu">dict</span>() <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(w)]</span>
+<span id="lst:mrreparto-6"><a href="#lst:mrreparto-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> clave, uno <span class="kw">in</span> pares:</span>
+<span id="lst:mrreparto-7"><a href="#lst:mrreparto-7" aria-hidden="true" tabindex="-1"></a>        d <span class="op">=</span> cubos[h(clave) <span class="op">%</span> w]</span>
+<span id="lst:mrreparto-8"><a href="#lst:mrreparto-8" aria-hidden="true" tabindex="-1"></a>        d[clave] <span class="op">=</span> d.get(clave, <span class="dv">0</span>) <span class="op">+</span> uno</span>
+<span id="lst:mrreparto-9"><a href="#lst:mrreparto-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># reduce: cada reductor agrega lo suyo (en paralelo)</span></span>
+<span id="lst:mrreparto-10"><a href="#lst:mrreparto-10" aria-hidden="true" tabindex="-1"></a>    salida <span class="op">=</span> {}</span>
+<span id="lst:mrreparto-11"><a href="#lst:mrreparto-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> d <span class="kw">in</span> cubos:</span>
+<span id="lst:mrreparto-12"><a href="#lst:mrreparto-12" aria-hidden="true" tabindex="-1"></a>        salida.update(d)</span>
+<span id="lst:mrreparto-13"><a href="#lst:mrreparto-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> salida</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.6.</strong> Map-Reduce repartido entre W reductores: el shuffle asigna cada clave a un reductor por su hash.</p>
+<p>La versión secuencial mínima —sin reparto— deja ver el esqueleto desnudo (listado&nbsp;9.8): map emite un uno por cada palabra, el shuffle agrupa los unos por palabra, y reduce los suma. La misma estructura —map que extrae, shuffle que agrupa, reduce que agrega— sirve para contar visitas por página, sumar ventas por región o construir un índice invertido, y se ejecuta sobre datos repartidos sin que el programador piense en el reparto.</p>
+<p>Ejecutado sobre un texto real —doscientas mil palabras con frecuencias naturales, sesgadas—, el recuento devuelve lo esperable (listado&nbsp;9.7): unas pocas palabras acaparan la mayor parte de las apariciones, y la cola se alarga con miles de palabras raras. Esa distribución sesgada, la ley de Zipf que ya apareció con las cachés del capítulo&nbsp;8, no es un detalle del ejemplo: es la causa del problema de la sección siguiente.</p>
+<pre class="{#lst:wcsalida}"><code>palabras mas frecuentes:
+  palabra0000  24875
+  palabra0001  12156
+  palabra0002   8022
+  palabra0003   5925
+  palabra0004   4865
+  ...           ...      (cola larga de palabras raras)</code></pre>
+<p><strong>Listado 9.7.</strong> Salida real del recuento: unas pocas palabras acaparan las apariciones (distribucion sesgada, Zipf).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:wordcount"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:wordcount-1"><a href="#lst:wordcount-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> map_reduce_conteo(texto):</span>
+<span id="lst:wordcount-2"><a href="#lst:wordcount-2" aria-hidden="true" tabindex="-1"></a>    pares <span class="op">=</span> [(palabra, <span class="dv">1</span>) <span class="cf">for</span> palabra <span class="kw">in</span> texto]      <span class="co"># map</span></span>
+<span id="lst:wordcount-3"><a href="#lst:wordcount-3" aria-hidden="true" tabindex="-1"></a>    grupos <span class="op">=</span> {}</span>
+<span id="lst:wordcount-4"><a href="#lst:wordcount-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> clave, uno <span class="kw">in</span> pares:                          <span class="co"># shuffle</span></span>
+<span id="lst:wordcount-5"><a href="#lst:wordcount-5" aria-hidden="true" tabindex="-1"></a>        grupos.setdefault(clave, []).append(uno)</span>
+<span id="lst:wordcount-6"><a href="#lst:wordcount-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {c: <span class="bu">sum</span>(unos) <span class="cf">for</span> c, unos <span class="kw">in</span> grupos.items()}  <span class="co"># reduce</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.8.</strong> Recuento de palabras con Map-Reduce: map, shuffle y reduce, el esqueleto de todo trabajo distribuido por lotes.</p>
+</section>
+<section id="hasta-dónde-acelera-el-sesgo-y-el-rezagado" class="level3">
+<h3 class="anchored" data-anchor-id="hasta-dónde-acelera-el-sesgo-y-el-rezagado">Hasta dónde acelera: el sesgo y el rezagado</h3>
+<p>La promesa de Map-Reduce es que el trabajo se acelera al añadir trabajadores. Pero esa aceleración tiene un techo, y la práctica lo mide sobre un recuento de palabras real con frecuencias sesgadas (figura&nbsp;9.10). Con un reparto perfecto, el tiempo —el <em>makespan</em>, lo que tarda el último en terminar— caería como <span class="math inline">\(1/W\)</span> con <span class="math inline">\(W\)</span> trabajadores. Lo que se observa es que el reparto real se aleja del ideal y, peor, se <em>estanca</em>: por más trabajadores que se añadan, no se baja de cierto suelo. La causa es el <em>sesgo</em> de los datos: una palabra muchísimo más frecuente que las demás carga a su reductor por encima del resto, y como el makespan lo fija el reductor más cargado —el <em>rezagado</em>, el <em>straggler</em>—, ese reductor se convierte en el cuello de botella que ningún número de trabajadores adicionales alivia. Es la versión distribuida de la ley de Amdahl <span class="citation" data-cites="amdahl1967">(<a href="#ref-amdahl1967" role="doc-biblioref">Amdahl 1967</a>)</span>: la parte que no se puede repartir limita la aceleración total.</p>
+<p>El núcleo de la medida lo deja claro (listado&nbsp;9.9): el trabajo de cada reductor es la suma de las cuentas de las palabras que le tocan por hash, y el makespan es el máximo de esas sumas. Como una sola palabra —la más frecuente— ya pesa casi una décima parte del total, ningún reparto puede bajar el makespan por debajo de lo que tarda el reductor que la procesa: ese es el suelo de la figura&nbsp;9.10, y por eso el sesgado se estanca mientras el ideal sigue cayendo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:nucleomr"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:nucleomr-1"><a href="#lst:nucleomr-1" aria-hidden="true" tabindex="-1"></a>carga <span class="op">=</span> [<span class="dv">0</span>] <span class="op">*</span> w</span>
+<span id="lst:nucleomr-2"><a href="#lst:nucleomr-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> palabra, n <span class="kw">in</span> conteo.items():</span>
+<span id="lst:nucleomr-3"><a href="#lst:nucleomr-3" aria-hidden="true" tabindex="-1"></a>    carga[h(palabra) <span class="op">%</span> w] <span class="op">+=</span> n     <span class="co"># el reducer lo decide el hash</span></span>
+<span id="lst:nucleomr-4"><a href="#lst:nucleomr-4" aria-hidden="true" tabindex="-1"></a>makespan <span class="op">=</span> <span class="bu">max</span>(carga)              <span class="co"># lo fija el reductor mas cargado</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.9.</strong> El nucleo de la medida del makespan: el reductor mas cargado fija el tiempo; una clave enorme pone el suelo.</p>
+<p>Frente a este límite, los sistemas reales aplican remedios que confirman la regla: detectar la clave caliente y <em>partirla</em> en sub-claves que varios reductores procesan en paralelo (una agregación parcial previa), o lanzar <em>tareas especulativas</em> —copias del rezagado en otro nodo, por si el original va lento—. Ninguno elimina el sesgo; lo reparten o lo solapan, que es todo lo que se puede hacer cuando el dato no es uniforme.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap09/fig_10.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;9.10.</strong> Makespan de un recuento de palabras (fracción del total) según el número de trabajadores, en log-log. El ideal cae como <span class="math inline">\(1/W\)</span>; el reparto real, sesgado por la frecuencia de las palabras, se estanca en el suelo que impone el reductor más cargado. Datos de <code>src/cap09_distribucion.py</code>.</figcaption>
+</figure>
+</div>
+<p>El marco aporta, además, tolerancia a fallos casi gratis: como cada tarea map o reduce es una función pura sobre su trozo, si un nodo cae, su tarea simplemente se re-ejecuta en otro, sin afectar al resto. Esa combinación —mover el cómputo a los datos, expresar el trabajo como map y reduce, y re-ejecutar lo que falla— es la que permitió procesar la web en clústeres de máquinas corrientes. El marco original —el Map-Reduce de Google y su realización abierta, Hadoop— es hoy sobre todo un hito histórico: lo han desplazado sus sucesores —Spark <span class="citation" data-cites="zaharia2012">(<a href="#ref-zaharia2012" role="doc-biblioref">Zaharia et&nbsp;al. 2012</a>)</span> y los motores de flujo de datos, más en memoria y con grafos de tareas más ricos—, que refinan el modelo sin cambiar su esencia; el patrón de map, shuffle y reduce sigue latiendo bajo Spark, Flink y los motores de datos de la nube.</p>
+</section>
+</section>
+<section id="un-clúster-de-principio-a-fin" class="level2">
+<h2 class="anchored" data-anchor-id="un-clúster-de-principio-a-fin">Un clúster, de principio a fin</h2>
+<p>Las tres mecánicas no viven aisladas: se combinan en cada operación de un almacén distribuido real. Conviene verlas juntas, montando sobre las piezas anteriores un clúster de juguete y siguiendo una escritura, una lectura y un trabajo por lotes de principio a fin. El reparto se hace por hash, con réplicas virtuales para equilibrar y factor de replicación tres para durar; es, salvo detalles, el diseño de Dynamo o Cassandra.</p>
+<p>El primer paso es construir el anillo con sus vnodos (listado&nbsp;9.10): por cada nodo físico se siembran <span class="math inline">\(V\)</span> puntos en el anillo, etiquetados con el nombre del nodo, y se ordenan. Esa tabla ordenada es toda la estructura de reparto que el clúster necesita.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:construir"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:construir-1"><a href="#lst:construir-1" aria-hidden="true" tabindex="-1"></a>puntos <span class="op">=</span> []</span>
+<span id="lst:construir-2"><a href="#lst:construir-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> nodo <span class="kw">in</span> nodos:                       <span class="co"># cada nodo fisico...</span></span>
+<span id="lst:construir-3"><a href="#lst:construir-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> v <span class="kw">in</span> <span class="bu">range</span>(vnodos):              <span class="co"># ...siembra V puntos en el anillo</span></span>
+<span id="lst:construir-4"><a href="#lst:construir-4" aria-hidden="true" tabindex="-1"></a>        puntos.append((h(<span class="ss">f"</span><span class="sc">{</span>nodo<span class="sc">}</span><span class="ss">#</span><span class="sc">{</span>v<span class="sc">}</span><span class="ss">"</span>), nodo))</span>
+<span id="lst:construir-5"><a href="#lst:construir-5" aria-hidden="true" tabindex="-1"></a>puntos.sort()                            <span class="co"># tabla ordenada de reparto</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.10.</strong> Construir el anillo: V puntos por nodo fisico, ordenados.</p>
+<p>Elegir las réplicas es recorrer el anillo desde el punto de la clave, anotando nodos físicos <em>distintos</em> hasta tener RF (listado&nbsp;9.11); como un nodo aparece en varios puntos por los vnodos, hay que saltar los repetidos para no poner dos copias en el mismo nodo. Es el detalle que convierte el anillo de reparto en anillo de replicación.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:siguientes"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:siguientes-1"><a href="#lst:siguientes-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> siguientes_distintos(anillo, clave, rf):</span>
+<span id="lst:siguientes-2"><a href="#lst:siguientes-2" aria-hidden="true" tabindex="-1"></a>    pos <span class="op">=</span> h(clave)</span>
+<span id="lst:siguientes-3"><a href="#lst:siguientes-3" aria-hidden="true" tabindex="-1"></a>    i <span class="op">=</span> indice_sucesor(anillo.puntos, pos)   <span class="co"># primer punto a la derecha</span></span>
+<span id="lst:siguientes-4"><a href="#lst:siguientes-4" aria-hidden="true" tabindex="-1"></a>    elegidos <span class="op">=</span> []</span>
+<span id="lst:siguientes-5"><a href="#lst:siguientes-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="bu">len</span>(elegidos) <span class="op">&lt;</span> rf:</span>
+<span id="lst:siguientes-6"><a href="#lst:siguientes-6" aria-hidden="true" tabindex="-1"></a>        nodo <span class="op">=</span> anillo.puntos[i <span class="op">%</span> <span class="bu">len</span>(anillo.puntos)][<span class="dv">1</span>]</span>
+<span id="lst:siguientes-7"><a href="#lst:siguientes-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> nodo <span class="kw">not</span> <span class="kw">in</span> elegidos:             <span class="co"># saltar vnodos repetidos</span></span>
+<span id="lst:siguientes-8"><a href="#lst:siguientes-8" aria-hidden="true" tabindex="-1"></a>            elegidos.append(nodo)</span>
+<span id="lst:siguientes-9"><a href="#lst:siguientes-9" aria-hidden="true" tabindex="-1"></a>        i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="lst:siguientes-10"><a href="#lst:siguientes-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> elegidos</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.11.</strong> Seleccionar RF replicas en el anillo: los siguientes nodos fisicos distintos a partir de la clave.</p>
+<section id="escritura-lectura-y-trabajo-por-lotes" class="level3">
+<h3 class="anchored" data-anchor-id="escritura-lectura-y-trabajo-por-lotes">Escritura, lectura y trabajo por lotes</h3>
+<p>Una <em>escritura</em> localiza la clave en el anillo y, desde su nodo, recorre el anillo tomando los siguientes RF nodos físicos <em>distintos</em> como réplicas; confirma cuando <span class="math inline">\(W\)</span> de ellas responden (listado&nbsp;9.12). Es el particionado (encontrar el nodo) y la replicación (las RF copias) y el quórum (esperar <span class="math inline">\(W\)</span>) operando en una sola orden.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:escribir9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:escribir9-1"><a href="#lst:escribir9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> escribir(clave, valor, rf, w):</span>
+<span id="lst:escribir9-2"><a href="#lst:escribir9-2" aria-hidden="true" tabindex="-1"></a>    destinos <span class="op">=</span> siguientes_distintos(anillo, clave, rf)  <span class="co"># RF replicas</span></span>
+<span id="lst:escribir9-3"><a href="#lst:escribir9-3" aria-hidden="true" tabindex="-1"></a>    confirmadas <span class="op">=</span> <span class="dv">0</span></span>
+<span id="lst:escribir9-4"><a href="#lst:escribir9-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> nodo <span class="kw">in</span> destinos:</span>
+<span id="lst:escribir9-5"><a href="#lst:escribir9-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> nodo.guardar(clave, valor):</span>
+<span id="lst:escribir9-6"><a href="#lst:escribir9-6" aria-hidden="true" tabindex="-1"></a>            confirmadas <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="lst:escribir9-7"><a href="#lst:escribir9-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> confirmadas <span class="op">&gt;=</span> w              <span class="co"># quorum de escritura (cap. 7)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.12.</strong> Una escritura: localizar en el anillo, replicar en RF nodos distintos, confirmar W.</p>
+<p>Una <em>lectura</em> hace lo simétrico: consulta <span class="math inline">\(R\)</span> de las RF réplicas y, si <span class="math inline">\(R+W&gt;RF\)</span>, la respuesta más reciente entre ellas es la última escrita (listado&nbsp;9.13); de paso, repara las rezagadas, como en el capítulo&nbsp;7. Particionado, replicación y quórum, otra vez, en una sola operación.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:leer9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:leer9-1"><a href="#lst:leer9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> leer(clave, rf, r):</span>
+<span id="lst:leer9-2"><a href="#lst:leer9-2" aria-hidden="true" tabindex="-1"></a>    replicas <span class="op">=</span> siguientes_distintos(anillo, clave, rf)[:r]</span>
+<span id="lst:leer9-3"><a href="#lst:leer9-3" aria-hidden="true" tabindex="-1"></a>    respuestas <span class="op">=</span> [nodo.leer(clave) <span class="cf">for</span> nodo <span class="kw">in</span> replicas]</span>
+<span id="lst:leer9-4"><a href="#lst:leer9-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(respuestas, key<span class="op">=</span><span class="kw">lambda</span> x: x.version)   <span class="co"># la mas nueva</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.13.</strong> Una lectura por quorum: R replicas, la version mas reciente, con R+W&gt;RF.</p>
+<p>Y un <em>trabajo por lotes</em> sobre todo el clúster —reconstruir un índice, agregar métricas— se expresa como un Map-Reduce que corre en cada nodo sobre su partición local y junta los resultados parciales (listado&nbsp;9.14), sin mover los datos de sitio. Las tres mecánicas, así, no son temas separados sino las tres caras de cada operación distribuida: dónde vive el dato, cuántas copias tiene y cómo se computa sin moverlo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:lote9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:lote9-1"><a href="#lst:lote9-1" aria-hidden="true" tabindex="-1"></a>parciales <span class="op">=</span> [nodo.map_local(tarea) <span class="cf">for</span> nodo <span class="kw">in</span> nodos]  <span class="co"># cada uno, lo suyo</span></span>
+<span id="lst:lote9-2"><a href="#lst:lote9-2" aria-hidden="true" tabindex="-1"></a>resultado <span class="op">=</span> reduce_global(parciales)                    <span class="co"># juntar lo pequeno</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.14.</strong> Un trabajo por lotes: map local en cada nodo, reduce de los parciales, sin mover datos.</p>
+</section>
+<section id="coordinador-nodos-y-fallo" class="level3">
+<h3 class="anchored" data-anchor-id="coordinador-nodos-y-fallo">Coordinador, nodos y fallo</h3>
+<p>Todo ello cabe en un <em>coordinador</em> que reúne el anillo, la replicación y el quórum en una clase (listado&nbsp;9.15). Es el componente que un cliente ve: le pide guardar o leer una clave, y él se encarga de localizar las réplicas en el anillo, escribir en RF y esperar el quórum, o leer de R y devolver la más reciente. Las tres mecánicas del capítulo, encapsuladas en una interfaz tan simple como la de un diccionario.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:coordinador"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:coordinador-1"><a href="#lst:coordinador-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Coordinador:</span>
+<span id="lst:coordinador-2"><a href="#lst:coordinador-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, nodos, rf<span class="op">=</span><span class="dv">3</span>, w<span class="op">=</span><span class="dv">2</span>, r<span class="op">=</span><span class="dv">2</span>):</span>
+<span id="lst:coordinador-3"><a href="#lst:coordinador-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.anillo <span class="op">=</span> Anillo(nodos, vnodos<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="lst:coordinador-4"><a href="#lst:coordinador-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.rf, <span class="va">self</span>.w, <span class="va">self</span>.r <span class="op">=</span> rf, w, r</span>
+<span id="lst:coordinador-5"><a href="#lst:coordinador-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:coordinador-6"><a href="#lst:coordinador-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _replicas(<span class="va">self</span>, clave):</span>
+<span id="lst:coordinador-7"><a href="#lst:coordinador-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># los RF nodos fisicos distintos a partir del punto de la clave</span></span>
+<span id="lst:coordinador-8"><a href="#lst:coordinador-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> siguientes_distintos(<span class="va">self</span>.anillo, clave, <span class="va">self</span>.rf)</span>
+<span id="lst:coordinador-9"><a href="#lst:coordinador-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:coordinador-10"><a href="#lst:coordinador-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> guardar(<span class="va">self</span>, clave, valor, version):</span>
+<span id="lst:coordinador-11"><a href="#lst:coordinador-11" aria-hidden="true" tabindex="-1"></a>        ok <span class="op">=</span> <span class="dv">0</span></span>
+<span id="lst:coordinador-12"><a href="#lst:coordinador-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> nodo <span class="kw">in</span> <span class="va">self</span>._replicas(clave):</span>
+<span id="lst:coordinador-13"><a href="#lst:coordinador-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> nodo.vivo() <span class="kw">and</span> nodo.guardar(clave, valor, version):</span>
+<span id="lst:coordinador-14"><a href="#lst:coordinador-14" aria-hidden="true" tabindex="-1"></a>                ok <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="lst:coordinador-15"><a href="#lst:coordinador-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ok <span class="op">&gt;=</span> <span class="va">self</span>.w            <span class="co"># quorum de escritura</span></span>
+<span id="lst:coordinador-16"><a href="#lst:coordinador-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:coordinador-17"><a href="#lst:coordinador-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> leer(<span class="va">self</span>, clave):</span>
+<span id="lst:coordinador-18"><a href="#lst:coordinador-18" aria-hidden="true" tabindex="-1"></a>        vivos <span class="op">=</span> [n <span class="cf">for</span> n <span class="kw">in</span> <span class="va">self</span>._replicas(clave) <span class="cf">if</span> n.vivo()]</span>
+<span id="lst:coordinador-19"><a href="#lst:coordinador-19" aria-hidden="true" tabindex="-1"></a>        respuestas <span class="op">=</span> [n.leer(clave) <span class="cf">for</span> n <span class="kw">in</span> vivos[:<span class="va">self</span>.r]]</span>
+<span id="lst:coordinador-20"><a href="#lst:coordinador-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">max</span>(respuestas, key<span class="op">=</span><span class="kw">lambda</span> x: x.version)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.15.</strong> Un coordinador de cluster: anillo + replicacion + quorum tras una interfaz de diccionario.</p>
+<p>Al otro lado del coordinador están los <em>nodos</em>, cada uno un almacén local que guarda su parte y conoce su propio estado de salud (listado&nbsp;9.16). Un nodo no sabe nada del anillo ni de las réplicas: solo guarda, lee y dice si está vivo. Toda la inteligencia de la distribución vive en el coordinador; el nodo es deliberadamente tonto, y esa separación —listo arriba, simple abajo— es lo que permite añadir y quitar nodos sin cambiarlos.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:nodo"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:nodo-1"><a href="#lst:nodo-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Nodo:</span>
+<span id="lst:nodo-2"><a href="#lst:nodo-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, nombre):</span>
+<span id="lst:nodo-3"><a href="#lst:nodo-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.nombre <span class="op">=</span> nombre</span>
+<span id="lst:nodo-4"><a href="#lst:nodo-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.datos <span class="op">=</span> {}          <span class="co"># clave -&gt; (valor, version)</span></span>
+<span id="lst:nodo-5"><a href="#lst:nodo-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.caido <span class="op">=</span> <span class="va">False</span></span>
+<span id="lst:nodo-6"><a href="#lst:nodo-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:nodo-7"><a href="#lst:nodo-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> vivo(<span class="va">self</span>):</span>
+<span id="lst:nodo-8"><a href="#lst:nodo-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">not</span> <span class="va">self</span>.caido</span>
+<span id="lst:nodo-9"><a href="#lst:nodo-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:nodo-10"><a href="#lst:nodo-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> guardar(<span class="va">self</span>, clave, valor, version):</span>
+<span id="lst:nodo-11"><a href="#lst:nodo-11" aria-hidden="true" tabindex="-1"></a>        actual <span class="op">=</span> <span class="va">self</span>.datos.get(clave)</span>
+<span id="lst:nodo-12"><a href="#lst:nodo-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> actual <span class="kw">is</span> <span class="va">None</span> <span class="kw">or</span> version <span class="op">&gt;</span> actual[<span class="dv">1</span>]:</span>
+<span id="lst:nodo-13"><a href="#lst:nodo-13" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.datos[clave] <span class="op">=</span> (valor, version)   <span class="co"># gana la mas nueva</span></span>
+<span id="lst:nodo-14"><a href="#lst:nodo-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">True</span></span>
+<span id="lst:nodo-15"><a href="#lst:nodo-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:nodo-16"><a href="#lst:nodo-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> leer(<span class="va">self</span>, clave):</span>
+<span id="lst:nodo-17"><a href="#lst:nodo-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.datos.get(clave)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.16.</strong> Un nodo de almacenamiento: guarda su parte y conoce su salud; ignora el anillo y las replicas.</p>
+<p>Conviene seguir un <em>fallo</em> a través de esta clase, porque ahí se ve la replicación trabajar (listado&nbsp;9.17). Si una de las tres réplicas de una clave está caída, la escritura sigue confirmando mientras las otras dos alcancen el quórum <span class="math inline">\(W=2\)</span>, y la lectura sigue respondiendo desde las vivas; cuando la caída sane, el <em>hinted handoff</em> del capítulo&nbsp;7 le entregará lo que se perdió. La caída de un nodo, que sin replicación perdería sus datos, se convierte aquí en un suceso del que el clúster se recupera solo.</p>
+<pre class="{#lst:failover}"><code>replicas de "x": [n2, n5, n8]   ; cae n5
+  guardar("x"): n2 ok, n8 ok       -&gt; 2 &gt;= W: CONFIRMA
+  leer("x"):    n2, n8 responden   -&gt; devuelve la mas reciente
+n5 vuelve: hinted handoff le entrega las escrituras que se perdio</code></pre>
+<p><strong>Listado 9.17.</strong> Traza de un fallo con RF=3, W=2: el clúster sigue sirviendo y se repara al volver el nodo.</p>
+<p>Puestas las piezas, el clúster entero se ejercita en unas pocas líneas (listado&nbsp;9.18): se crean los nodos, se monta el coordinador, se escribe una clave, se tira un nodo, y se comprueba que la lectura sigue respondiendo. Es la segunda parte del libro condensada en un guion ejecutable: particionar por el anillo, replicar con factor tres, confirmar por quórum y sobrevivir a un fallo, todo tras una interfaz tan simple como la de un diccionario.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:demo9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:demo9-1"><a href="#lst:demo9-1" aria-hidden="true" tabindex="-1"></a>nodos <span class="op">=</span> [Nodo(<span class="ss">f"n</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">6</span>)]</span>
+<span id="lst:demo9-2"><a href="#lst:demo9-2" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> Coordinador(nodos, rf<span class="op">=</span><span class="dv">3</span>, w<span class="op">=</span><span class="dv">2</span>, r<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="lst:demo9-3"><a href="#lst:demo9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:demo9-4"><a href="#lst:demo9-4" aria-hidden="true" tabindex="-1"></a>c.guardar(<span class="st">"usuario:7"</span>, <span class="st">"Ada"</span>, version<span class="op">=</span><span class="dv">1</span>)     <span class="co"># replica en 3 nodos</span></span>
+<span id="lst:demo9-5"><a href="#lst:demo9-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(c.leer(<span class="st">"usuario:7"</span>))                    <span class="co"># -&gt; ("Ada", 1)</span></span>
+<span id="lst:demo9-6"><a href="#lst:demo9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:demo9-7"><a href="#lst:demo9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># cae uno de los nodos que guardan la clave</span></span>
+<span id="lst:demo9-8"><a href="#lst:demo9-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> c._replicas(<span class="st">"usuario:7"</span>):</span>
+<span id="lst:demo9-9"><a href="#lst:demo9-9" aria-hidden="true" tabindex="-1"></a>    n.caido <span class="op">=</span> <span class="va">True</span></span>
+<span id="lst:demo9-10"><a href="#lst:demo9-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span>                                     <span class="co"># tiramos solo el primero</span></span>
+<span id="lst:demo9-11"><a href="#lst:demo9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:demo9-12"><a href="#lst:demo9-12" aria-hidden="true" tabindex="-1"></a>c.guardar(<span class="st">"usuario:7"</span>, <span class="st">"Ada B."</span>, version<span class="op">=</span><span class="dv">2</span>)   <span class="co"># 2 vivos: alcanza W=2</span></span>
+<span id="lst:demo9-13"><a href="#lst:demo9-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(c.leer(<span class="st">"usuario:7"</span>))                    <span class="co"># -&gt; ("Ada B.", 2): sobrevive</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.18.</strong> El cluster en accion: escribir, tirar un nodo y comprobar que la lectura sobrevive.</p>
+<p>Que este guion funcione pese a la caída —que la escritura confirme y la lectura devuelva el valor nuevo con un nodo menos— es, en miniatura, la promesa de la distribución cumplida: el sistema es más fiable que cualquiera de sus piezas. Y es también el resumen operativo de la segunda parte: relajadas las garantías justas (capítulos 6 y 7), elegida la familia adecuada (capítulo&nbsp;8) y montada la mecánica de reparto y réplica (este), se obtiene un almacén que escala y tolera fallos, al precio en complejidad que la sección anterior detalló.</p>
+</section>
+</section>
+<section id="práctica-la-distribución-medida" class="level2">
+<h2 class="anchored" data-anchor-id="práctica-la-distribución-medida">Práctica: la distribución, medida</h2>
+<p>Las cuatro gráficas anteriores salen de un mismo módulo, <code>src/cap09_distribucion.py</code> —Python puro, sin servicio ni GPU, según la tabla de recursos—, que implementa las cuatro mecánicas en memoria y las cronometra (listado&nbsp;9.19). No reproduce un clúster real —para eso están los servicios de <code>infra/</code>—, sino que aísla, en cada mecánica desnuda, la propiedad que importa: cuántas claves se mueven, cómo se equilibra la carga, cuánto baja el riesgo, hasta dónde acelera el reparto.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:driver9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:driver9-1"><a href="#lst:driver9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main():</span>
+<span id="lst:driver9-2"><a href="#lst:driver9-2" aria-hidden="true" tabindex="-1"></a>    anunciar()               <span class="co"># recursos: python puro, cpu, sin gpu</span></span>
+<span id="lst:driver9-3"><a href="#lst:driver9-3" aria-hidden="true" tabindex="-1"></a>    simular_movimiento()     <span class="co"># modulo vs anillo  -&gt; cap09_movimiento.dat</span></span>
+<span id="lst:driver9-4"><a href="#lst:driver9-4" aria-hidden="true" tabindex="-1"></a>    simular_hotspot()        <span class="co"># rango vs hash     -&gt; cap09_hotspot.dat</span></span>
+<span id="lst:driver9-5"><a href="#lst:driver9-5" aria-hidden="true" tabindex="-1"></a>    simular_balance()        <span class="co"># vnodos -&gt; balance -&gt; cap09_balance.dat</span></span>
+<span id="lst:driver9-6"><a href="#lst:driver9-6" aria-hidden="true" tabindex="-1"></a>    simular_durabilidad()    <span class="co"># RF vs perdida     -&gt; cap09_durabilidad.dat</span></span>
+<span id="lst:driver9-7"><a href="#lst:driver9-7" aria-hidden="true" tabindex="-1"></a>    simular_mapreduce()      <span class="co"># makespan vs W     -&gt; cap09_mapreduce.dat</span></span>
+<span id="lst:driver9-8"><a href="#lst:driver9-8" aria-hidden="true" tabindex="-1"></a>    demostracion(<span class="dv">15</span>)         <span class="co"># 15 claves y su nodo en el anillo</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.19.</strong> El motor del experimento: las cuatro mecanicas de la distribucion, con semilla fija para reproducir las curvas.</p>
+<p>El corazón de la medida del movimiento es directo (listado&nbsp;9.20): se asignan las mismas claves con <span class="math inline">\(N\)</span> y con <span class="math inline">\(N+1\)</span> nodos, y se cuenta cuántas cambian de dueño, con cada esquema. La diferencia entre el módulo y el anillo no es de constantes, sino de cuánto del conjunto se reorganiza: casi todo frente a una fracción.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:nucleomov"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:nucleomov-1"><a href="#lst:nucleomov-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modulo: cambia si el resto cambia al cambiar el divisor</span></span>
+<span id="lst:nucleomov-2"><a href="#lst:nucleomov-2" aria-hidden="true" tabindex="-1"></a>mov_mod <span class="op">=</span> <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> c <span class="kw">in</span> claves <span class="cf">if</span> h(c) <span class="op">%</span> n <span class="op">!=</span> h(c) <span class="op">%</span> (n <span class="op">+</span> <span class="dv">1</span>))</span>
+<span id="lst:nucleomov-3"><a href="#lst:nucleomov-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:nucleomov-4"><a href="#lst:nucleomov-4" aria-hidden="true" tabindex="-1"></a><span class="co"># anillo: cambia si su nodo asignado es otro tras anadir uno</span></span>
+<span id="lst:nucleomov-5"><a href="#lst:nucleomov-5" aria-hidden="true" tabindex="-1"></a>mov_ani <span class="op">=</span> <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> c <span class="kw">in</span> claves <span class="cf">if</span> a1.nodo(c) <span class="op">!=</span> a2.nodo(c))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.20.</strong> El nucleo de la medida del movimiento: que claves cambian de nodo al pasar de N a N+1.</p>
+<p>Las cinco medidas, leídas juntas, componen el cuadro del coste de distribuir (tabla&nbsp;9.4). Cada una pone número a una decisión: cómo repartir para crecer barato y equilibrado, cuántas copias para durar, y hasta dónde paralelizar. Ninguna cifra es absoluta —son maquetas en memoria—, pero la <em>forma</em> de cada una —el acantilado, la saturación, la caída geométrica— es propiedad del mecanismo, no de la máquina, y es esa forma la que guía el diseño.</p>
+<table class="caption-top table">
+<caption>Las cinco mecánicas medidas y lo que cada una cuantifica. Juntas, el coste de distribuir en cifras.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Medida</th>
+<th style="text-align: left;">Qué compara</th>
+<th style="text-align: left;">Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Movimiento</td>
+<td style="text-align: left;">módulo vs anillo</td>
+<td style="text-align: left;">el anillo mueve <span class="math inline">\(\sim 1/N\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hotspot</td>
+<td style="text-align: left;">rango vs hash</td>
+<td style="text-align: left;">el hash evita el punto caliente</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Balance</td>
+<td style="text-align: left;">vnodos</td>
+<td style="text-align: left;">cientos igualan la carga</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Durabilidad</td>
+<td style="text-align: left;">factor RF</td>
+<td style="text-align: left;">el riesgo cae como <span class="math inline">\(p^{RF}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Map-Reduce</td>
+<td style="text-align: left;">ideal vs sesgo</td>
+<td style="text-align: left;">el rezagado pone un suelo</td>
+</tr>
+</tbody>
+</table>
+<p>Los núcleos de las otras medidas son igual de escuetos (listado&nbsp;9.21): el balance cuenta la carga por nodo y la divide por la media; el hotspot hace lo mismo para los dos repartos. En todos, lo medido es una propiedad del reparto, no una astucia de programación.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:nucleos9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:nucleos9-1"><a href="#lst:nucleos9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># balance: carga del nodo mas cargado / media ideal</span></span>
+<span id="lst:nucleos9-2"><a href="#lst:nucleos9-2" aria-hidden="true" tabindex="-1"></a>desbalance <span class="op">=</span> <span class="bu">max</span>(carga.values()) <span class="op">/</span> (k <span class="op">/</span> nodos)</span>
+<span id="lst:nucleos9-3"><a href="#lst:nucleos9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:nucleos9-4"><a href="#lst:nucleos9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># hotspot: lo mismo, para reparto por rango y por hash</span></span>
+<span id="lst:nucleos9-5"><a href="#lst:nucleos9-5" aria-hidden="true" tabindex="-1"></a>des_rango <span class="op">=</span> <span class="bu">max</span>(carga_rango) <span class="op">/</span> media</span>
+<span id="lst:nucleos9-6"><a href="#lst:nucleos9-6" aria-hidden="true" tabindex="-1"></a>des_hash  <span class="op">=</span> <span class="bu">max</span>(carga_hash)  <span class="op">/</span> media</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 9.21.</strong> Nucleos de las medidas de balance y de hotspot: contar carga y compararla con la media.</p>
+<section id="la-demostración-quince-claves-y-su-nodo" class="level3">
+<h3 class="anchored" data-anchor-id="la-demostración-quince-claves-y-su-nodo">La demostración: quince claves y su nodo</h3>
+<p>Fiel a la convención, el módulo muestra quince claves al azar y el nodo del anillo que les toca (listado&nbsp;9.22). La muestra hace visible el reparto: claves consecutivas caen en nodos distintos, sin patrón aparente, que es justo lo que un buen particionado por hash busca —repartir sin que el orden de las claves concentre la carga.</p>
+<pre class="{#lst:artefacto9}"><code>clave          nodo
+  -------------  ----
+  clave-599159   n5
+  clave-34167    n2
+  clave-449722   n2
+  clave-506002   n4
+  ...            ...</code></pre>
+<p><strong>Listado 9.22.</strong> Quince claves al azar y el nodo que les asigna el anillo (muestra): el reparto dispersa sin patron.</p>
+</section>
+<section id="lo-que-la-práctica-no-decide" class="level3">
+<h3 class="anchored" data-anchor-id="lo-que-la-práctica-no-decide">Lo que la práctica no decide</h3>
+<p>Reunidas, las cinco medidas se traducen en un puñado de decisiones de diseño que todo clúster ha de tomar, y para las que el capítulo da ya un criterio:</p>
+<dl>
+<dt>Cómo repartir.</dt>
+<dd>
+<p>Por hash, salvo que las consultas por rango dominen; el hash evita los puntos calientes que las claves sesgadas crean por rango (figura&nbsp;9.2).</p>
+</dd>
+<dt>Hashing consistente.</dt>
+<dd>
+<p>Siempre, frente al módulo: crecer mueve <span class="math inline">\(\sim 1/N\)</span> de las claves en lugar de casi todas (figura&nbsp;9.3).</p>
+</dd>
+<dt>Cuántas réplicas virtuales.</dt>
+<dd>
+<p>Del orden de cientos por nodo, que bastan para equilibrar la carga (figura&nbsp;9.6) a cambio de una tabla algo mayor.</p>
+</dd>
+<dt>Qué factor de replicación.</dt>
+<dd>
+<p>Tres por defecto: lleva el riesgo por debajo del por ciento (figura&nbsp;9.8) sin disparar el almacenamiento.</p>
+</dd>
+<dt>Cuántos trabajadores.</dt>
+<dd>
+<p>Los que el reparto permita aprovechar; más allá del suelo que el sesgo impone, añadir trabajadores no acelera (figura&nbsp;9.10).</p>
+</dd>
+</dl>
+<p>Pero las maquetas miden la <em>forma</em> de cada mecánica —la fracción que se mueve, cómo se equilibra la carga, cómo cae el riesgo, dónde se estanca la aceleración—, no el rendimiento absoluto de un clúster real, que depende de la red, los discos y la implementación. Tampoco capturan los problemas más espinosos de la distribución real, que son operativos: detectar qué nodo ha caído de verdad —y no solo está lento o incomunicado—, coordinar la entrada y salida de nodos sin servir datos a medio mover, o reequilibrar sin saturar la red. Esos problemas, que el capítulo&nbsp;7 rozó con el teorema CAP, son la complejidad que la escala cobra, y ninguna fórmula los elimina: se gestionan con ingeniería y operación cuidadosas. La herramienta cuantifica los compromisos de diseño; la operación de un sistema distribuido vivo es otra disciplina, que empieza donde la medida acaba.</p>
+</section>
+</section>
+<section id="el-precio-operativo-de-la-escala" class="level2">
+<h2 class="anchored" data-anchor-id="el-precio-operativo-de-la-escala">El precio operativo de la escala</h2>
+<p>Las mecánicas medidas son la parte limpia, la que cabe en fórmulas y curvas. Pero distribuir cobra un precio que ninguna gráfica captura y que conviene nombrar antes de cerrar la parte: la <em>complejidad operativa</em>. Un sistema de un nodo está vivo o muerto, y se sabe cuál; un sistema de mil nodos vive en un limbo permanente donde, en todo momento, alguno está lento, otro incomunicado y otro a medio reincorporarse, y distinguir esos estados es, en sí, un problema difícil. Estos son los frentes que la escala abre y que la teoría de este capítulo deja fuera:</p>
+<dl>
+<dt>Detección de fallos.</dt>
+<dd>
+<p>Decidir si un nodo ha caído o solo va lento es indecidible en general: una red puede retrasar un mensaje tanto como lo retrasaría un nodo muerto. Los sistemas usan latidos y tiempos de espera, y se equivocan en ambos sentidos —dar por muerto a un vivo, o esperar a un muerto—, con consecuencias que el teorema CAP del capítulo&nbsp;7 ya anticipaba.</p>
+</dd>
+<dt>Pertenencia al clúster.</dt>
+<dd>
+<p>Saber qué nodos forman el clúster ahora mismo —y propagar las altas y bajas sin que dos partes discrepen— exige protocolos de pertenencia, a menudo por <em>gossip</em>, que difunden los cambios como un rumor hasta que todos coinciden.</p>
+</dd>
+<dt>Reequilibrado.</dt>
+<dd>
+<p>Cuando entra o sale un nodo, hay que mover datos —los pocos que el anillo decide— sin saturar la red ni servir, durante el traslado, datos a medio mover. Hacerlo en caliente, mientras el clúster atiende tráfico, es un arte.</p>
+</dd>
+<dt>Contrapresión y puntos calientes.</dt>
+<dd>
+<p>Un nodo sobrecargado —por un punto caliente que el reparto no previó, o por una clave viral— ha de poder frenar a quien le envía trabajo sin derrumbar el sistema entero, y detectarse para repartir su carga.</p>
+</dd>
+<dt>Observabilidad.</dt>
+<dd>
+<p>Con mil nodos, entender qué está pasando —dónde está la latencia, qué réplica va rezagada, qué partición está caliente— exige instrumentar y agregar métricas de todo el clúster, que es a su vez un problema distribuido.</p>
+</dd>
+</dl>
+<p>Ninguno de estos frentes tiene una solución cerrada en una fórmula; se gestionan con ingeniería, herramientas y oficio, y son la razón de que operar un sistema distribuido sea una disciplina propia. La escala, en suma, no se paga solo en consistencia (capítulo&nbsp;7) o en código de reparto (este): se paga, sobre todo, en la complejidad de mantener vivo y coherente un organismo de muchas piezas que fallan por separado. Tenerlo presente es lo que separa el diseño sobre el papel de la operación real, y es la nota con la que conviene cerrar el estrato NoSQL.</p>
+</section>
+<section id="síntesis-y-puente-a-la-tercera-parte" class="level2">
+<h2 class="anchored" data-anchor-id="síntesis-y-puente-a-la-tercera-parte">Síntesis y puente a la tercera parte</h2>
+<p>Este capítulo ha desmontado la maquinaria de la distribución en sus piezas y las ha medido. El particionado reparte los datos, y el hashing consistente con réplicas virtuales lo hace de modo que crecer el clúster mueva pocas claves y la carga quede equilibrada —frente al reparto por módulo, que reorganiza casi todo—. La replicación guarda cada partición en varios nodos, y cada réplica añadida divide el riesgo de pérdida, lo que explica el factor tres tan común. Y Map-Reduce procesa lo repartido llevando el cómputo a los datos, con una aceleración real que el sesgo y el rezagado limitan. Las cuatro mecánicas, juntas, son lo que convierte la promesa de escala de las familias NoSQL en un sistema que de verdad funciona sobre muchas máquinas.</p>
+<p>Con esto se cierra la segunda parte, y conviene mirar atrás para ver hasta dónde se ha llegado. La primera parte construyó el dato estructurado y sus garantías sobre un nodo; la segunda las relajó para ganar escala —el esquema flexible, la consistencia eventual, las familias especializadas, la mecánica distribuida—. Pero en todo ese recorrido, de Codd a Map-Reduce, una cosa no ha cambiado: la consulta ha sido siempre por <em>coincidencia</em>. Buscar ha significado encontrar lo que es <em>igual a</em> un valor —la fila con este identificador, la clave con este nombre, la palabra con esta cadena exacta—. Toda la potencia de los índices, las particiones y los quórumes se ha puesto al servicio de localizar, deprisa y a escala, una coincidencia exacta.</p>
+<p>Ahí está el límite que la tercera parte rompe. Hay preguntas que la coincidencia exacta no sabe responder: «documentos <em>parecidos</em> a este», «imágenes <em>como</em> esta», «la respuesta más <em>relevante</em> a esta pregunta». No piden lo que es igual, sino lo que está <em>cerca</em>, y para ellas el <em>igual a</em> no sirve: hace falta una noción de <em>semejanza</em>, una forma de medir cuánto se parecen dos cosas y de encontrar las más próximas. Ese es el giro que da título al libro, y la tercera parte lo aborda desde su raíz: cómo se representa el significado de un dato de modo que la cercanía entre representaciones capture la semejanza entre datos. El <em>igual a</em>, que ha gobernado las dos primeras partes, cede el paso al <em>cercano a</em>.</p>
+</section>
+<section id="ejercicios-propuestos" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="ejercicios-propuestos">Ejercicios propuestos</h2>
+</section>
+<section id="lecturas-recomendadas" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecturas-recomendadas">Lecturas recomendadas</h2>
+<ul>
+<li><p><span class="citation" data-cites="karger1997">Karger et&nbsp;al. (<a href="#ref-karger1997" role="doc-biblioref">1997</a>)</span>: el artículo que introdujo el hashing consistente, base del reparto de todos los almacenes distribuidos modernos.</p></li>
+<li><p><span class="citation" data-cites="dynamo2007"><span class="nocase">DeCandia et&nbsp;al.</span> (<a href="#ref-dynamo2007" role="doc-biblioref">2007</a>)</span>: el diseño de Dynamo, que llevó a la práctica el hashing consistente con réplicas virtuales y la replicación sin líder por quórum.</p></li>
+<li><p><span class="citation" data-cites="dean2004">Dean y Ghemawat (<a href="#ref-dean2004" role="doc-biblioref">2004</a>)</span>: el artículo de Map-Reduce, que popularizó el procesamiento distribuido por lotes sobre clústeres de máquinas corrientes.</p></li>
+<li><p><span class="citation" data-cites="ghemawat2003">Ghemawat et&nbsp;al. (<a href="#ref-ghemawat2003" role="doc-biblioref">2003</a>)</span>: el sistema de ficheros distribuido de Google sobre el que Map-Reduce se apoya; el almacenamiento que hace posible el cómputo.</p></li>
+<li><p><span class="citation" data-cites="kleppmann">Kleppmann (<a href="#ref-kleppmann" role="doc-biblioref">2017</a>)</span>: el tratamiento unificado y moderno del particionado, la replicación y el procesamiento distribuido, con el detalle operativo que aquí se esboza.</p></li>
+</ul>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referencias</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-amdahl1967" class="csl-entry" role="listitem">
+Amdahl, Gene M. 1967. <span>«Validity of the Single Processor Approach to Achieving Large Scale Computing Capabilities»</span>. <em>AFIPS Spring Joint Computer Conference</em>, 483-85.
+</div>
+<div id="ref-dean2004" class="csl-entry" role="listitem">
+Dean, Jeffrey, y Sanjay Ghemawat. 2004. <span>«<span>MapReduce</span>: Simplified Data Processing on Large Clusters»</span>. <em>USENIX Symposium on Operating Systems Design and Implementation (OSDI)</em>.
+</div>
+<div id="ref-dynamo2007" class="csl-entry" role="listitem">
+<span class="nocase">DeCandia, Giuseppe, Deniz Hastorun, Madan Jampani, et&nbsp;al.</span> 2007. <span>«Dynamo: Amazon’s Highly Available Key-Value Store»</span>. <em>ACM Symposium on Operating Systems Principles (SOSP)</em>.
+</div>
+<div id="ref-ghemawat2003" class="csl-entry" role="listitem">
+Ghemawat, Sanjay, Howard Gobioff, y Shun-Tak Leung. 2003. <span>«The Google File System»</span>. <em>ACM Symposium on Operating Systems Principles (SOSP)</em>.
+</div>
+<div id="ref-karger1997" class="csl-entry" role="listitem">
+Karger, David, Eric Lehman, Tom Leighton, Rina Panigrahy, Matthew Levine, y Daniel Lewin. 1997. <span>«Consistent Hashing and Random Trees: Distributed Caching Protocols for Relieving Hot Spots on the World Wide Web»</span>. <em>ACM Symposium on Theory of Computing (STOC)</em>.
+</div>
+<div id="ref-kleppmann" class="csl-entry" role="listitem">
+Kleppmann, Martin. 2017. <em>Designing Data-Intensive Applications</em>. O’Reilly.
+</div>
+<div id="ref-zaharia2012" class="csl-entry" role="listitem">
+Zaharia, Matei, Mosharaf Chowdhury, Tathagata Das, et&nbsp;al. 2012. <span>«Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing»</span>. <em>USENIX Symposium on Networked Systems Design and Implementation (NSDI)</em>, 15-28.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cap08.html" class="pagination-link" aria-label="Capítulo 8. Las familias NoSQL">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Capítulo 8. Las familias NoSQL</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./cap10.html" class="pagination-link" aria-label="Capítulo 10. Recuperación de información clásica">
+        <span class="nav-page-text">Capítulo 10. Recuperación de información clásica</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 Manuel Muñoz Plá · Edición web bajo licencia <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es">CC BY-NC-ND 4.0</a> (uso académico con atribución; sin uso comercial ni obras derivadas) · El código va aparte bajo licencia MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

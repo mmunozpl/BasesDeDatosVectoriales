@@ -1,0 +1,6 @@
+# latencia de un alta: anadir al final vs insertar ordenado (ms)
+n  anadir  insertar
+1000  0.0001  0.00069
+10000  0.0001  0.0026
+100000  0.0001  0.01912
+1000000  0.0001  0.20107

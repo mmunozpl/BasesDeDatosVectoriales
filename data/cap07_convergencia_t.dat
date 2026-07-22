@@ -1,0 +1,12 @@
+# fraccion de replicas convergidas por ronda de gossip (50 replicas)
+ronda  convergida
+0  0.02
+1  0.0395
+2  0.0772
+3  0.1466
+4  0.2636
+5  0.4349
+6  0.6356
+7  0.8079
+8  0.9157
+9  0.9667

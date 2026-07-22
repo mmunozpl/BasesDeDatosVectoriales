@@ -1,0 +1,9 @@
+# |coseno| medio entre vectores aleatorios segun dimension
+dim  coseno_abs
+2  0.6348
+5  0.3665
+10  0.2574
+50  0.1123
+100  0.0798
+500  0.0358
+1000  0.0251

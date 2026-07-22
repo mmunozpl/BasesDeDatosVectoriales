@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Capítulo 14. Anatomía de una base de datos vectorial – Bases de datos</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cap15.html" rel="next">
+<link href="./cap13.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-654c8d80848ee01bf5d57418afe456c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cap14.html">Capítulo 14. Anatomía de una base de datos vectorial</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Bases de datos</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Alternar modo lector">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 1. La persistencia y la disciplina de gestión de datos</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 2. El modelo relacional</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 3. SQL: del DML declarativo a las extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 4. Diseño y normalización</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 5. Transacciones, concurrencia y recuperación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 6. Límites del relacional y el movimiento NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 7. Consistencia distribuida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 8. Las familias NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 9. Mecánica de la distribución</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 10. Recuperación de información clásica</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 11. De la representación dispersa a la densa</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 12. Deep learning para embeddings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 13. Geometría del espacio métrico</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap14.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Capítulo 14. Anatomía de una base de datos vectorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 15. Índices de vecino aproximado</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 16. Motores: dedicados frente a extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 17. Consulta híbrida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 18. Evaluación y operación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 19. Recuperación aumentada y memoria de agentes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 20. El futuro híbrido</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 21. Caso de estudio integral</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#almacenamiento-del-vector-y-los-metadatos" id="toc-almacenamiento-del-vector-y-los-metadatos" class="nav-link active" data-scroll-target="#almacenamiento-del-vector-y-los-metadatos">Almacenamiento del vector y los metadatos</a>
+  <ul class="collapse">
+  <li><a href="#cuantización-comprar-memoria-con-un-poco-de-error" id="toc-cuantización-comprar-memoria-con-un-poco-de-error" class="nav-link" data-scroll-target="#cuantización-comprar-memoria-con-un-poco-de-error">Cuantización: comprar memoria con un poco de error</a></li>
+  <li><a href="#persistencia-y-disposición-en-disco" id="toc-persistencia-y-disposición-en-disco" class="nav-link" data-scroll-target="#persistencia-y-disposición-en-disco">Persistencia y disposición en disco</a></li>
+  </ul></li>
+  <li><a href="#ingesta-y-vectorización" id="toc-ingesta-y-vectorización" class="nav-link" data-scroll-target="#ingesta-y-vectorización">Ingesta y vectorización</a></li>
+  <li><a href="#el-índice-como-estructura-central" id="toc-el-índice-como-estructura-central" class="nav-link" data-scroll-target="#el-índice-como-estructura-central">El índice como estructura central</a>
+  <ul class="collapse">
+  <li><a href="#la-búsqueda-exacta-y-por-qué-no-escala" id="toc-la-búsqueda-exacta-y-por-qué-no-escala" class="nav-link" data-scroll-target="#la-búsqueda-exacta-y-por-qué-no-escala">La búsqueda exacta y por qué no escala</a></li>
+  <li><a href="#consulta-con-filtro-prefiltrar-o-posfiltrar" id="toc-consulta-con-filtro-prefiltrar-o-posfiltrar" class="nav-link" data-scroll-target="#consulta-con-filtro-prefiltrar-o-posfiltrar">Consulta con filtro: prefiltrar o posfiltrar</a></li>
+  </ul></li>
+  <li><a href="#el-caso-multivector-maxsim-y-compresión-tipo-plaid" id="toc-el-caso-multivector-maxsim-y-compresión-tipo-plaid" class="nav-link" data-scroll-target="#el-caso-multivector-maxsim-y-compresión-tipo-plaid">El caso multivector: MaxSim y compresión tipo PLAID</a></li>
+  <li><a href="#el-ciclo-de-vida-del-dato-actualizar-borrar-reindexar" id="toc-el-ciclo-de-vida-del-dato-actualizar-borrar-reindexar" class="nav-link" data-scroll-target="#el-ciclo-de-vida-del-dato-actualizar-borrar-reindexar">El ciclo de vida del dato: actualizar, borrar, reindexar</a></li>
+  <li><a href="#la-interfaz-de-una-base-vectorial" id="toc-la-interfaz-de-una-base-vectorial" class="nav-link" data-scroll-target="#la-interfaz-de-una-base-vectorial">La interfaz de una base vectorial</a>
+  <ul class="collapse">
+  <li><a href="#el-vector-como-columna-sql-vectorial" id="toc-el-vector-como-columna-sql-vectorial" class="nav-link" data-scroll-target="#el-vector-como-columna-sql-vectorial">El vector como columna: SQL vectorial</a></li>
+  </ul></li>
+  <li><a href="#práctica-un-mini-almacén-vectorial" id="toc-práctica-un-mini-almacén-vectorial" class="nav-link" data-scroll-target="#práctica-un-mini-almacén-vectorial">Práctica: un mini almacén vectorial</a>
+  <ul class="collapse">
+  <li><a href="#cómo-está-organizado-el-módulo" id="toc-cómo-está-organizado-el-módulo" class="nav-link" data-scroll-target="#cómo-está-organizado-el-módulo">Cómo está organizado el módulo</a></li>
+  <li><a href="#la-demostración-y-lo-que-la-práctica-enseña" id="toc-la-demostración-y-lo-que-la-práctica-enseña" class="nav-link" data-scroll-target="#la-demostración-y-lo-que-la-práctica-enseña">La demostración y lo que la práctica enseña</a></li>
+  </ul></li>
+  <li><a href="#errores-comunes-al-montar-una-base-vectorial" id="toc-errores-comunes-al-montar-una-base-vectorial" class="nav-link" data-scroll-target="#errores-comunes-al-montar-una-base-vectorial">Errores comunes al montar una base vectorial</a></li>
+  <li><a href="#dimensionar-una-colección-un-cálculo-de-servilleta" id="toc-dimensionar-una-colección-un-cálculo-de-servilleta" class="nav-link" data-scroll-target="#dimensionar-una-colección-un-cálculo-de-servilleta">Dimensionar una colección: un cálculo de servilleta</a></li>
+  <li><a href="#casos-de-diseño-tres-bases-vectoriales" id="toc-casos-de-diseño-tres-bases-vectoriales" class="nav-link" data-scroll-target="#casos-de-diseño-tres-bases-vectoriales">Casos de diseño: tres bases vectoriales</a>
+  <ul class="collapse">
+  <li><a href="#una-búsqueda-interna-en-una-empresa-pequeña" id="toc-una-búsqueda-interna-en-una-empresa-pequeña" class="nav-link" data-scroll-target="#una-búsqueda-interna-en-una-empresa-pequeña">Una búsqueda interna en una empresa pequeña</a></li>
+  <li><a href="#un-buscador-semántico-a-gran-escala" id="toc-un-buscador-semántico-a-gran-escala" class="nav-link" data-scroll-target="#un-buscador-semántico-a-gran-escala">Un buscador semántico a gran escala</a></li>
+  <li><a href="#un-rag-de-alta-precisión" id="toc-un-rag-de-alta-precisión" class="nav-link" data-scroll-target="#un-rag-de-alta-precisión">Un RAG de alta precisión</a></li>
+  </ul></li>
+  <li><a href="#nota-histórica-la-emergencia-de-las-bases-vectoriales" id="toc-nota-histórica-la-emergencia-de-las-bases-vectoriales" class="nav-link" data-scroll-target="#nota-histórica-la-emergencia-de-las-bases-vectoriales">Nota histórica: la emergencia de las bases vectoriales</a></li>
+  <li><a href="#la-base-vectorial-en-perspectiva" id="toc-la-base-vectorial-en-perspectiva" class="nav-link" data-scroll-target="#la-base-vectorial-en-perspectiva">La base vectorial en perspectiva</a>
+  <ul class="collapse">
+  <li><a href="#relacional-frente-a-vectorial-parte-por-parte" id="toc-relacional-frente-a-vectorial-parte-por-parte" class="nav-link" data-scroll-target="#relacional-frente-a-vectorial-parte-por-parte">Relacional frente a vectorial, parte por parte</a></li>
+  <li><a href="#la-base-vectorial-dentro-del-sistema" id="toc-la-base-vectorial-dentro-del-sistema" class="nav-link" data-scroll-target="#la-base-vectorial-dentro-del-sistema">La base vectorial dentro del sistema</a></li>
+  <li><a href="#mitos-y-realidades" id="toc-mitos-y-realidades" class="nav-link" data-scroll-target="#mitos-y-realidades">Mitos y realidades</a></li>
+  </ul></li>
+  <li><a href="#síntesis-y-puente-al-capítulo-15" id="toc-síntesis-y-puente-al-capítulo-15" class="nav-link" data-scroll-target="#síntesis-y-puente-al-capítulo-15">Síntesis y puente al capítulo 15</a></li>
+  <li><a href="#ejercicios-propuestos" id="toc-ejercicios-propuestos" class="nav-link" data-scroll-target="#ejercicios-propuestos">Ejercicios propuestos</a></li>
+  <li><a href="#lecturas-recomendadas" id="toc-lecturas-recomendadas" class="nav-link" data-scroll-target="#lecturas-recomendadas">Lecturas recomendadas</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Capítulo 14. Anatomía de una base de datos vectorial</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Las tres partes anteriores han construido, ladrillo a ladrillo, todo lo necesario para entender qué es un vector y cómo se compara con otro. La primera fijó la disciplina del dato estructurado y la persistencia; la segunda relajó el esquema y aprendió a distribuir; la tercera pasó de la coincidencia exacta a la similitud, representó el significado como un vector denso y estudió la geometría del espacio donde esos vectores viven. Con eso, el lector tiene en la mano las dos piezas que definen la búsqueda por similitud: el <em>vector</em> —producido por un codificador— y la <em>distancia</em> —que mide el parecido—. Lo que falta es el sistema que las pone a trabajar a escala: una <em>base de datos vectorial</em>.</p>
+<p>Esta cuarta parte es, por fin, la ingeniería. No introduce conceptos nuevos sobre qué es el parecido —eso quedó cerrado en el capítulo&nbsp;13— sino que construye la maquinaria que almacena millones de vectores y encuentra los más próximos a una consulta en milisegundos. Empieza, en este capítulo, por la <em>anatomía</em>: de qué partes está hecha una base de datos vectorial, qué hace cada una y cómo encajan. La mejor forma de diseccionar algo es construir uno pequeño y mirar por dentro, y eso es justo lo que hace la práctica: un mini almacén vectorial completo, escrito desde cero en numpy, con sus vectores, sus metadatos, su ingesta y su búsqueda. Sobre ese esqueleto se entiende después cualquier motor real —pgvector, Qdrant, Milvus—, que no es sino la misma anatomía con mucha más ingeniería encima <span class="citation" data-cites="pan2024">(<a href="#ref-pan2024" role="doc-biblioref">Pan et&nbsp;al. 2024</a>)</span>.</p>
+<p>Conviene fijar desde el principio una idea que el capítulo entero desarrollará: una base de datos vectorial no inventa nada radicalmente nuevo, sino que <em>integra</em> dos mundos que el lector ya conoce. Del lado de la base de datos hereda todo lo de las tres primeras partes —persistir, indexar, consultar, distribuir, dar garantías—; del lado de lo vectorial, la representación densa del capítulo&nbsp;11, el codificador del capítulo&nbsp;12 y la geometría del capítulo&nbsp;13. La novedad no está en las piezas, sino en su unión: un sistema donde el tipo de dato central es el vector y la operación central es «encontrar lo más parecido». Por eso este capítulo no necesita conceptos nuevos, solo ensamblar con cuidado los que ya están.</p>
+<p>Cuatro son las partes que este capítulo recorre, siguiendo el esqueleto del sistema. Primero, el <em>almacenamiento</em>: cómo se guardan el vector y sus metadatos, cuánta memoria cuestan y cómo la cuantización la reduce. Segundo, la <em>ingesta</em>: cómo entran los datos, cómo se vectorizan y qué conviene precomputar al insertarlos. Tercero, y central, el <em>índice</em>: la estructura que permite encontrar los vecinos sin comparar contra todos —aquí, en su forma más simple, la búsqueda exacta, cuyo coste medido explica por qué el capítulo siguiente necesita índices aproximados—. Y cuarto, el caso <em>multivector</em>: qué cambia cuando cada documento no es un vector sino muchos. Todo, como siempre, medido: la huella en memoria, la latencia de la búsqueda, el coste del filtrado, el error de la cuantización y el precio del multivector salen de un módulo que se ejecuta en una CPU normal y produce datos reales.</p>
+<section id="almacenamiento-del-vector-y-los-metadatos" class="level2">
+<h2 class="anchored" data-anchor-id="almacenamiento-del-vector-y-los-metadatos">Almacenamiento del vector y los metadatos</h2>
+<p>En el corazón de toda base de datos vectorial hay una estructura sorprendentemente simple: una gran matriz de números en coma flotante, una fila por vector, una columna por dimensión. Si hay un millón de documentos codificados en vectores de 768 dimensiones, el dato esencial es una matriz de un millón por 768. A esa matriz se le adjunta, en paralelo, la información que la acompaña —los <em>metadatos</em>: el identificador del documento, su tema, su fecha, su autor— y una estructura de acceso —el <em>índice</em>— que evita recorrer la matriz entera en cada consulta. Esas tres piezas —vectores, metadatos, índice— forman la <em>colección</em>, la unidad básica con la que se trabaja (figura&nbsp;14.1).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap14/fig_01.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;14.1.</strong> La anatomía de una colección vectorial: la matriz de vectores (el dato), los metadatos paralelos (el contexto) y el índice (la estructura de acceso). La consulta entra por el índice, que localiza los vectores candidatos; los metadatos permiten filtrar.</figcaption>
+</figure>
+</div>
+<p>Los <em>metadatos</em> merecen una palabra propia, porque son la pieza que conecta la búsqueda por similitud con el mundo estructurado de las tres primeras partes. Cada vector lleva adjunta una colección de campos —identificador, tema, fecha, autor, permisos, precio, lo que el dominio pida— que en la jerga de los motores vectoriales suele llamarse <em>payload</em>. Esos campos cumplen dos funciones. La primera es <em>devolver contexto</em>: el resultado de una búsqueda no es un vector —que al usuario no le dice nada— sino el documento que representa, recuperado a través de su identificador. La segunda, más interesante, es <em>filtrar</em>: restringir la búsqueda a los vectores cuyos metadatos cumplen una condición, lo que exige que los metadatos estén, a su vez, indexados —con los índices clásicos del capítulo&nbsp;2—. Una base vectorial es, por eso, también una pequeña base de datos relacional para sus metadatos, y su eficacia en la consulta híbrida depende tanto del índice vectorial como del índice de metadatos.</p>
+<p>La separación entre el vector y sus metadatos no es casual. El vector es un objeto numérico denso y homogéneo, idóneo para el cálculo masivo —multiplicaciones de matrices, que las CPU y GPU devoran—; los metadatos son heterogéneos, dispersos y de tipos variados, idóneos para el filtrado relacional clásico. Una base vectorial bien diseñada los guarda de formas distintas porque sirven a operaciones distintas, y los une solo cuando hace falta. Es, en el fondo, la misma separación entre el dato y su contexto que recorre todo el libro, ahora con el dato convertido en un punto de un espacio de cientos de dimensiones.</p>
+<p>La primera consecuencia práctica de que el dato sea una gran matriz de números es que ocupa, y mucho. Un vector de 768 dimensiones en coma flotante de simple precisión (<code>float32</code>, cuatro bytes por número) pesa algo más de tres kilobytes; parece poco, pero multiplicado por millones se dispara. La práctica lo calcula sin rodeos (figura&nbsp;14.2): un millón de esos vectores ocupa unos 3 gigabytes, y diez millones, más de 30. Y eso es solo el dato en bruto, sin contar el índice ni los metadatos. La memoria —no el cómputo— es a menudo el primer límite que encuentra una base vectorial al crecer.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap14/fig_02.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;14.2.</strong> Huella en memoria de <span class="math inline">\(N\)</span> vectores de dimensión 768 según el tipo numérico (log-log). De <code>float32</code> (4 bytes) a <code>int8</code> (1 byte) la memoria se divide por cuatro: la cuantización es la palanca central del almacenamiento a gran escala. Datos de <code>src/cap14_anatomia.py</code>.</figcaption>
+</figure>
+</div>
+<p>De ahí que el <em>tipo numérico</em> con que se guardan los vectores sea una decisión de primer orden. Bajar de <code>float32</code> a media precisión (<code>float16</code>, dos bytes) reduce la memoria a la mitad casi sin pérdida; bajar a enteros de un byte (<code>int8</code>) la reduce a la cuarta parte. Esa reducción —comprar memoria a cambio de un poco de precisión— se llama <em>cuantización</em>, y es tan central que merece su propia sección.</p>
+<section id="cuantización-comprar-memoria-con-un-poco-de-error" class="level3">
+<h3 class="anchored" data-anchor-id="cuantización-comprar-memoria-con-un-poco-de-error">Cuantización: comprar memoria con un poco de error</h3>
+<p>Cuantizar un vector es representar cada una de sus componentes con menos bits. La forma más común, la <em>cuantización escalar a <code>int8</code></em>, reparte el rango de valores de cada vector en 256 niveles enteros, guardando un único factor de escala por vector para poder reconstruir los valores aproximados (figura&nbsp;14.3). Cada número pasa de cuatro bytes a uno, y la matriz entera adelgaza a la cuarta parte. La pregunta es cuánto se degrada la búsqueda al hacerlo, y la respuesta, medida, es tranquilizadora.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap14/fig_03.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;14.3.</strong> Cuantización escalar a <code>int8</code>: el rango continuo de cada componente (<code>float32</code>, 4 bytes) se reparte en 256 niveles enteros (<code>int8</code>, 1 byte) con un factor de escala por vector. La cuarta parte de memoria a cambio de un error mínimo.</figcaption>
+</figure>
+</div>
+<p>La práctica cuantiza una colección a <code>int8</code>, reconstruye los vectores y compara la búsqueda contra la original (tabla&nbsp;14.1). El error relativo medio que introduce la cuantización es de apenas un 0,7 %, y —lo que de verdad importa— el <em>recall@10</em> —la fracción de los diez verdaderos vecinos que la versión cuantizada recupera— se mantiene en torno al 95 %. Es decir: con la cuarta parte de memoria se recuperan, casi siempre, los mismos resultados. No es magia, sino la manifestación práctica de la robustez geométrica del capítulo&nbsp;13: si los datos tienen estructura y los vecinos están claramente más cerca que el resto, un pequeño ruido de cuantización no altera el orden de los primeros puestos.</p>
+<table class="caption-top table">
+<caption>Cuantización a <code>int8</code> frente a <code>float32</code>: memoria relativa y recall@10. Con la cuarta parte de memoria se conserva el 95 % de los vecinos verdaderos. Datos de <code>src/cap14_anatomia.py</code>.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tipo</th>
+<th style="text-align: center;">Bits/comp.</th>
+<th style="text-align: center;">Memoria relativa</th>
+<th style="text-align: center;">recall@10</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>float32</code></td>
+<td style="text-align: center;">32</td>
+<td style="text-align: center;"><span class="math inline">\(1{,}00\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1{,}00\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>int8</code></td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;"><span class="math inline">\(0{,}25\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0{,}95\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>El listado&nbsp;14.1 muestra la operación completa: hallar el factor de escala por vector —el mayor valor absoluto dividido por 127—, dividir, redondear a entero y, para buscar, reconstruir los valores aproximados multiplicando de nuevo por la escala. La cuantización avanzada —la <em>cuantización de producto</em> (PQ), que descompone el vector en trozos y los codifica con un diccionario <span class="citation" data-cites="jegou2011">(<a href="#ref-jegou2011" role="doc-biblioref">Jégou et&nbsp;al. 2011</a>)</span>— llega mucho más lejos en compresión, y se verá en el capítulo&nbsp;15; la escalar a <code>int8</code> es su versión más simple y ya enseña la idea.</p>
+<p>En el extremo de la compresión está la <em>cuantización binaria</em>: representar cada componente con un solo bit —su signo—, de modo que un vector de 768 dimensiones pasa de 3 kilobytes a apenas 96 bytes, una reducción de 32 a 1. La distancia entre vectores binarios se calcula entonces con la distancia de Hamming del capítulo&nbsp;13 —contar bits distintos—, una operación que el procesador ejecuta a una velocidad asombrosa. El precio es una pérdida de precisión mayor que con <code>int8</code>, que se compensa con una estrategia en dos etapas: usar los vectores binarios para un primer cribado rapidísimo de candidatos y reordenar después los finalistas con los vectores originales o cuantizados a <code>int8</code>. Es la misma idea de dos etapas —cribado barato seguido de reordenación cara— que reaparecerá en la recuperación del capítulo&nbsp;17; la geometría del capítulo&nbsp;13, una vez más, es la que dice por qué un cribado tan agresivo todavía conserva los vecinos de verdad.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:cuantizar"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:cuantizar-1"><a href="#lst:cuantizar-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cuantizar_int8(vecs):</span>
+<span id="lst:cuantizar-2"><a href="#lst:cuantizar-2" aria-hidden="true" tabindex="-1"></a>    escala <span class="op">=</span> np.<span class="bu">abs</span>(vecs).<span class="bu">max</span>(axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>) <span class="op">/</span> <span class="fl">127.0</span></span>
+<span id="lst:cuantizar-3"><a href="#lst:cuantizar-3" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> np.<span class="bu">round</span>(vecs <span class="op">/</span> (escala <span class="op">+</span> <span class="fl">1e-12</span>)).astype(np.int8)</span>
+<span id="lst:cuantizar-4"><a href="#lst:cuantizar-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> q, escala            <span class="co"># un byte por componente</span></span>
+<span id="lst:cuantizar-5"><a href="#lst:cuantizar-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:cuantizar-6"><a href="#lst:cuantizar-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> reconstruir(q, escala):</span>
+<span id="lst:cuantizar-7"><a href="#lst:cuantizar-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> q.astype(np.float32) <span class="op">*</span> escala   <span class="co"># valores aproximados</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.1.</strong> Cuantizacion escalar a int8: un factor de escala por vector, redondeo a entero y reconstruccion aproximada para buscar.</p>
+</section>
+<section id="persistencia-y-disposición-en-disco" class="level3">
+<h3 class="anchored" data-anchor-id="persistencia-y-disposición-en-disco">Persistencia y disposición en disco</h3>
+<p>Al final, la colección tiene que vivir en algún sitio cuando el proceso se apaga, y aquí reaparece toda la disciplina de persistencia de la primera parte. Los vectores se escriben a disco como un bloque binario contiguo —una operación tan simple como volcar la matriz— y los metadatos, en una estructura que permita filtrarlos, a menudo una tabla relacional o un fichero columnar. La clave del rendimiento es la <em>disposición</em> (<em>layout</em>): guardar los vectores de forma contigua y alineada permite leerlos en bloques grandes y aprovechar la caché del procesador, mientras que dispersarlos obliga a saltos costosos. Es el mismo principio que regía los índices B-tree del capítulo&nbsp;2 —la localidad manda— trasladado a un dato mil veces más voluminoso. Un motor real añade aquí <em>memory mapping</em> para trabajar con colecciones mayores que la memoria, compresión en disco y particionado, pero el gesto esencial —escribir la matriz como un bloque— es el del listado&nbsp;14.2.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:persistir"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:persistir-1"><a href="#lst:persistir-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> guardar(<span class="va">self</span>, ruta):</span>
+<span id="lst:persistir-2"><a href="#lst:persistir-2" aria-hidden="true" tabindex="-1"></a>    np.save(ruta, <span class="va">self</span>.vectores)   <span class="co"># bloque binario contiguo</span></span>
+<span id="lst:persistir-3"><a href="#lst:persistir-3" aria-hidden="true" tabindex="-1"></a><span class="co"># los metadatos van aparte: tabla relacional o fichero columnar</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.2.</strong> Persistencia minima: la matriz de vectores a disco como un unico bloque binario contiguo; los metadatos, aparte, en forma consultable.</p>
+</section>
+</section>
+<section id="ingesta-y-vectorización" class="level2">
+<h2 class="anchored" data-anchor-id="ingesta-y-vectorización">Ingesta y vectorización</h2>
+<p>Antes de poder buscar, hay que <em>meter</em> los datos, y ese proceso —la <em>ingesta</em>— tiene su propia anatomía. Cada documento recorre un pequeño oleoducto: se codifica en un vector con el modelo del capítulo&nbsp;12, se le adjuntan sus metadatos y se inserta en la colección (figura&nbsp;14.4). El paso caro es la <em>vectorización</em> —pasar el texto por el codificador—, que suele hacerse fuera de la base, en lotes, con GPU; la base recibe ya los vectores listos. Esta separación entre quien produce los vectores (el codificador) y quien los almacena y busca (la base vectorial) es una decisión de arquitectura constante, y la razón de que muchas bases vectoriales no incluyan el modelo: esperan recibir embeddings.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap14/fig_04.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;14.4.</strong> El flujo de ingesta: cada documento se codifica en un vector, se le adjuntan sus metadatos y se inserta en la colección. El paso caro —la vectorización— suele hacerse en lotes y fuera de la base.</figcaption>
+</figure>
+</div>
+<p>Insertar los vectores de uno en uno es lento: cada inserción individual paga el coste fijo de actualizar las estructuras. Por eso la ingesta se hace <em>por lotes</em>: se acumulan muchos vectores y se insertan de golpe, amortizando ese coste. En el mini almacén, agregar un lote es apilar su matriz sobre la existente y extender la lista de metadatos (listado&nbsp;14.3). Un motor real hace mucho más —construye o actualiza el índice, replica, registra en un <em>write-ahead log</em> como el del capítulo&nbsp;5— pero la operación lógica es esa: añadir filas a la gran matriz.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:ingesta"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:ingesta-1"><a href="#lst:ingesta-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> agregar(<span class="va">self</span>, vecs, metas):</span>
+<span id="lst:ingesta-2"><a href="#lst:ingesta-2" aria-hidden="true" tabindex="-1"></a>    vecs <span class="op">=</span> vecs.astype(np.float32)</span>
+<span id="lst:ingesta-3"><a href="#lst:ingesta-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>.vectores <span class="op">=</span> np.vstack([<span class="va">self</span>.vectores, vecs])</span>
+<span id="lst:ingesta-4"><a href="#lst:ingesta-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>.metadatos.extend(metas)</span>
+<span id="lst:ingesta-5"><a href="#lst:ingesta-5" aria-hidden="true" tabindex="-1"></a>    normas <span class="op">=</span> np.linalg.norm(vecs, axis<span class="op">=</span><span class="dv">1</span>)        <span class="co"># se precomputa</span></span>
+<span id="lst:ingesta-6"><a href="#lst:ingesta-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>.normas <span class="op">=</span> np.concatenate([<span class="va">self</span>.normas, normas])</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.3.</strong> Ingesta por lotes en el mini almacen: apilar la matriz del lote y extender los metadatos; el coste fijo se amortiza sobre muchos vectores.</p>
+<p>Hay una optimización pequeña y reveladora escondida en ese listado: al ingestar, se calcula y se guarda la <em>norma</em> de cada vector. El motivo viene directo del capítulo&nbsp;13. La similitud coseno —la métrica más usada— divide el producto escalar por las normas de los dos vectores; si la norma de cada vector almacenado se ha precalculado en la ingesta, cada consulta posterior se ahorra recalcularla, y son millones de consultas contra los mismos vectores. Mejor aún: muchas bases <em>normalizan</em> los vectores en la ingesta —los llevan a la esfera unidad de una vez— de modo que la búsqueda por coseno se reduce a un simple producto escalar, la operación que el hardware ejecuta más rápido. Es la lección del capítulo&nbsp;13 hecha ingeniería: como sobre vectores normalizados el coseno es un producto escalar y la euclídea ordena igual, normalizar una vez al ingestar abarata todas las búsquedas. El trabajo se hace una vez, al entrar, no en cada consulta.</p>
+</section>
+<section id="el-índice-como-estructura-central" class="level2">
+<h2 class="anchored" data-anchor-id="el-índice-como-estructura-central">El índice como estructura central</h2>
+<p>Si el almacenamiento es el esqueleto y la ingesta el aparato digestivo, el <em>índice</em> es el corazón: la estructura que decide cómo se encuentran los vecinos. Y la forma más simple de índice —tan simple que apenas merece el nombre— es no tener ninguno: comparar la consulta con todos los vectores, uno a uno, y quedarse con los más parecidos. Es la <em>búsqueda exacta</em> o por fuerza bruta, y conviene empezar por ella porque es correcta, trivial y la referencia contra la que se mide todo lo demás.</p>
+<section id="la-búsqueda-exacta-y-por-qué-no-escala" class="level3">
+<h3 class="anchored" data-anchor-id="la-búsqueda-exacta-y-por-qué-no-escala">La búsqueda exacta y por qué no escala</h3>
+<p>En el mini almacén, buscar es una sola expresión vectorizada: multiplicar la matriz de vectores por la consulta da, de un golpe, la similitud con todos; ordenar y tomar los <span class="math inline">\(k\)</span> mayores da los vecinos (listado&nbsp;14.4). Gracias a la norma precomputada, el coseno es casi un producto escalar. El resultado es <em>exacto</em>: encuentra, con certeza, los <span class="math inline">\(k\)</span> verdaderos vecinos más próximos, sin aproximación alguna. Para colecciones de hasta unos cientos de miles de vectores, en una máquina normal, esta búsqueda exacta es perfectamente viable y muchas veces la elección correcta: simple, sin parámetros que ajustar y sin error.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:buscar"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:buscar-1"><a href="#lst:buscar-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> buscar(<span class="va">self</span>, consulta, k<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="lst:buscar-2"><a href="#lst:buscar-2" aria-hidden="true" tabindex="-1"></a>    sim <span class="op">=</span> <span class="va">self</span>.vectores <span class="op">@</span> consulta               <span class="co"># similitud con todos</span></span>
+<span id="lst:buscar-3"><a href="#lst:buscar-3" aria-hidden="true" tabindex="-1"></a>    sim <span class="op">=</span> sim <span class="op">/</span> (<span class="va">self</span>.normas <span class="op">*</span> norm(consulta) <span class="op">+</span> <span class="fl">1e-12</span>)   <span class="co"># coseno</span></span>
+<span id="lst:buscar-4"><a href="#lst:buscar-4" aria-hidden="true" tabindex="-1"></a>    orden <span class="op">=</span> np.argsort(<span class="op">-</span>sim)[:k]                  <span class="co"># los k mayores</span></span>
+<span id="lst:buscar-5"><a href="#lst:buscar-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [(<span class="bu">int</span>(j), <span class="bu">float</span>(sim[j])) <span class="cf">for</span> j <span class="kw">in</span> orden]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.4.</strong> Busqueda exacta de los k vecinos: un producto matriz-vector da todas las similitudes, ordenar y tomar los k mayores da el resultado.</p>
+<p>El problema de la fuerza bruta es el tamaño. Su coste es proporcional al número de vectores por la dimensión —<span class="math inline">\(O(N\cdot d)\)</span>—, así que crece linealmente con la colección, y la práctica lo mide sin piedad (figura&nbsp;14.5): con mil vectores, una consulta tarda una fracción de milisegundo; con un millón, decenas de milisegundos. Y aunque decenas de milisegundos por consulta parezcan poco, a escala de un servicio real —miles de consultas por segundo, cada una contra la colección entera— es inviable: el coste por consulta se multiplica por el número de consultas y por el número de réplicas, y la factura, en cómputo y en tiempo de respuesta, se dispara.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap14/fig_05.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;14.5.</strong> Latencia por consulta de la búsqueda exacta según el tamaño de la colección (log-log). Crece linealmente con <span class="math inline">\(N\)</span> —es <span class="math inline">\(O(N\cdot d)\)</span>—: de una fracción de milisegundo con mil vectores a decenas de milisegundos con un millón. La fuerza bruta es exacta pero no escala. Datos de <code>src/cap14_anatomia.py</code>.</figcaption>
+</figure>
+</div>
+<p>Aquí enlaza todo lo del capítulo&nbsp;13. La fuerza bruta no escala, y los árboles exactos clásicos —que funcionaban en pocas dimensiones— degeneran en la alta dimensión por la concentración de distancias. La salida, como se anticipó, es renunciar a la exactitud perfecta: aceptar índices <em>aproximados</em> que devuelven casi siempre los verdaderos vecinos a cambio de ser cientos de veces más rápidos. Ese es el tema del capítulo&nbsp;15, y la figura&nbsp;14.5 es su justificación: la línea recta que sube sin freno es el problema que los índices aproximados vienen a resolver. La búsqueda exacta queda como lo que es —la referencia de calidad y la opción correcta a pequeña escala— pero no como la solución a gran escala.</p>
+</section>
+<section id="consulta-con-filtro-prefiltrar-o-posfiltrar" class="level3">
+<h3 class="anchored" data-anchor-id="consulta-con-filtro-prefiltrar-o-posfiltrar">Consulta con filtro: prefiltrar o posfiltrar</h3>
+<p>Rara vez se busca solo por similitud. Lo habitual es combinarla con condiciones sobre los metadatos: «documentos parecidos a este <em>pero solo de 2024</em>», «productos afines <em>de esta categoría y por debajo de este precio</em>». Esa <em>consulta híbrida</em> —similitud más filtro— es tan central que el capítulo&nbsp;17 entero se le dedica; aquí interesa su anatomía básica, porque plantea una disyuntiva con consecuencias medibles. Hay dos formas de combinar el filtro con la búsqueda, y no son equivalentes (figura&nbsp;14.6). El <em>prefiltrado</em> restringe primero la colección a los que pasan el filtro y busca solo en ese subconjunto; el <em>posfiltrado</em> busca en toda la colección y descarta después los que no cumplen.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap14/fig_06.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;14.6.</strong> Las dos formas de la consulta híbrida. El prefiltrado restringe por metadatos y busca en el subconjunto; el posfiltrado busca en todo y descarta después. No son equivalentes ni en coste ni en corrección.</figcaption>
+</figure>
+</div>
+<p>La práctica mide ambas según la <em>selectividad</em> del filtro —qué fracción de la colección lo pasa— y el resultado es instructivo (figura&nbsp;14.7 y tabla&nbsp;14.2). El prefiltrado, apoyado en un índice de metadatos, es baratísimo cuando el filtro es selectivo —si solo pasa el 5 %, solo se busca en el 5 %— y se encarece a medida que pasa más colección. El posfiltrado tiene un coste casi constante —siempre busca en todo— pero esconde un defecto grave: cuando el filtro es selectivo, entre los primeros vecinos por similitud pasan muy pocos, y el posfiltrado <em>se queda corto de resultados</em>. La tabla lo cuantifica: con un filtro que deja pasar el 5 %, pidiendo diez resultados, el posfiltrado devuelve de media menos de uno. Es la <em>inanición</em> del posfiltrado, y la razón de que un filtro selectivo casi siempre pida prefiltrar.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap14/fig_07.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;14.7.</strong> Latencia del prefiltrado (con índice) frente al posfiltrado según la selectividad. El prefiltrado es barato cuando el filtro es selectivo; el posfiltrado tiene coste casi fijo —pero se queda corto de resultados (tabla&nbsp;14.2). Datos de <code>src/cap14_anatomia.py</code>.</figcaption>
+</figure>
+</div>
+<table class="caption-top table">
+<caption>Inanición del posfiltrado: como siempre busca en toda la colección y filtra después, al estrecharse el filtro devuelve cada vez menos de los <span class="math inline">\(k=10\)</span> resultados pedidos (colección de 200 000). La <em>latencia</em> de ambas estrategias —dependiente de la máquina— va en la figura&nbsp;14.7. Datos de <code>src/cap14_anatomia.py</code>.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Selectividad</th>
+<th style="text-align: center;">Resultados posfiltrado (de <span class="math inline">\(k=10\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">5 %</td>
+<td style="text-align: center;"><span class="math inline">\(0{,}3\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10 %</td>
+<td style="text-align: center;"><span class="math inline">\(0{,}7\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">25 %</td>
+<td style="text-align: center;"><span class="math inline">\(2{,}8\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">50 %</td>
+<td style="text-align: center;"><span class="math inline">\(6{,}0\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">100 %</td>
+<td style="text-align: center;"><span class="math inline">\(10{,}0\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>El listado&nbsp;14.5 muestra el prefiltrado en el mini almacén: una máscara sobre los metadatos —el índice de metadatos en su forma más simple— restringe la colección antes de buscar. La lección de diseño es clara y reaparecerá en el capítulo&nbsp;17: con un filtro selectivo y un índice de metadatos, prefiltrar; con un filtro poco selectivo, da casi igual; y el posfiltrado, cómodo de implementar, es traicionero porque puede dejar al usuario sin resultados sin avisar.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:filtro"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:filtro-1"><a href="#lst:filtro-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> buscar_filtrado(<span class="va">self</span>, consulta, permitidos, k<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="lst:filtro-2"><a href="#lst:filtro-2" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> np.isin(<span class="va">self</span>.temas, permitidos)       <span class="co"># indice de metadatos</span></span>
+<span id="lst:filtro-3"><a href="#lst:filtro-3" aria-hidden="true" tabindex="-1"></a>    sub, subn <span class="op">=</span> <span class="va">self</span>.vectores[mask], <span class="va">self</span>.normas[mask]</span>
+<span id="lst:filtro-4"><a href="#lst:filtro-4" aria-hidden="true" tabindex="-1"></a>    sim <span class="op">=</span> (sub <span class="op">@</span> consulta) <span class="op">/</span> (subn <span class="op">*</span> norm(consulta) <span class="op">+</span> <span class="fl">1e-12</span>)</span>
+<span id="lst:filtro-5"><a href="#lst:filtro-5" aria-hidden="true" tabindex="-1"></a>    orden <span class="op">=</span> np.argsort(<span class="op">-</span>sim)[:k]</span>
+<span id="lst:filtro-6"><a href="#lst:filtro-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> orden                                  <span class="co"># indices dentro del subconj.</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.5.</strong> Prefiltrado con un indice de metadatos: una mascara restringe la coleccion antes de buscar, asi solo se compara contra lo que pasa el filtro.</p>
+</section>
+</section>
+<section id="el-caso-multivector-maxsim-y-compresión-tipo-plaid" class="level2">
+<h2 class="anchored" data-anchor-id="el-caso-multivector-maxsim-y-compresión-tipo-plaid">El caso multivector: MaxSim y compresión tipo PLAID</h2>
+<p>Hasta aquí cada documento ha sido un vector. Pero el capítulo&nbsp;12 mostró otra posibilidad: representar cada documento no por un único vector que lo resume, sino por <em>muchos</em> —uno por token— y comparar con <em>MaxSim</em>, la interacción tardía de ColBERT <span class="citation" data-cites="khattab2020">(<a href="#ref-khattab2020" role="doc-biblioref">Khattab y Zaharia 2020</a>)</span>. Esa elección tiene una anatomía distinta y un coste distinto, y conviene entenderla porque está detrás de los sistemas de recuperación más precisos (figura&nbsp;14.8).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap14/fig_08.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;14.8.</strong> Single-vector frente a multivector. El modelo single resume cada documento en un vector; el multivector guarda un vector por token y compara con MaxSim —cada token de la consulta busca su mejor pareja en el documento—, más preciso pero más caro.</figcaption>
+</figure>
+</div>
+<p>MaxSim compara una consulta y un documento, ambos representados por listas de vectores de token: para cada token de la consulta, busca su <em>mejor</em> pareja entre los tokens del documento y suma esos máximos (listado&nbsp;14.6). Captura así parecidos finos —una palabra de la consulta que casa con una palabra concreta del documento— que un único vector resumen difumina. La práctica lo confirma: el MaxSim entre una consulta y un documento afín da un valor muy superior al de un documento ajeno, igual que el coseno separaba los embeddings densos en el capítulo&nbsp;12.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:maxsim14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:maxsim14-1"><a href="#lst:maxsim14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> maxsim(consulta_tokens, doc_tokens):</span>
+<span id="lst:maxsim14-2"><a href="#lst:maxsim14-2" aria-hidden="true" tabindex="-1"></a>    sim <span class="op">=</span> consulta_tokens <span class="op">@</span> doc_tokens.T         <span class="co"># (t_consulta, t_doc)</span></span>
+<span id="lst:maxsim14-3"><a href="#lst:maxsim14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">float</span>(sim.<span class="bu">max</span>(axis<span class="op">=</span><span class="dv">1</span>).<span class="bu">sum</span>())          <span class="co"># mejor pareja por token</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.6.</strong> MaxSim: cada token de la consulta aporta su mejor parecido con algun token del documento; la suma es la puntuacion (interaccion tardia).</p>
+<p>La precisión del multivector se paga. Si cada documento tiene <span class="math inline">\(T\)</span> tokens, almacenarlo cuesta <span class="math inline">\(T\)</span> veces más memoria —<span class="math inline">\(T\)</span> vectores en vez de uno— y compararlo con MaxSim cuesta del orden de <span class="math inline">\(T^2\)</span> operaciones —cada token de la consulta contra cada token del documento—. La práctica lo mide (figura&nbsp;14.9): con 32 tokens por documento, la memoria se multiplica por 32 y las comparaciones por mil. A escala de millones de documentos, ese factor es la diferencia entre viable e inviable, y es la razón de que el multivector, pese a su calidad, no sea la opción por defecto.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap14/fig_09.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;14.9.</strong> Coste relativo del multivector según los tokens por documento <span class="math inline">\(T\)</span> (log-log, single <span class="math inline">\(=1\)</span>). La memoria crece como <span class="math inline">\(T\)</span> y las comparaciones como <span class="math inline">\(T^2\)</span>: con 32 tokens, mil veces más comparaciones. El precio del parecido a nivel de token. Datos de <code>src/cap14_anatomia.py</code>.</figcaption>
+</figure>
+</div>
+<p>De ahí la importancia de comprimir. La línea de trabajo de <em>PLAID</em> <span class="citation" data-cites="santhanam2022">(<a href="#ref-santhanam2022" role="doc-biblioref">Santhanam et&nbsp;al. 2022</a>)</span> ataca justo ese coste: cuantiza agresivamente los vectores de token, agrupa los parecidos en <em>centroides</em> para no guardarlos todos enteros, y usa esos centroides para descartar pronto los documentos que no pueden ganar, evitando el MaxSim completo sobre la mayoría. Combina, así, las dos palancas de este capítulo —la cuantización del almacenamiento y el filtrado temprano del índice— al servicio del multivector. El resultado es que la interacción tardía, antes prohibitiva a gran escala, se vuelve practicable. El detalle de PLAID excede esta anatomía; lo que importa retener es que el multivector es una rama legítima de la familia, con su propio compromiso entre calidad y coste, y con su propia ingeniería para domarlo.</p>
+<p>¿Cuándo merece la pena, entonces, el multivector? La respuesta práctica es: cuando la precisión de la recuperación es crítica y la colección no es descomunal, o cuando se usa solo en una segunda etapa. Es habitual, de hecho, combinar lo mejor de los dos mundos en una recuperación en dos fases —un patrón que el capítulo&nbsp;17 desarrollará—: una primera etapa con vectores únicos, baratos, recupera unos cientos de candidatos a gran escala, y una segunda etapa, sobre esos pocos candidatos, aplica la interacción tardía multivector —o un <em>cross-encoder</em> aún más preciso— para reordenarlos con finura. Así se paga el coste alto del multivector solo sobre un puñado de finalistas, no sobre la colección entera. Es la misma filosofía de la cuantización binaria —cribar barato, refinar caro— aplicada a la representación: usar la herramienta costosa donde de verdad cambia el resultado y la barata donde basta. La anatomía admite, pues, configuraciones mixtas, y los mejores sistemas suelen serlo.</p>
+</section>
+<section id="el-ciclo-de-vida-del-dato-actualizar-borrar-reindexar" class="level2">
+<h2 class="anchored" data-anchor-id="el-ciclo-de-vida-del-dato-actualizar-borrar-reindexar">El ciclo de vida del dato: actualizar, borrar, reindexar</h2>
+<p>La anatomía vista hasta aquí es, en gran medida, estática: se ingiere una colección y se busca en ella. Pero los datos reales cambian —se añaden documentos, se editan, se borran— y ese <em>ciclo de vida</em> plantea problemas propios que distinguen una base de datos de una mera biblioteca de búsqueda. Conviene tratarlos, aunque sea brevemente, porque son los que más a menudo se subestiman y los que reconectan lo vectorial con la disciplina de las partes anteriores.</p>
+<p><em>Actualizar</em> un vector —porque el documento cambió y hay que recodificarlo— es, en el dato en bruto, sencillo: se sustituye la fila de la matriz. La complicación está en el índice. Un índice aproximado se construye a partir de la posición de los vectores; si un vector se mueve, el índice queda desactualizado en ese punto, y muchas estructuras no admiten mover un nodo con facilidad. La solución habitual es marcar el vector viejo como borrado e insertar el nuevo, difiriendo la limpieza. <em>Borrar</em> plantea lo mismo: en lugar de reconstruir el índice en cada baja, se marca el vector con una <em>lápida</em> (<em>tombstone</em>) y se le excluye de los resultados, dejando su hueco hasta una limpieza posterior. Es el mismo patrón de borrado diferido que aparecía en los motores LSM del capítulo&nbsp;8: borrar de verdad es caro, así que se aplaza.</p>
+<p>El problema de fondo es que un índice aproximado se <em>degrada</em> con el tiempo. A medida que se acumulan lápidas y se insertan vectores sobre una estructura pensada para los originales, la calidad de la búsqueda —el recall— baja y la latencia sube, porque el índice deja de reflejar bien la geometría actual de los datos. La respuesta es el <em>reindexado</em>: reconstruir periódicamente el índice desde cero, una operación costosa que conviene hacer en segundo plano, sobre una copia, y conmutar al terminar para no interrumpir el servicio. Reaparecen así, con ropa vectorial, viejos conocidos: el borrado diferido del capítulo&nbsp;8, la compactación de fondo, la conmutación atómica que evita ver un estado a medias —la atomicidad del capítulo&nbsp;5—. Una base de datos vectorial que ignore este ciclo de vida funcionará de maravilla en la demo y se degradará en producción; tenerlo en cuenta es parte de la anatomía, no un añadido.</p>
+</section>
+<section id="la-interfaz-de-una-base-vectorial" class="level2">
+<h2 class="anchored" data-anchor-id="la-interfaz-de-una-base-vectorial">La interfaz de una base vectorial</h2>
+<p>Por encima de las diferencias de implementación, casi todas las bases de datos vectoriales exponen el mismo puñado de operaciones, y reconocerlas ayuda a leer cualquier motor: la anatomía interna se proyecta en una interfaz externa bastante uniforme. Son cinco gestos esenciales. <em>Crear una colección</em>, declarando la dimensión de los vectores y la métrica —coseno, euclídea o producto interno—, que fija de entrada la geometría del capítulo&nbsp;13. <em>Insertar o actualizar</em> (<em>upsert</em>) vectores con sus metadatos, la ingesta por lotes de la sección&nbsp;14.2. <em>Consultar</em> (<em>query</em>) los <span class="math inline">\(k\)</span> más próximos a un vector, opcionalmente con un filtro sobre los metadatos. <em>Borrar</em> por identificador o por filtro. Y <em>persistir</em> la colección. El listado&nbsp;14.7 las reúne en la forma conceptual que comparten pgvector, Qdrant o Milvus bajo sintaxis distintas.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:api"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:api-1"><a href="#lst:api-1" aria-hidden="true" tabindex="-1"></a>col <span class="op">=</span> db.crear_coleccion(dim<span class="op">=</span><span class="dv">768</span>, metrica<span class="op">=</span><span class="st">"coseno"</span>)</span>
+<span id="lst:api-2"><a href="#lst:api-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:api-3"><a href="#lst:api-3" aria-hidden="true" tabindex="-1"></a>col.upsert(ids, vectores, metadatos)        <span class="co"># ingesta por lotes</span></span>
+<span id="lst:api-4"><a href="#lst:api-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:api-5"><a href="#lst:api-5" aria-hidden="true" tabindex="-1"></a>resultados <span class="op">=</span> col.query(vector<span class="op">=</span>q, k<span class="op">=</span><span class="dv">10</span>,      <span class="co"># los k mas proximos</span></span>
+<span id="lst:api-6"><a href="#lst:api-6" aria-hidden="true" tabindex="-1"></a>                       filtro<span class="op">=</span>{<span class="st">"anio"</span>: <span class="dv">2024</span>})   <span class="co"># + condicion</span></span>
+<span id="lst:api-7"><a href="#lst:api-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:api-8"><a href="#lst:api-8" aria-hidden="true" tabindex="-1"></a>col.borrar(filtro<span class="op">=</span>{<span class="st">"tema"</span>: <span class="st">"obsoleto"</span>})     <span class="co"># por identificador o filtro</span></span>
+<span id="lst:api-9"><a href="#lst:api-9" aria-hidden="true" tabindex="-1"></a>col.persistir()                             <span class="co"># a disco</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.7.</strong> La interfaz comun de una base vectorial: crear, insertar, consultar, borrar y persistir. Los motores reales la visten con su propia sintaxis.</p>
+<p>Esa uniformidad no es casual: refleja que todas las bases vectoriales resuelven el mismo problema con la misma anatomía. Las diferencias —que el capítulo&nbsp;16 detallará— están debajo: qué índice usan, cómo distribuyen, qué garantías de consistencia ofrecen, cómo de eficiente es su filtrado. Pero el contrato con el programador es casi siempre este, y entenderlo como la proyección de las partes anatómicas —la métrica es la geometría, el upsert es la ingesta, el query es el índice, el filtro son los metadatos— convierte la lectura de cualquier documentación en un ejercicio de reconocer lo ya conocido. Una base vectorial nueva no es un mundo nuevo: es esta interfaz sobre esta anatomía.</p>
+<section id="el-vector-como-columna-sql-vectorial" class="level3">
+<h3 class="anchored" data-anchor-id="el-vector-como-columna-sql-vectorial">El vector como columna: SQL vectorial</h3>
+<p>La interfaz conceptual de la sección anterior se concreta de dos maneras en los motores reales, y conviene ver al menos una para que la anatomía deje de ser abstracta. La vía más cercana a lo que el lector ya conoce es tratar el vector como un <em>tipo de columna</em> dentro de una base de datos relacional, que es lo que hace la extensión pgvector sobre PostgreSQL. Allí, una tabla normal gana una columna de tipo <code>vector</code>, y toda la maquinaria relacional de la primera parte —claves, transacciones, <code>JOIN</code>, <code>WHERE</code>— sigue disponible junto a la búsqueda por similitud (listado&nbsp;14.8). Es la unión de los dos mundos del libro en una sola tabla: el dato estructurado y el vectorial conviviendo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:sql_ddl"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:sql_ddl-1"><a href="#lst:sql_ddl-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> EXTENSION vector;</span>
+<span id="lst:sql_ddl-2"><a href="#lst:sql_ddl-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:sql_ddl-3"><a href="#lst:sql_ddl-3" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> documento (</span>
+<span id="lst:sql_ddl-4"><a href="#lst:sql_ddl-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span>     bigserial <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="lst:sql_ddl-5"><a href="#lst:sql_ddl-5" aria-hidden="true" tabindex="-1"></a>    tema   text,</span>
+<span id="lst:sql_ddl-6"><a href="#lst:sql_ddl-6" aria-hidden="true" tabindex="-1"></a>    anio   <span class="dt">int</span>,</span>
+<span id="lst:sql_ddl-7"><a href="#lst:sql_ddl-7" aria-hidden="true" tabindex="-1"></a>    emb    vector(<span class="dv">768</span>)          <span class="co">-- el vector, una columna mas</span></span>
+<span id="lst:sql_ddl-8"><a href="#lst:sql_ddl-8" aria-hidden="true" tabindex="-1"></a>);</span>
+<span id="lst:sql_ddl-9"><a href="#lst:sql_ddl-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:sql_ddl-10"><a href="#lst:sql_ddl-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- el indice de similitud se declara como cualquier otro indice</span></span>
+<span id="lst:sql_ddl-11"><a href="#lst:sql_ddl-11" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> <span class="kw">ON</span> documento</span>
+<span id="lst:sql_ddl-12"><a href="#lst:sql_ddl-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">USING</span> hnsw (emb vector_cosine_ops);</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.8.</strong> El vector como columna en pgvector: una tabla relacional normal con una columna vector y un indice de similitud declarado sobre ella.</p>
+<p>La consulta combina, con naturalidad, el filtro estructurado y la similitud (listado&nbsp;14.9). El operador de distancia —<code>&lt;=&gt;</code> para el coseno en pgvector— ordena por proximidad, y la cláusula <code>WHERE</code> de toda la vida prefiltra por metadatos antes de buscar. En una sola sentencia conviven el <em>igual a</em> —<code>anio = 2024</code>— y el <em>cercano a</em> —<code>ORDER BY emb &lt;=&gt; consulta</code>—, los dos regímenes que han vertebrado el libro. Que esto se escriba en SQL, el lenguaje del capítulo&nbsp;3, no es anecdótico: significa que la búsqueda vectorial puede entrar en sistemas existentes sin reescribirlos, como una capacidad más del motor relacional.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:sql_query"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:sql_query-1"><a href="#lst:sql_query-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">id</span>, tema, emb <span class="op">&lt;=&gt;</span> <span class="ch">:consulta</span> <span class="kw">AS</span> distancia</span>
+<span id="lst:sql_query-2"><a href="#lst:sql_query-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span>   documento</span>
+<span id="lst:sql_query-3"><a href="#lst:sql_query-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span>  anio <span class="op">=</span> <span class="dv">2024</span>                <span class="co">-- prefiltro estructurado</span></span>
+<span id="lst:sql_query-4"><a href="#lst:sql_query-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> emb <span class="op">&lt;=&gt;</span> <span class="ch">:consulta</span>        <span class="co">-- ordena por cercania (coseno)</span></span>
+<span id="lst:sql_query-5"><a href="#lst:sql_query-5" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span>  <span class="dv">10</span>;                        <span class="co">-- los 10 mas proximos</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.9.</strong> Consulta hibrida en SQL: el filtro estructurado (WHERE) y la similitud (ORDER BY con el operador de distancia) en una sola sentencia.</p>
+<p>La otra vía —los motores <em>dedicados</em>, que nacen pensados para vectores— expone una interfaz parecida a la conceptual del listado&nbsp;14.7, normalmente por API en vez de por SQL, y optimiza cada parte de la anatomía para el caso vectorial a costa de integrarse peor con el dato relacional clásico. La elección entre una vía y otra —extensión sobre lo existente o motor dedicado— es la pregunta del capítulo&nbsp;16. Lo que importa retener aquí es que ambas implementan la misma anatomía: una de ellas, simplemente, la viste con el SQL que el lector ya domina.</p>
+</section>
+</section>
+<section id="práctica-un-mini-almacén-vectorial" class="level2">
+<h2 class="anchored" data-anchor-id="práctica-un-mini-almacén-vectorial">Práctica: un mini almacén vectorial</h2>
+<p>Todo lo anterior sale de <code>src/cap14_anatomia.py</code> —numpy, CPU, sin servicio ni GPU—, que construye un almacén vectorial completo, <code>AlmacenVectorial</code>, y lo mide. La clase reúne las cuatro partes anatómicas en muy poco código: la matriz de vectores, los metadatos paralelos, las normas precomputadas y la búsqueda exacta con filtro opcional (listado&nbsp;14.10). No es un juguete incompleto: ingiere por lotes, busca por coseno, euclídea o producto interno, filtra por metadatos y persiste a disco. Lo único que le falta frente a un motor real es el índice aproximado —el capítulo&nbsp;15— y la ingeniería de escala —distribución, replicación, concurrencia— que las partes anteriores ya estudiaron en abstracto.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:clase"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:clase-1"><a href="#lst:clase-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AlmacenVectorial:</span>
+<span id="lst:clase-2"><a href="#lst:clase-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, dim, metrica<span class="op">=</span><span class="st">"coseno"</span>):</span>
+<span id="lst:clase-3"><a href="#lst:clase-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dim <span class="op">=</span> dim</span>
+<span id="lst:clase-4"><a href="#lst:clase-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.metrica <span class="op">=</span> metrica</span>
+<span id="lst:clase-5"><a href="#lst:clase-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.vectores <span class="op">=</span> np.empty((<span class="dv">0</span>, dim), dtype<span class="op">=</span>np.float32)</span>
+<span id="lst:clase-6"><a href="#lst:clase-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.metadatos <span class="op">=</span> []                      <span class="co"># contexto paralelo</span></span>
+<span id="lst:clase-7"><a href="#lst:clase-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.normas <span class="op">=</span> np.empty((<span class="dv">0</span>,), dtype<span class="op">=</span>np.float32)</span>
+<span id="lst:clase-8"><a href="#lst:clase-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:clase-9"><a href="#lst:clase-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> agregar(<span class="va">self</span>, vecs, metas): ...          <span class="co"># ingesta por lotes</span></span>
+<span id="lst:clase-10"><a href="#lst:clase-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> buscar(<span class="va">self</span>, consulta, k<span class="op">=</span><span class="dv">10</span>, filtro<span class="op">=</span><span class="va">None</span>): ...   <span class="co"># exacta</span></span>
+<span id="lst:clase-11"><a href="#lst:clase-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> guardar(<span class="va">self</span>, ruta): ...                 <span class="co"># persistencia</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.10.</strong> El esqueleto de AlmacenVectorial: las cuatro partes anatomicas —vectores, metadatos, normas e indice (busqueda exacta)— en una clase.</p>
+<section id="cómo-está-organizado-el-módulo" class="level3">
+<h3 class="anchored" data-anchor-id="cómo-está-organizado-el-módulo">Cómo está organizado el módulo</h3>
+<p>El módulo separa con claridad la <em>estructura</em> —la clase <code>AlmacenVectorial</code>— de las <em>medidas</em> —seis funciones, una por fenómeno anatómico— y una función <code>main</code> que las ejecuta todas con semilla fija (listado&nbsp;14.11). Las medidas no tocan la clase por dentro: la usan como la usaría cualquier programa, lo que mantiene honesta la demostración —se mide la anatomía a través de su interfaz, no de atajos internos—. Reejecutar el módulo reproduce las cinco gráficas, las dos tablas y la demostración del capítulo; las medidas de latencia varían un poco entre máquinas, pero su forma —el crecimiento lineal de la búsqueda, el perfil del filtrado— es estable.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:organizacion14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:organizacion14-1"><a href="#lst:organizacion14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AlmacenVectorial: ...          <span class="co"># la estructura: 4 partes</span></span>
+<span id="lst:organizacion14-2"><a href="#lst:organizacion14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:organizacion14-3"><a href="#lst:organizacion14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_almacenamiento(): ...    <span class="co"># huella segun el tipo numerico</span></span>
+<span id="lst:organizacion14-4"><a href="#lst:organizacion14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_busqueda():       ...    <span class="co"># latencia exacta ~ O(n*d)</span></span>
+<span id="lst:organizacion14-5"><a href="#lst:organizacion14-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_filtrado():       ...    <span class="co"># prefiltrar vs posfiltrar</span></span>
+<span id="lst:organizacion14-6"><a href="#lst:organizacion14-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_cuantizacion():   ...    <span class="co"># int8 vs float32 (recall@10)</span></span>
+<span id="lst:organizacion14-7"><a href="#lst:organizacion14-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simular_multivector():    ...    <span class="co"># coste memoria/comparaciones</span></span>
+<span id="lst:organizacion14-8"><a href="#lst:organizacion14-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demostracion():           ...    <span class="co"># 15 vecinos de una consulta</span></span>
+<span id="lst:organizacion14-9"><a href="#lst:organizacion14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:organizacion14-10"><a href="#lst:organizacion14-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main():</span>
+<span id="lst:organizacion14-11"><a href="#lst:organizacion14-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> sim <span class="kw">in</span> (simular_almacenamiento, simular_busqueda,</span>
+<span id="lst:organizacion14-12"><a href="#lst:organizacion14-12" aria-hidden="true" tabindex="-1"></a>                simular_filtrado, simular_cuantizacion,</span>
+<span id="lst:organizacion14-13"><a href="#lst:organizacion14-13" aria-hidden="true" tabindex="-1"></a>                simular_multivector):</span>
+<span id="lst:organizacion14-14"><a href="#lst:organizacion14-14" aria-hidden="true" tabindex="-1"></a>        sim()                        <span class="co"># cada una escribe su .dat</span></span>
+<span id="lst:organizacion14-15"><a href="#lst:organizacion14-15" aria-hidden="true" tabindex="-1"></a>    demostracion(<span class="dv">15</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.11.</strong> La organizacion del modulo: la clase del almacen, seis medidas —una por parte anatomica— y main que las orquesta con semilla fija.</p>
+<p>Conviene ver las partes funcionando juntas en un guion completo, porque es el capítulo entero en una pantalla (listado&nbsp;14.12). Se crea un almacén declarando dimensión y métrica —la geometría—; se ingiere por lotes un conjunto de vectores con sus metadatos —el almacenamiento y la ingesta, con la norma precomputada—; se consulta por similitud con un filtro sobre los metadatos —el índice y el prefiltrado—; y, si hiciera falta, se persiste a disco. Cinco gestos, las cuatro partes anatómicas, sin más andamiaje que numpy. Un motor real añade índices aproximados, distribución y durabilidad, pero el esqueleto que el programador toca es exactamente este.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:endtoend"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:endtoend-1"><a href="#lst:endtoend-1" aria-hidden="true" tabindex="-1"></a><span class="co"># crear: dimension y metrica fijan la geometria</span></span>
+<span id="lst:endtoend-2"><a href="#lst:endtoend-2" aria-hidden="true" tabindex="-1"></a>alm <span class="op">=</span> AlmacenVectorial(dim<span class="op">=</span><span class="dv">768</span>, metrica<span class="op">=</span><span class="st">"coseno"</span>)</span>
+<span id="lst:endtoend-3"><a href="#lst:endtoend-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:endtoend-4"><a href="#lst:endtoend-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ingerir por lotes: almacenamiento + ingesta (precomputa la norma)</span></span>
+<span id="lst:endtoend-5"><a href="#lst:endtoend-5" aria-hidden="true" tabindex="-1"></a>alm.agregar(vectores_lote, metadatos_lote)</span>
+<span id="lst:endtoend-6"><a href="#lst:endtoend-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:endtoend-7"><a href="#lst:endtoend-7" aria-hidden="true" tabindex="-1"></a><span class="co"># consultar con prefiltro: indice (exacto) + metadatos</span></span>
+<span id="lst:endtoend-8"><a href="#lst:endtoend-8" aria-hidden="true" tabindex="-1"></a>solo_2024 <span class="op">=</span> <span class="kw">lambda</span> m: m[<span class="st">"anio"</span>] <span class="op">==</span> <span class="dv">2024</span></span>
+<span id="lst:endtoend-9"><a href="#lst:endtoend-9" aria-hidden="true" tabindex="-1"></a>vecinos <span class="op">=</span> alm.buscar(consulta, k<span class="op">=</span><span class="dv">10</span>, filtro<span class="op">=</span>solo_2024)</span>
+<span id="lst:endtoend-10"><a href="#lst:endtoend-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, sim <span class="kw">in</span> vecinos:</span>
+<span id="lst:endtoend-11"><a href="#lst:endtoend-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(alm.metadatos[idx], <span class="bu">round</span>(sim, <span class="dv">4</span>))</span>
+<span id="lst:endtoend-12"><a href="#lst:endtoend-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:endtoend-13"><a href="#lst:endtoend-13" aria-hidden="true" tabindex="-1"></a><span class="co"># persistir: el almacenamiento a disco</span></span>
+<span id="lst:endtoend-14"><a href="#lst:endtoend-14" aria-hidden="true" tabindex="-1"></a>alm.guardar(<span class="st">"coleccion.npy"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 14.12.</strong> El mini almacen de principio a fin: crear, ingerir por lotes, consultar con filtro y persistir. El capitulo entero en una pantalla.</p>
+</section>
+<section id="la-demostración-y-lo-que-la-práctica-enseña" class="level3">
+<h3 class="anchored" data-anchor-id="la-demostración-y-lo-que-la-práctica-enseña">La demostración y lo que la práctica enseña</h3>
+<p>Fiel a la convención del libro, el módulo termina con una consulta real al almacén: toma un vector de la colección, lo perturba un poco —como haría una consulta parecida pero no idéntica— y pide sus quince vecinos más próximos (listado&nbsp;14.13). El resultado es la base de datos vectorial en funcionamiento: los quince vecinos pertenecen todos al mismo tema que la consulta, con cosenos que decrecen suavemente desde casi uno. Ver esa lista ordenada —el sistema entero reducido a su acto esencial, «devuélveme lo más parecido a esto»— es el cierre natural del capítulo.</p>
+<pre class="{#lst:artefacto14}"><code>rank  id      tema  coseno
+  ----  ------  ----  ------
+  0     0       4      0.9906
+  1     2430    4      0.9299
+  2     1759    4      0.9287
+  ...   ...     ...    ...
+  14    4430    4      0.9231</code></pre>
+<p><strong>Listado 14.13.</strong> Quince vecinos mas proximos de una consulta (muestra): todos del mismo tema, con el coseno decreciendo desde casi uno. El sistema en su acto esencial.</p>
+<p>El mini almacén enseña, fielmente, la <em>anatomía</em>: qué partes hay, qué hace cada una y cómo encajan, y mide con honestidad los compromisos —memoria contra precisión en la cuantización, coste contra corrección en el filtrado, calidad contra coste en el multivector—. Lo que no debe leerse en él es que construir una base de datos vectorial de producción sea tan simple: un motor real resuelve la concurrencia, la durabilidad, la distribución, la actualización del índice en caliente y mil detalles de ingeniería que el mini almacén ignora —justamente los problemas que las partes I y II del libro estudiaron—. Lo que el módulo captura, y captura bien, es la esencia: una base vectorial es una matriz de vectores, unos metadatos, un índice y una operación de búsqueda, y todo lo demás es ingeniería sobre ese esqueleto. Entender el esqueleto es lo que permite leer con criterio la documentación de cualquier motor.</p>
+<p>Una palabra sobre las medidas de latencia, en aras de la honestidad de costumbre. Las cifras de las figuras&nbsp;14.5 y&nbsp;14.7 —milisegundos por consulta— se tomaron en una máquina concreta y dependen de ella: del procesador, de la memoria, de la versión de numpy y de si la operación cabe en la caché. Reejecutar el módulo en otro equipo dará números distintos. Lo que <em>no</em> depende de la máquina, y es lo que el capítulo afirma, es la <em>forma</em> de las curvas: la latencia exacta crece linealmente con el tamaño de la colección, el prefiltrado se abarata con la selectividad y el posfiltrado se queda corto de resultados. Esas tendencias son consecuencia de la aritmética —<span class="math inline">\(O(N\cdot d)\)</span>, la fracción que pasa el filtro— y no del reloj; por eso el módulo, además de la latencia medida, registra las operaciones (deterministas), que cualquier máquina reproduce idénticas. La lección metodológica es la del libro entero: medir de verdad, pero distinguir lo que es esencia —la tendencia— de lo que es accidente —el número concreto en una máquina dada—.</p>
+</section>
+</section>
+<section id="errores-comunes-al-montar-una-base-vectorial" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes-al-montar-una-base-vectorial">Errores comunes al montar una base vectorial</h2>
+<p>La anatomía de este capítulo permite reconocer, por anticipado, los tropiezos que más se repiten al poner en pie una base vectorial, casi todos consecuencia de olvidar alguna de sus partes. El primero es <em>infravalorar la memoria</em>: dimensionar la máquina por el número de documentos sin multiplicar por la dimensión y los bytes, y descubrir tarde que la colección no cabe. El cálculo de servilleta de la sección siguiente lo evita; la regla es hacer la cuenta <span class="math inline">\(N\times d\times\text{bytes}\)</span> antes de elegir nada.</p>
+<p>El segundo error es <em>usar fuerza bruta a destiempo</em>, en cualquiera de sus dos direcciones: montar un índice aproximado —con su error y su complejidad— para una colección de diez mil vectores donde la búsqueda exacta sobra, o, al revés, insistir en la búsqueda exacta cuando la colección ha crecido a millones y las consultas se han vuelto lentas. La figura&nbsp;14.5 es la brújula: hay un tamaño a partir del cual la exactitud perfecta deja de salir a cuenta, y conviene saber de qué lado se está.</p>
+<p>El tercero es <em>posfiltrar sin darse cuenta</em>. Muchas implementaciones ingenuas recuperan los <span class="math inline">\(k\)</span> más próximos y aplican el filtro después, y funcionan en las pruebas —donde los filtros son laxos— para fallar en producción, cuando un usuario pide un filtro selectivo y recibe una lista medio vacía. La tabla&nbsp;14.2 cuantificó esa inanición; el remedio es prefiltrar con un índice de metadatos cuando el filtro sea selectivo. El cuarto es <em>mezclar métricas</em>: indexar con una y consultar con otra, o normalizar en la ingesta y luego buscar por producto interno esperando que la magnitud cuente —un eco del capítulo&nbsp;13—. Y el quinto, más sutil, es <em>olvidar que una base vectorial sigue siendo una base de datos</em>: necesita copias de seguridad, control de concurrencia, durabilidad y una estrategia de reindexado cuando los vectores cambian, justo los problemas que las partes I y II trataron y que el brillo de lo vectorial a veces hace olvidar. Cada error es la otra cara de una parte de la anatomía descuidada.</p>
+</section>
+<section id="dimensionar-una-colección-un-cálculo-de-servilleta" class="level2">
+<h2 class="anchored" data-anchor-id="dimensionar-una-colección-un-cálculo-de-servilleta">Dimensionar una colección: un cálculo de servilleta</h2>
+<p>La anatomía se vuelve decisión concreta en cuanto hay que dimensionar un sistema real, y conviene saber hacer la cuenta gruesa —el cálculo de servilleta— antes de elegir motor o máquina. Toda la aritmética parte de tres números: cuántos documentos (<span class="math inline">\(N\)</span>), de qué dimensión son los vectores (<span class="math inline">\(d\)</span>) y con qué tipo numérico se guardan. La memoria del dato en bruto es, simplemente, <span class="math inline">\(N\times d\times\text{bytes}\)</span>, y a ella hay que sumar el índice —que según el tipo añade entre un 10 % y más del 100 % sobre el dato— y los metadatos. Con esa fórmula se responde la primera pregunta de viabilidad: ¿cabe en memoria?</p>
+<p>Tomemos un ejemplo realista. Un sistema de búsqueda semántica sobre diez millones de documentos, codificados en vectores de 768 dimensiones, ocupa en <code>float32</code> unos 30 gigabytes solo de vectores —más que la memoria de muchas máquinas—. La decisión cae por su propio peso: cuantizar a <code>int8</code> baja la huella a unos 8 gigabytes, que ya caben holgadamente, a cambio de ese 5 % de recall que la tabla&nbsp;14.1 midió y que casi siempre es asumible. Si además se añade un índice aproximado —el capítulo&nbsp;15—, hay que reservar memoria para su estructura; un grafo navegable, por ejemplo, puede añadir un factor considerable. La segunda pregunta —¿es rápido?— la responde la figura&nbsp;14.5: con diez millones de vectores la fuerza bruta queda descartada (cientos de milisegundos por consulta), de modo que el índice aproximado no es un lujo sino una necesidad.</p>
+<p>El cálculo de servilleta evita errores caros. Decidir entre búsqueda exacta y aproximada, entre <code>float32</code> y cuantización, entre una máquina y un clúster, no es cuestión de gusto sino de unos pocos productos que cualquiera puede hacer en un minuto: huella en memoria, latencia estimada, presupuesto de recall. La regla práctica que se deduce es nítida y se resume en tres regímenes según el tamaño (tabla&nbsp;14.3): por debajo de unos cientos de miles de vectores, búsqueda exacta sin cuantizar, simple y exacta; entre cientos de miles y unos millones, cuantización y, según la latencia exigida, índice aproximado; por encima, cuantización agresiva, índice aproximado obligatorio y, si no cabe en una máquina, distribución —con todo lo que la segunda parte enseñó sobre repartir y replicar—. La anatomía da los componentes; el cálculo de servilleta los dimensiona.</p>
+<table class="caption-top table">
+<caption>Tres regímenes de dimensionado según el tamaño de la colección. Cada salto activa una palanca de la anatomía: cuantización, índice aproximado, distribución.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tamaño</th>
+<th style="text-align: left;">Búsqueda</th>
+<th style="text-align: left;">Almacenamiento y despliegue</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\lesssim 10^5\)</span></td>
+<td style="text-align: left;">Exacta</td>
+<td style="text-align: left;"><code>float32</code>, una máquina</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(10^5\)</span> a <span class="math inline">\(\sim\!10^7\)</span></td>
+<td style="text-align: left;">Aprox.&nbsp;(o exacta)</td>
+<td style="text-align: left;">Cuantización, una máquina</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\gtrsim 10^7\)</span></td>
+<td style="text-align: left;">Aproximada</td>
+<td style="text-align: left;">Cuantización agresiva, distribución</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="casos-de-diseño-tres-bases-vectoriales" class="level2">
+<h2 class="anchored" data-anchor-id="casos-de-diseño-tres-bases-vectoriales">Casos de diseño: tres bases vectoriales</h2>
+<p>Para fijar las decisiones, recorramos tres sistemas con perfiles distintos, cada uno con su configuración de las partes que el capítulo ha diseccionado. La gracia del ejercicio es que la misma anatomía da lugar a máquinas muy diferentes según la escala y la exigencia.</p>
+<section id="una-búsqueda-interna-en-una-empresa-pequeña" class="level3">
+<h3 class="anchored" data-anchor-id="una-búsqueda-interna-en-una-empresa-pequeña">Una búsqueda interna en una empresa pequeña</h3>
+<p>El primer caso es modesto: un buscador semántico sobre la documentación interna de una empresa, unos cincuenta mil documentos. A esa escala, la decisión correcta es la más simple. Cincuenta mil vectores de 768 dimensiones ocupan unos 150 megabytes en <code>float32</code>: caben de sobra en memoria sin cuantizar. La búsqueda exacta tarda unos pocos milisegundos por consulta —la figura&nbsp;14.5 lo confirma para ese tamaño—, perfectamente aceptable para el tráfico de una empresa. No hace falta índice aproximado, ni cuantización, ni distribución: una sola máquina, búsqueda exacta, <code>float32</code>, y un prefiltrado sencillo por departamento o fecha. La lección de este caso es que la sofisticación no siempre es la respuesta: a escala pequeña, lo exacto y lo simple ganan, y añadir un índice aproximado solo introduciría error y complejidad sin necesidad.</p>
+</section>
+<section id="un-buscador-semántico-a-gran-escala" class="level3">
+<h3 class="anchored" data-anchor-id="un-buscador-semántico-a-gran-escala">Un buscador semántico a gran escala</h3>
+<p>El segundo caso cambia de liga: un buscador sobre cien millones de documentos, con miles de consultas por segundo y una latencia exigida de pocas decenas de milisegundos. Aquí todas las palancas del capítulo entran en juego. Cien millones de vectores de 768 dimensiones son unos 300 gigabytes en <code>float32</code>: no caben en una máquina, así que cuantización obligatoria —a <code>int8</code>, unos 75 gigabytes, o más agresiva con cuantización de producto— y, casi seguro, distribución en varias máquinas, con el sharding y la replicación de la segunda parte. La búsqueda exacta queda descartada de plano: hace falta un índice aproximado capaz de responder en milisegundos, aceptando un recall del 95 % o 99 % según lo que el negocio tolere. El filtrado se hace prefiltrando con un índice de metadatos, porque a esa escala el posfiltrado dejaría consultas sin resultados. Es el sistema completo: cuantización, índice aproximado, distribución y prefiltrado, cada pieza justificada por la anatomía de este capítulo.</p>
+</section>
+<section id="un-rag-de-alta-precisión" class="level3">
+<h3 class="anchored" data-anchor-id="un-rag-de-alta-precisión">Un RAG de alta precisión</h3>
+<p>El tercer caso prioriza la calidad sobre el coste: un sistema de generación aumentada por recuperación (RAG) para un dominio crítico —legal, médico— donde recuperar el fragmento exacto importa más que el ahorro. Aquí puede justificarse la representación <em>multivector</em> con interacción tardía, que captura parecidos a nivel de token y mejora la precisión de la recuperación, asumiendo su coste mayor en memoria y cómputo —domado con una compresión tipo PLAID— porque la colección no es gigantesca y la calidad lo compensa. A menudo se combina con una segunda etapa de reordenación —un <em>cross-encoder</em>, que el capítulo&nbsp;17 tratará— sobre los primeros candidatos. Es el extremo opuesto del primer caso: donde allá bastaba lo simple, aquí se paga la maquinaria más cara porque el valor de acertar es alto. La lección conjunta de los tres casos es que no hay una «base vectorial correcta» en abstracto: hay decisiones de anatomía que se toman según la escala, la latencia y la exigencia de precisión.</p>
+</section>
+</section>
+<section id="nota-histórica-la-emergencia-de-las-bases-vectoriales" class="level2">
+<h2 class="anchored" data-anchor-id="nota-histórica-la-emergencia-de-las-bases-vectoriales">Nota histórica: la emergencia de las bases vectoriales</h2>
+<p>Conviene situar estas máquinas en su breve pero intensa historia, porque las bases de datos vectoriales son, como categoría de producto, muy recientes. Durante años, la búsqueda por vecino más próximo vivió en <em>bibliotecas</em> —no en bases de datos—: paquetes como FAISS <span class="citation" data-cites="johnson2019">(<a href="#ref-johnson2019" role="doc-biblioref">Johnson et&nbsp;al. 2021</a>)</span>, de Facebook AI Research, o Annoy, de Spotify, ofrecían índices aproximados muy eficientes, pero eran componentes que el programador integraba a mano en su aplicación, sin persistencia gestionada, sin metadatos, sin concurrencia ni distribución. Eran el índice —el corazón del capítulo— sin el resto de la anatomía.</p>
+<p>El salto a <em>base de datos</em> llegó cuando la explosión de los embeddings de calidad —los codificadores del capítulo&nbsp;12— y, sobre todo, la irrupción de los grandes modelos de lenguaje y el patrón RAG hacia 2022 y 2023 dispararon la demanda de almacenar y buscar vectores a escala, con todas las garantías que se esperan de una base de datos. Aparecieron así motores dedicados —Qdrant, Milvus, Weaviate, Pinecone— que envolvían el índice aproximado en una anatomía completa: ingesta, metadatos, filtrado, persistencia, distribución, API. Y, en paralelo, las bases de datos existentes incorporaron la búsqueda vectorial como una capacidad más: pgvector llevó el vector a PostgreSQL, Redis y Elasticsearch añadieron índices vectoriales, y los motores analíticos empezaron a absorber la similitud en su propio núcleo. El capítulo&nbsp;16 recorrerá ese paisaje.</p>
+<p>La perspectiva que conviene retener es que una base de datos vectorial no es una idea nueva, sino la <em>integración</em> de piezas conocidas: el índice de vecino aproximado, que la investigación llevaba décadas afinando, montado sobre la disciplina de persistencia, distribución y consulta que las tres primeras partes de este libro recorrieron. Por eso el lector que ha llegado hasta aquí está, quizá sin saberlo, bien preparado: una base vectorial es una base de datos —con sus transacciones, su replicación, su consulta— cuyo tipo de dato central es el vector y cuyo índice central es el de vecino aproximado. El resto de la cuarta parte completa ese índice y esa consulta; la anatomía, ya está sobre la mesa.</p>
+</section>
+<section id="la-base-vectorial-en-perspectiva" class="level2">
+<h2 class="anchored" data-anchor-id="la-base-vectorial-en-perspectiva">La base vectorial en perspectiva</h2>
+<section id="relacional-frente-a-vectorial-parte-por-parte" class="level3">
+<h3 class="anchored" data-anchor-id="relacional-frente-a-vectorial-parte-por-parte">Relacional frente a vectorial, parte por parte</h3>
+<p>Como el lector ha recorrido en detalle la base de datos relacional en la primera parte, la forma más rápida de fijar la anatomía vectorial es compararla con ella, parte por parte, porque las semejanzas son tan instructivas como las diferencias (tabla&nbsp;14.4). El <em>dato</em>, en la relacional, es una fila de valores tipados —enteros, cadenas, fechas—; en la vectorial, un punto de un espacio de cientos de dimensiones. La <em>consulta</em> fundamental, en la relacional, es la coincidencia exacta o por rango —<code>WHERE precio = 10</code> o <code>BETWEEN</code>—; en la vectorial, la proximidad —los <span class="math inline">\(k\)</span> más cercanos a un punto—. Es, una vez más, el eje del libro: del <em>igual a</em> al <em>cercano a</em>.</p>
+<p>El <em>índice</em> marca quizá la diferencia más honda. El B-tree del capítulo&nbsp;2 es exacto y se apoya en el orden total de los valores —se puede decir sin ambigüedad si una clave es menor que otra—; el índice vectorial es aproximado y vive en un espacio sin orden total, donde la concentración de distancias del capítulo&nbsp;13 impide la poda exacta. Por eso uno garantiza encontrar siempre lo que existe y el otro solo casi siempre. La <em>integridad</em>, en la relacional, la dan las claves y las restricciones —el dato es correcto por construcción—; en la vectorial, no hay un concepto equivalente: un vector «mal colocado» por un codificador deficiente no viola ninguna restricción, simplemente empeora la búsqueda, y la calidad se vigila con evaluación (capítulo&nbsp;18), no con restricciones.</p>
+<p>Pero las semejanzas son igual de reveladoras, y son las que justifican llamar «base de datos» a la vectorial. La <em>persistencia</em> —escribir a disco, sobrevivir a un reinicio— es la misma disciplina del capítulo&nbsp;1. Las <em>transacciones</em> y la <em>durabilidad</em> —no perder una escritura confirmada, no ver un estado a medias— son las del capítulo&nbsp;5, y reaparecen en el ciclo de vida del dato vectorial. La <em>distribución</em> —repartir y replicar para crecer y tolerar fallos— es la de la segunda parte, aplicada ahora a una matriz de vectores. Incluso el <em>borrado diferido</em> y la <em>compactación</em> vienen de los motores LSM del capítulo&nbsp;8. La conclusión es la que cierra el arco del libro: una base de datos vectorial es una base de datos de pleno derecho —con todo lo que eso exige— cuyo tipo de dato e índice centrales están diseñados para la similitud en vez de para la coincidencia. No sustituye a la relacional; extiende la familia con un miembro especializado en el <em>cercano a</em>.</p>
+<table class="caption-top table">
+<caption>La base de datos relacional y la vectorial, parte por parte. Difieren en el dato, la consulta y el índice; comparten la disciplina de persistencia, transacciones y distribución.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parte</th>
+<th style="text-align: left;">Relacional</th>
+<th style="text-align: left;">Vectorial</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Dato</td>
+<td style="text-align: left;">Fila de valores tipados</td>
+<td style="text-align: left;">Punto en un espacio de alta dim.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Consulta</td>
+<td style="text-align: left;">Coincidencia exacta / rango</td>
+<td style="text-align: left;">Proximidad (<span class="math inline">\(k\)</span> más cercanos)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Índice</td>
+<td style="text-align: left;">B-tree (exacto, ordenado)</td>
+<td style="text-align: left;">ANN (aproximado, sin orden total)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Integridad</td>
+<td style="text-align: left;">Claves y restricciones</td>
+<td style="text-align: left;">Calidad de la búsqueda (evaluación)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Persistencia</td>
+<td style="text-align: left;">Disco, WAL</td>
+<td style="text-align: left;">Disco, WAL</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Distribución</td>
+<td style="text-align: left;">Sharding, réplicas</td>
+<td style="text-align: left;">Sharding, réplicas</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="la-base-vectorial-dentro-del-sistema" class="level3">
+<h3 class="anchored" data-anchor-id="la-base-vectorial-dentro-del-sistema">La base vectorial dentro del sistema</h3>
+<p>Una base de datos vectorial rara vez vive sola: es una pieza de un sistema mayor, y entender su lugar ayuda a no pedirle lo que no le toca. El patrón más extendido hoy —la generación aumentada por recuperación, o RAG <span class="citation" data-cites="lewis2020">(<a href="#ref-lewis2020" role="doc-biblioref">Lewis et&nbsp;al. 2020</a>)</span>— la coloca en el centro de un flujo con varios actores, y conviene recorrerlo porque ilumina, por contraste, qué hace y qué no hace la base.</p>
+<p>En el momento de <em>construir</em> el conocimiento, un proceso de ingesta toma los documentos de la organización —manuales, correos, fichas, páginas—, los trocea en fragmentos manejables, pasa cada fragmento por un <em>servicio de codificación</em> (el modelo del capítulo&nbsp;12, normalmente en GPU y fuera de la base) y deposita los vectores resultantes, con sus metadatos, en la base vectorial. Ese troceado —<em>chunking</em>— es una decisión de diseño con consecuencias: fragmentos demasiado largos diluyen el significado en un solo vector y empeoran la recuperación; demasiado cortos pierden contexto. La base no decide el troceado ni produce los vectores; los recibe y los organiza. Su responsabilidad empieza cuando el vector ya existe.</p>
+<p>En el momento de <em>responder</em>, llega una pregunta del usuario. El orquestador la pasa por el mismo servicio de codificación para obtener su vector, consulta a la base vectorial los fragmentos más próximos —posiblemente con un filtro por permisos o por fecha, la consulta híbrida del capítulo&nbsp;17— y entrega esos fragmentos, como contexto, a un gran modelo de lenguaje que redacta la respuesta final. La base vectorial es, en este flujo, el <em>recuperador</em>: su trabajo es devolver, deprisa y con buen recall, los fragmentos pertinentes. No genera texto, no entiende la pregunta, no decide qué es relevante en sentido profundo; hace una cosa y la hace a escala: encontrar lo más parecido. Confundir ese papel —esperar que la base «entienda»— lleva a culparla de errores que son del codificador, del troceado o del modelo generador.</p>
+<p>Alrededor de ese núcleo hay piezas de apoyo que reconocerá quien haya leído las partes anteriores. Una <em>caché</em> guarda las respuestas a consultas frecuentes para no repetir el trabajo —la misma idea del capítulo&nbsp;8—. Una capa de <em>permisos</em> restringe qué puede ver cada usuario, y se implementa, casi siempre, como un filtro de metadatos en la consulta —el prefiltrado de este capítulo—. Un sistema de <em>observabilidad</em> mide latencias y calidad de la recuperación, el tema del capítulo&nbsp;18. Y, por debajo de todo, la base vectorial sigue necesitando copias de seguridad, réplicas y control de concurrencia, porque —insistimos— sigue siendo una base de datos. El dibujo completo no es muy distinto del de cualquier sistema de información clásico: una fuente de datos, un proceso de ingesta, un almacén indexado, una capa de consulta y unos servicios alrededor. Lo que cambia es que el índice central es de vecino más próximo y el dato central es un vector, justamente la anatomía que este capítulo ha diseccionado.</p>
+<p>Ver la base vectorial en su contexto enseña una última lección de diseño: la calidad del sistema no depende solo de la base, sino de toda la cadena. Un codificador mediocre, un troceado torpe o un modelo generador débil arruinan la experiencia por buena que sea la base vectorial; y, al revés, una base mal dimensionada —lenta, sin filtrado, sin durabilidad— estrangula a los mejores modelos. El ingeniero que entiende la anatomía de la base <em>y</em> su lugar en el sistema es el que sabe dónde está, en cada caso, el cuello de botella. Ese es, en el fondo, el objetivo de toda la cuarta parte: no solo saber qué es una base de datos vectorial, sino saber construirla, dimensionarla y operarla dentro del sistema al que sirve.</p>
+</section>
+<section id="mitos-y-realidades" class="level3">
+<h3 class="anchored" data-anchor-id="mitos-y-realidades">Mitos y realidades</h3>
+<p>La novedad y el ruido alrededor de las bases de datos vectoriales han generado algunas ideas equivocadas que conviene desmontar, porque desviar las expectativas lleva a malas decisiones de diseño. Vale la pena recorrerlas, porque cada una se aclara con la anatomía de este capítulo.</p>
+<p>El primer mito es que <em>una base vectorial sustituye a la relacional</em>. No: resuelve un problema distinto —la búsqueda por similitud— y, como se ha visto, lo más común es que convivan, ya sea como dos sistemas o como una columna vectorial dentro de la propia base relacional. La mayoría de las aplicaciones siguen necesitando el <em>igual a</em> —identificadores, transacciones, integridad referencial— tanto como el <em>cercano a</em>. El segundo mito es que <em>una base vectorial es solo una caché de embeddings</em>, una estructura tonta donde se vuelcan vectores. La anatomía demuestra lo contrario: tiene ingesta, índice, filtrado, ciclo de vida y garantías de base de datos; reducirla a un diccionario de vectores es ignorar todo lo que la hace fiable a escala.</p>
+<p>El tercer mito es que <em>más dimensiones es siempre mejor</em>. El capítulo&nbsp;13 ya lo desmintió: más dimensiones significan más memoria, más cómputo y más maldición de la dimensión, y el punto óptimo lo fija el codificador, no el deseo de «capturar más». Un modelo de 384 dimensiones bien entrenado supera a menudo a uno de 1 536 mediocre, y cuesta la cuarta parte. El cuarto mito es que <em>el índice aproximado siempre merece la pena</em>: para colecciones pequeñas, la búsqueda exacta es más simple, no tiene error y es lo bastante rápida, y montar un índice aproximado solo añade parámetros que ajustar y recall que perder. Y el quinto, quizá el más costoso, es que <em>la base vectorial determina la calidad de la búsqueda</em>. No: la calidad nace sobre todo del codificador y del troceado —lo que entra— y la base solo puede preservarla o degradarla. Pedirle a la base que arregle embeddings malos es pedirle lo que no puede dar.</p>
+<p>La realidad que emerge de desmontar los mitos es sobria y útil: una base de datos vectorial es una herramienta especializada y madura para un problema concreto, ni una panacea que sustituye a todo lo anterior ni un truco trivial. Usarla bien es entender su anatomía —para configurarla según el caso— y su lugar en el sistema —para no exigirle lo que corresponde a otras piezas—. Ese criterio, y no la lista de características de ningún producto, es lo que distingue al ingeniero que sabe lo que hace.</p>
+</section>
+</section>
+<section id="síntesis-y-puente-al-capítulo-15" class="level2">
+<h2 class="anchored" data-anchor-id="síntesis-y-puente-al-capítulo-15">Síntesis y puente al capítulo 15</h2>
+<p>Este capítulo ha abierto la cuarta parte diseccionando la base de datos vectorial en sus partes. El <em>almacenamiento</em> es una gran matriz de vectores junto a sus metadatos, y su huella en memoria —tres gigabytes por millón de vectores de 768 dimensiones— hace de la <em>cuantización</em> una palanca central: bajar a <code>int8</code> divide por cuatro la memoria conservando el 95 % de los vecinos. La <em>ingesta</em> es un oleoducto que codifica, adjunta metadatos e inserta por lotes, y precompute la norma —o normaliza— para abaratar cada búsqueda. El <em>índice</em> es la estructura central, y su forma exacta —la fuerza bruta— es correcta pero crece linealmente con la colección, hasta volverse inviable: la figura de su latencia es la justificación del capítulo siguiente. La consulta con filtro plantea ya el dilema prefiltrar o posfiltrar, con la inanición del posfiltrado como aviso. Y el caso <em>multivector</em> añade una rama de la familia, más precisa y más cara, que la compresión tipo PLAID viene a domar.</p>
+<p>El puente al capítulo&nbsp;15 está tendido por la propia anatomía. La búsqueda exacta no escala —lo hemos medido— y los árboles exactos no sobreviven a la alta dimensión —lo vimos en el capítulo&nbsp;13—. La pieza que falta, por tanto, es un <em>índice aproximado</em>: una estructura que sacrifique una pizca de exactitud a cambio de encontrar los vecinos sin recorrer toda la colección. A modo de mapa de lo que viene, esos índices se agrupan en unas pocas familias, cada una con su idea central (tabla&nbsp;14.5): el barrido plano (la fuerza bruta de este capítulo, exacta y sin parámetros), el hashing sensible a la localidad, la cuantización con listas invertidas, y los grafos navegables. El capítulo&nbsp;15 las desarrolla y mide su compromiso entre recall y latencia; aquí basta verlas como las respuestas posibles al problema que la figura&nbsp;14.5 ha planteado.</p>
+<table class="caption-top table">
+<caption>Mapa de las familias de índices que el capítulo&nbsp;15 desarrollará. Cada una ataca de un modo distinto el coste de la búsqueda exacta medido en este capítulo.</caption>
+<colgroup>
+<col style="width: 26%">
+<col style="width: 71%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Familia</th>
+<th style="text-align: left;">Idea central</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Barrido plano (<em>flat</em>)</td>
+<td style="text-align: left;">Comparar con todos; exacto, sin parámetros, no escala (este capítulo).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hashing (LSH)</td>
+<td style="text-align: left;">Funciones que mandan los vectores parecidos al mismo cubo.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cuantización + IVF</td>
+<td style="text-align: left;">Agrupar en celdas y comprimir los vectores; buscar en pocas celdas.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Grafos navegables (HNSW)</td>
+<td style="text-align: left;">Tejer un grafo de vecindad y navegarlo saltando hacia el más próximo.</td>
+</tr>
+</tbody>
+</table>
+<p>Cómo se construye cada estructura —por hashing, por cuantización, por grafos navegables— y cómo se navega el compromiso entre recall y latencia es el corazón de la búsqueda por vecino aproximado, y el tema al que el libro se dedica a continuación. La anatomía está completa; toca hacer que el corazón lata deprisa.</p>
+<p>Conviene retener, antes de pasar página, la idea que vertebra el capítulo y enlaza con todo lo anterior. Una base de datos vectorial no es una criatura exótica nacida con los grandes modelos de lenguaje, sino la integración de dos linajes que el libro ha recorrido por separado: la disciplina de la base de datos —persistencia, transacciones, distribución, consulta— de las tres primeras partes, y la geometría de la similitud —el vector, la distancia, la alta dimensión— de la tercera. La anatomía de este capítulo es justamente el punto donde ambos linajes se encuentran: el vector se convierte en un tipo de dato más, con su almacenamiento, su ingesta, su índice y su consulta, y hereda a la vez las garantías de una base de datos y la riqueza de la búsqueda por proximidad. Quien entienda esa doble herencia leerá cualquier motor —por nuevo que parezca— como una variación sobre temas conocidos.</p>
+<p>Y conviene retener también el orden de las decisiones, porque es el que guía el resto de la cuarta parte. Primero, la representación y la métrica —qué vector y qué distancia—, que vienen del codificador y de la geometría. Después, el almacenamiento —qué tipo numérico, cuánta memoria, cuánta cuantización—. Luego, el índice —exacto si la escala lo permite, aproximado si no—. Y por encima de todo, las garantías de base de datos —durabilidad, concurrencia, ciclo de vida— que no desaparecen por trabajar con vectores. Los capítulos siguientes profundizan en el índice (el 15), en los motores que lo encarnan (el 16), en la consulta híbrida (el 17) y en la evaluación y operación (el 18); todos dan por supuesta la anatomía que este ha puesto sobre la mesa. El esqueleto está montado; lo que viene es darle músculo, velocidad y resistencia.</p>
+<p>Una última reflexión sobre por qué esta anatomía importa más que cualquier producto concreto. El lector que la ha asimilado puede abrir la documentación de pgvector, de Qdrant o del motor que aún no existe y reconocer, bajo la jerga particular de cada uno, las mismas cuatro partes: dónde guarda los vectores, cómo ingiere, qué índice ofrece, cómo trata los metadatos. Esa capacidad de <em>diseccionar</em> —de ver el esqueleto bajo la piel— es lo que distingue a quien elige una herramienta con criterio de quien la adopta por moda. Los productos cambiarán; la anatomía —una matriz de vectores, unos metadatos, un índice y una búsqueda, con la disciplina de base de datos alrededor— es la invariante que este capítulo ha querido grabar, porque es la que seguirá siendo cierta cuando los nombres de hoy se hayan olvidado. Entender la anatomía es, en el fondo, dejar de necesitar que nadie nos explique el próximo motor: sabremos leerlo solos.</p>
+</section>
+<section id="ejercicios-propuestos" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="ejercicios-propuestos">Ejercicios propuestos</h2>
+</section>
+<section id="lecturas-recomendadas" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecturas-recomendadas">Lecturas recomendadas</h2>
+<ul>
+<li><p><span class="citation" data-cites="pan2024">Pan et&nbsp;al. (<a href="#ref-pan2024" role="doc-biblioref">2024</a>)</span>: un panorama actual de los sistemas de gestión de bases de datos vectoriales, con su arquitectura, sus componentes y las decisiones de diseño que este capítulo disecciona. La lectura de referencia para situar el conjunto de la cuarta parte.</p></li>
+<li><p><span class="citation" data-cites="jegou2011">Jégou et&nbsp;al. (<a href="#ref-jegou2011" role="doc-biblioref">2011</a>)</span>: el trabajo fundacional de la cuantización de producto, la técnica que lleva la compresión de vectores mucho más allá de la escalar a <code>int8</code> de este capítulo, y que reaparecerá en el capítulo&nbsp;15.</p></li>
+<li><p><span class="citation" data-cites="khattab2020">Khattab y Zaharia (<a href="#ref-khattab2020" role="doc-biblioref">2020</a>)</span>: ColBERT y la interacción tardía con MaxSim, el origen de la representación multivector y de la búsqueda a nivel de token.</p></li>
+<li><p><span class="citation" data-cites="santhanam2022">Santhanam et&nbsp;al. (<a href="#ref-santhanam2022" role="doc-biblioref">2022</a>)</span>: PLAID, la ingeniería que hace practicable la interacción tardía a gran escala mediante cuantización, centroides y descarte temprano.</p></li>
+<li><p><span class="citation" data-cites="manning2008">Manning et&nbsp;al. (<a href="#ref-manning2008" role="doc-biblioref">2008</a>)</span>: para repasar el filtrado y la combinación de señales en recuperación de información, el contexto clásico de la consulta híbrida que el capítulo&nbsp;17 retomará.</p></li>
+</ul>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referencias</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-jegou2011" class="csl-entry" role="listitem">
+Jégou, Hervé, Matthijs Douze, y Cordelia Schmid. 2011. <span>«Product Quantization for Nearest Neighbor Search»</span>. <em>IEEE Transactions on Pattern Analysis and Machine Intelligence</em> 33 (1).
+</div>
+<div id="ref-johnson2019" class="csl-entry" role="listitem">
+Johnson, Jeff, Matthijs Douze, y Hervé Jégou. 2021. <span>«Billion-Scale Similarity Search with <span>GPUs</span>»</span>. <em>IEEE Transactions on Big Data</em> 7 (3).
+</div>
+<div id="ref-khattab2020" class="csl-entry" role="listitem">
+Khattab, Omar, y Matei Zaharia. 2020. <span>«<span>ColBERT</span>: Efficient and Effective Passage Search via Contextualized Late Interaction over <span>BERT</span>»</span>. <em>ACM SIGIR Conference on Research and Development in Information Retrieval</em>.
+</div>
+<div id="ref-lewis2020" class="csl-entry" role="listitem">
+Lewis, Patrick, Ethan Perez, Aleksandra Piktus, et&nbsp;al. 2020. <span>«Retrieval-Augmented Generation for Knowledge-Intensive <span>NLP</span> Tasks»</span>. <em>Advances in Neural Information Processing Systems (NeurIPS)</em>.
+</div>
+<div id="ref-manning2008" class="csl-entry" role="listitem">
+Manning, Christopher D., Prabhakar Raghavan, y Hinrich Schütze. 2008. <em>Introduction to Information Retrieval</em>. Cambridge University Press.
+</div>
+<div id="ref-pan2024" class="csl-entry" role="listitem">
+Pan, James Jie, Jianguo Wang, y Guoliang Li. 2024. <span>«Survey of Vector Database Management Systems»</span>. <em>The VLDB Journal</em> 33 (5).
+</div>
+<div id="ref-santhanam2022" class="csl-entry" role="listitem">
+Santhanam, Keshav, Omar Khattab, Jon Saad-Falcon, Christopher Potts, y Matei Zaharia. 2022. <span>«<span>PLAID</span>: An Efficient Engine for Late Interaction Retrieval»</span>. <em>ACM International Conference on Information and Knowledge Management (CIKM)</em>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cap13.html" class="pagination-link" aria-label="Capítulo 13. Geometría del espacio métrico">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Capítulo 13. Geometría del espacio métrico</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./cap15.html" class="pagination-link" aria-label="Capítulo 15. Índices de vecino aproximado">
+        <span class="nav-page-text">Capítulo 15. Índices de vecino aproximado</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 Manuel Muñoz Plá · Edición web bajo licencia <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es">CC BY-NC-ND 4.0</a> (uso académico con atribución; sin uso comercial ni obras derivadas) · El código va aparte bajo licencia MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

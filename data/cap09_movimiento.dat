@@ -1,0 +1,7 @@
+# fraccion de claves movidas al pasar de N a N+1 nodos
+n  modulo  anillo
+2  0.6663  0.2943
+4  0.8002  0.1804
+8  0.8909  0.1386
+16  0.9398  0.0642
+32  0.9691  0.0249

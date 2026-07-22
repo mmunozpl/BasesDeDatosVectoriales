@@ -1,0 +1,9 @@
+# contraste (dmax-dmin)/dmin de distancias segun dimension
+dim  contraste
+2  100.6854
+5  8.0089
+10  3.0262
+50  0.6748
+100  0.4294
+500  0.1743
+1000  0.1196

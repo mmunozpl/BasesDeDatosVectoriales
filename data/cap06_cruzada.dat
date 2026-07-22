@@ -1,0 +1,6 @@
+# latencia de 'libros por pais' (mediana, ms)
+m  relacional  documento
+1000  0.459  0.918
+10000  3.161  6.947
+100000  33.708  80.358
+1000000  198.34  783.963

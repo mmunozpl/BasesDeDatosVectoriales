@@ -1,0 +1,17 @@
+# coste estimado (unidades internas del optimizador) frente a
+# la selectividad (fraccion de filas que pasan el filtro).
+# modelo anclado a una corrida real (PostgreSQL 16.14): el
+# indice pasa por el coste del plan en la consulta. generado
+# por curva_coste() en cap01_sgbd_basico.py, sin BD.
+# N=20000, sel_consulta=0.03285, cruce=0.075.
+selectividad  seq      idx
+0.00100         508.0     17.8
+0.00500         508.0     44.3
+0.01000         508.0     77.5
+0.02000         508.0    143.9
+0.03285         508.0    229.2
+0.05000         508.0    343.0
+0.07500         508.0    508.9
+0.10000         508.0    674.9
+0.15000         508.0   1006.8
+0.20000         508.0   1338.6

@@ -1,0 +1,8 @@
+# makespan (fraccion del total) ideal vs sesgado segun W trabajadores
+w  ideal  sesgado
+1  1.0  1.0
+2  0.5  0.5809
+4  0.25  0.3836
+8  0.125  0.2511
+16  0.0625  0.1978
+32  0.0312  0.1676

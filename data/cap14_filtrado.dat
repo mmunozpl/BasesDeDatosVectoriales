@@ -1,0 +1,7 @@
+# latencia (ms) de prefiltrado (con indice) vs posfiltrado y resultados que devuelve el posfiltrado, segun selectividad (n 200000, dim 256, k=10)
+selectividad  prefiltro_ms  posfiltro_ms  result_posfiltro
+5.0  6.145  15.314  0.3
+10.0  11.4  14.926  0.7
+25.0  44.272  14.65  2.8
+50.0  83.389  15.795  6.0
+100.0  146.296  13.84  10.0

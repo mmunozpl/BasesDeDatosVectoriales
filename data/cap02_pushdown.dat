@@ -1,0 +1,9 @@
+# tuplas intermedias al evaluar sigma_R(R join S)
+selectividad  sin_empuje  con_empuje
+0.01          2000        20
+0.05          2000        100
+0.1           2000        200
+0.2           2000        400
+0.5           2000        1000
+0.8           2000        1600
+1.0           2000        2000

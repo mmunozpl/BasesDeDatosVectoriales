@@ -1,0 +1,8 @@
+# dimension intrinseca: componentes PCA para el 90 por ciento de la varianza en datos uniformes vs estructurados, segun la dimension
+dim  uniforme  estructurado
+16  15  7
+32  29  8
+64  56  8
+128  109  9
+256  209  9
+512  389  9

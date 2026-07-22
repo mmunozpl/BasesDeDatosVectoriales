@@ -1,0 +1,7 @@
+# contraste de distancias: datos uniformes vs estructurados (cumulos) segun dimension
+dim  uniforme  estructurado
+2  105.6884  151.9086
+8  4.0125  17.1945
+32  1.078  9.3112
+128  0.4107  6.7019
+512  0.1914  5.8979

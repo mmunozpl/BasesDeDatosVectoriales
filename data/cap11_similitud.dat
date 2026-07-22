@@ -1,0 +1,5 @@
+# coseno medio de pares afines/ajenos (denso) vs one-hot
+caso  coseno
+afines_denso  0.9435
+ajenas_denso  0.2932
+cualquiera_onehot  0.0

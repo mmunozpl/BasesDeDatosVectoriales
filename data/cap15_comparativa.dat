@@ -1,0 +1,6 @@
+# comparativa: recall@10 y % de la coleccion comparada por familia (n=20000, mejor punto operativo)
+metodo  recall  pct_comparado
+Flat  1.0  100.0
+IVF  0.994  6.7
+LSH  0.58  23.3
+HNSW  0.936  4.5

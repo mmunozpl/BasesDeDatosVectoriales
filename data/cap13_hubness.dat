@@ -1,0 +1,7 @@
+# asimetria de la k-ocurrencia (hubness) y maxima ocurrencia segun dimension (k=10)
+dim  asimetria  max_ocurr
+2  -0.4142  17.4
+8  0.5821  30.6
+32  3.4213  131.8
+128  4.5694  194.1
+512  4.7199  210.9

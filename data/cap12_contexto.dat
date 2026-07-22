@@ -1,0 +1,4 @@
+# coseno de una palabra consigo misma: estatico (1) vs contextual en dos contextos (<1)
+caso  coseno
+estatico_mismo  1.0
+contextual_dos_ctx  -0.0704

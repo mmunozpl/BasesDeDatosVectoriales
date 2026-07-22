@@ -1,0 +1,5 @@
+# exito@10 de la busqueda vectorial vs el recorrido del grafo (GraphRAG) en preguntas de 1, 2 y 3 saltos (n=3000)
+saltos  vectorial  grafo
+1  0.0  1.0
+2  0.0067  1.0
+3  0.0033  1.0

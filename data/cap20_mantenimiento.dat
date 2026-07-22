@@ -1,0 +1,7 @@
+# recall@10 y numero de reentrenos del indice particionado segun la cadencia de reindexado, bajo 6000 altas que derivan a temas nuevos (cadencia 0 = nunca)
+cadencia  recall  reentrenos
+500  0.6745  12
+1000  0.6877  6
+2000  0.6652  3
+3000  0.6753  2
+0  0.63  0

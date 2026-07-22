@@ -1,0 +1,6 @@
+# latencia de amigos de amigos: adyacencia vs reunion (3000 nodos, grado 6, ms)
+k  adyacencia  reunion
+1  0.0006  0.2889
+2  0.0029  0.6178
+3  0.0153  0.9406
+4  0.0909  1.9612

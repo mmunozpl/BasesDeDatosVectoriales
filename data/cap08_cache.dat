@@ -1,0 +1,8 @@
+# ratio de aciertos LRU segun el tamano de cache (% de claves), acceso Zipf
+frac  aciertos
+1  0.2135
+2  0.3187
+5  0.4637
+10  0.5795
+20  0.6988
+50  0.8664

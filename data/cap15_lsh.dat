@@ -1,0 +1,8 @@
+# LSH: recall@10, candidatos, % de la coleccion y latencia (ms) segun los bits de la firma (n=20000, 16 tablas)
+bits  recall  candidatos  pct  latencia_ms
+4  0.929  12664  63.32  3.903
+6  0.5795  4652  23.26  1.291
+8  0.2615  1363  6.82  0.372
+10  0.091  371  1.85  0.235
+12  0.0365  104  0.52  0.173
+14  0.0125  25  0.12  0.153

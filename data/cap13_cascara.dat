@@ -1,0 +1,11 @@
+# fraccion del volumen de la bola en el 10% exterior (1-0.9^d)
+dim  frac
+1  0.1
+2  0.19
+3  0.271
+5  0.4095
+10  0.6513
+20  0.8784
+50  0.9948
+100  1.0
+200  1.0

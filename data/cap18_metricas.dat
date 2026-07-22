@@ -1,0 +1,5 @@
+# recall@10, MRR y nDCG@10 de tres rankings con los mismos relevantes en posiciones distintas (igual recall, distinto orden)
+ranking  recall  mrr  ndcg
+ideal  1.0  1.0  1.0
+disperso  1.0  1.0  0.828
+tardio  1.0  0.2  0.505

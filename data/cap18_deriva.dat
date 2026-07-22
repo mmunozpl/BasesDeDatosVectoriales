@@ -1,0 +1,6 @@
+# recall@10 de un IVF al insertar temas nuevos (deriva) sin reentrenar, y tras reindexar (reentrenar el k-means)
+fase  n  recall
+inicial  20000  0.987
++deriva  30000  0.6985
+++deriva  40000  0.512
+reindexado  40000  0.8775

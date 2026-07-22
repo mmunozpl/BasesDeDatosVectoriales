@@ -1,0 +1,8 @@
+# recall@5 segun el peso de recencia alpha, para consultas recientes vs atemporales (memoria de 5000)
+alpha  reciente  atemporal
+0.0  0.0533  0.0833
+0.2  0.1233  0.03
+0.4  0.27  0.0167
+0.6  0.3133  0.02
+0.8  0.2733  0.0133
+1.0  0.0333  0.0033

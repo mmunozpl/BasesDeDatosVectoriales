@@ -1,0 +1,8 @@
+# memoria (GB) de 1000000 vectores segun la dimension, en float32 y int8
+dim  float32_gb  int8_gb
+128  0.51  0.13
+256  1.02  0.26
+512  2.05  0.51
+768  3.07  0.77
+1024  4.1  1.02
+1536  6.14  1.54

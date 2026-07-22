@@ -1,0 +1,8 @@
+# recall@k de un indice IVF (nprobe=8) frente a la verdad exacta, segun la profundidad k (n=20000)
+k  recall
+1  0.995
+5  0.99
+10  0.9895
+20  0.9862
+50  0.9812
+100  0.9747

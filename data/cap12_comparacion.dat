@@ -1,0 +1,5 @@
+# acierto de tema: aleatorio vs co-ocurrencia vs word2vec
+metodo  acierto
+aleatorio  0.3438
+coocurrencia_svd  1.0
+word2vec  1.0

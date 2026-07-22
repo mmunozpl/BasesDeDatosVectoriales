@@ -1,0 +1,8 @@
+# varianza acumulada del SVD de la co-ocurrencia por componentes
+comp  varianza
+1  0.4502
+2  0.5764
+4  0.8176
+8  0.9355
+16  0.9623
+32  0.9981

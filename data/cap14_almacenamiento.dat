@@ -1,0 +1,6 @@
+# memoria (MB) de N vectores de dim 768 segun el tipo numerico
+n  float32  float16  int8
+10000  30.7  15.4  7.7
+100000  307.2  153.6  76.8
+1000000  3072.0  1536.0  768.0
+10000000  30720.0  15360.0  7680.0

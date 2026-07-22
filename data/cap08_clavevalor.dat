@@ -1,0 +1,6 @@
+# latencia de buscar una clave: hash vs barrido (ms)
+n  hash  barrido
+100  9e-05  0.0016
+1000  9e-05  0.0157
+10000  9e-05  0.2429
+100000  9e-05  2.253

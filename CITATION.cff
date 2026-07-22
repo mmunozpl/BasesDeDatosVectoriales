@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "Si usas esta obra, cítala así."
+title: "Bases de datos: SQL · NoSQL · Vectorial"
+authors:
+  - family-names: "Muñoz Plá"
+    given-names: "Manuel"
+repository-code: "https://github.com/mmunozpl/BasesDeDatosVectoriales"
+url: "https://mmunozpl.github.io/BasesDeDatosVectoriales/"
+license: CC-BY-NC-ND-4.0
+preferred-citation:
+  type: book
+  title: "Bases de datos: SQL · NoSQL · Vectorial"
+  authors:
+    - family-names: "Muñoz Plá"
+      given-names: "Manuel"
+  year: 2026
+  publisher:
+    name: "qWORD.dev"
+  url: "https://mmunozpl.github.io/BasesDeDatosVectoriales/"

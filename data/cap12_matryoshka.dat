@@ -1,0 +1,6 @@
+# acierto de tema al truncar la dimension: estandar vs Matryoshka
+dim  estandar  matryoshka
+2  0.375  1.0
+4  0.8125  1.0
+8  0.9375  1.0
+16  1.0  1.0

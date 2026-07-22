@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Capítulo 2. El modelo relacional – Bases de datos</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cap03.html" rel="next">
+<link href="./cap01.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-654c8d80848ee01bf5d57418afe456c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cap02.html">Capítulo 2. El modelo relacional</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Bases de datos</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Alternar modo lector">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 1. La persistencia y la disciplina de gestión de datos</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap02.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Capítulo 2. El modelo relacional</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 3. SQL: del DML declarativo a las extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 4. Diseño y normalización</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 5. Transacciones, concurrencia y recuperación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 6. Límites del relacional y el movimiento NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 7. Consistencia distribuida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 8. Las familias NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 9. Mecánica de la distribución</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 10. Recuperación de información clásica</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 11. De la representación dispersa a la densa</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 12. Deep learning para embeddings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 13. Geometría del espacio métrico</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 14. Anatomía de una base de datos vectorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 15. Índices de vecino aproximado</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 16. Motores: dedicados frente a extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 17. Consulta híbrida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 18. Evaluación y operación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 19. Recuperación aumentada y memoria de agentes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 20. El futuro híbrido</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 21. Caso de estudio integral</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#relaciones-atributos-y-claves" id="toc-relaciones-atributos-y-claves" class="nav-link active" data-scroll-target="#relaciones-atributos-y-claves">Relaciones, atributos y claves</a>
+  <ul class="collapse">
+  <li><a href="#la-relación-como-objeto-matemático" id="toc-la-relación-como-objeto-matemático" class="nav-link" data-scroll-target="#la-relación-como-objeto-matemático">La relación como objeto matemático</a></li>
+  </ul></li>
+  <li><a href="#claves-e-integridad-referencial" id="toc-claves-e-integridad-referencial" class="nav-link" data-scroll-target="#claves-e-integridad-referencial">Claves e integridad referencial</a>
+  <ul class="collapse">
+  <li><a href="#valores-nulos-y-lógica-trivaluada" id="toc-valores-nulos-y-lógica-trivaluada" class="nav-link" data-scroll-target="#valores-nulos-y-lógica-trivaluada">Valores nulos y lógica trivaluada</a></li>
+  </ul></li>
+  <li><a href="#el-álgebra-relacional" id="toc-el-álgebra-relacional" class="nav-link" data-scroll-target="#el-álgebra-relacional">El álgebra relacional</a>
+  <ul class="collapse">
+  <li><a href="#operadores-primitivos" id="toc-operadores-primitivos" class="nav-link" data-scroll-target="#operadores-primitivos">Operadores primitivos</a></li>
+  <li><a href="#operadores-derivados-la-reunión-y-la-división" id="toc-operadores-derivados-la-reunión-y-la-división" class="nav-link" data-scroll-target="#operadores-derivados-la-reunión-y-la-división">Operadores derivados: la reunión y la división</a></li>
+  </ul></li>
+  <li><a href="#las-leyes-del-álgebra-y-la-optimización" id="toc-las-leyes-del-álgebra-y-la-optimización" class="nav-link" data-scroll-target="#las-leyes-del-álgebra-y-la-optimización">Las leyes del álgebra y la optimización</a></li>
+  <li><a href="#restricciones-de-integridad-y-vistas" id="toc-restricciones-de-integridad-y-vistas" class="nav-link" data-scroll-target="#restricciones-de-integridad-y-vistas">Restricciones de integridad y vistas</a>
+  <ul class="collapse">
+  <li><a href="#vistas-relaciones-derivadas" id="toc-vistas-relaciones-derivadas" class="nav-link" data-scroll-target="#vistas-relaciones-derivadas">Vistas: relaciones derivadas</a></li>
+  </ul></li>
+  <li><a href="#el-cálculo-relacional" id="toc-el-cálculo-relacional" class="nav-link" data-scroll-target="#el-cálculo-relacional">El cálculo relacional</a>
+  <ul class="collapse">
+  <li><a href="#cálculo-de-tuplas-y-de-dominios" id="toc-cálculo-de-tuplas-y-de-dominios" class="nav-link" data-scroll-target="#cálculo-de-tuplas-y-de-dominios">Cálculo de tuplas y de dominios</a></li>
+  <li><a href="#la-seguridad-de-las-expresiones" id="toc-la-seguridad-de-las-expresiones" class="nav-link" data-scroll-target="#la-seguridad-de-las-expresiones">La seguridad de las expresiones</a></li>
+  </ul></li>
+  <li><a href="#equivalencia-y-poder-expresivo" id="toc-equivalencia-y-poder-expresivo" class="nav-link" data-scroll-target="#equivalencia-y-poder-expresivo">Equivalencia y poder expresivo</a>
+  <ul class="collapse">
+  <li><a href="#de-la-consulta-declarativa-al-plan-físico" id="toc-de-la-consulta-declarativa-al-plan-físico" class="nav-link" data-scroll-target="#de-la-consulta-declarativa-al-plan-físico">De la consulta declarativa al plan físico</a></li>
+  </ul></li>
+  <li><a href="#los-límites-del-álgebra-relacional" id="toc-los-límites-del-álgebra-relacional" class="nav-link" data-scroll-target="#los-límites-del-álgebra-relacional">Los límites del álgebra relacional</a></li>
+  <li><a href="#práctica-un-álgebra-relacional-en-funcionamiento" id="toc-práctica-un-álgebra-relacional-en-funcionamiento" class="nav-link" data-scroll-target="#práctica-un-álgebra-relacional-en-funcionamiento">Práctica: un álgebra relacional en funcionamiento</a>
+  <ul class="collapse">
+  <li><a href="#verificar-las-leyes-no-enunciarlas" id="toc-verificar-las-leyes-no-enunciarlas" class="nav-link" data-scroll-target="#verificar-las-leyes-no-enunciarlas">Verificar las leyes, no enunciarlas</a></li>
+  <li><a href="#el-empuje-de-la-selección-medido" id="toc-el-empuje-de-la-selección-medido" class="nav-link" data-scroll-target="#el-empuje-de-la-selección-medido">El empuje de la selección, medido</a></li>
+  <li><a href="#la-demostración-quince-tuplas" id="toc-la-demostración-quince-tuplas" class="nav-link" data-scroll-target="#la-demostración-quince-tuplas">La demostración: quince tuplas</a></li>
+  </ul></li>
+  <li><a href="#síntesis-y-puente-al-capítulo-siguiente" id="toc-síntesis-y-puente-al-capítulo-siguiente" class="nav-link" data-scroll-target="#síntesis-y-puente-al-capítulo-siguiente">Síntesis y puente al capítulo siguiente</a></li>
+  <li><a href="#ejercicios-propuestos" id="toc-ejercicios-propuestos" class="nav-link" data-scroll-target="#ejercicios-propuestos">Ejercicios propuestos</a></li>
+  <li><a href="#lecturas-recomendadas" id="toc-lecturas-recomendadas" class="nav-link" data-scroll-target="#lecturas-recomendadas">Lecturas recomendadas</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Capítulo 2. El modelo relacional</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>El capítulo anterior habló de tablas, atributos y claves como si su significado fuera evidente. No lo es: bajo esas palabras hay una teoría matemática precisa, y este capítulo la desarrolla. El modelo relacional, que Codd propuso en 1970 <span class="citation" data-cites="codd1970">(<a href="#ref-codd1970" role="doc-biblioref">Codd 1970</a>)</span>, hizo por las bases de datos lo que pocas ideas han hecho por la informática: sustituyó la navegación explícita entre registros por una descripción declarativa basada en la teoría de conjuntos, de modo que el usuario dice <em>qué</em> dato quiere y el sistema decide <em>cómo</em> obtenerlo. Esa separación entre el qué y el cómo es la encarnación más pura de la independencia física del capítulo&nbsp;1, y la razón de que el modelo relacional haya dominado medio siglo.</p>
+<p>El capítulo se construye sobre una sola definición austera —la relación como conjunto de tuplas sobre un producto de dominios— y de ella extrae todo lo demás: las claves y la integridad referencial, un álgebra cuya propiedad característica es la <em>clausura</em> (toda operación sobre relaciones devuelve otra relación, y por eso las consultas se componen) y un cálculo declarativo equivalente en poder expresivo. Que el álgebra, procedimental, y el cálculo, declarativo, expresen exactamente lo mismo —el teorema de completitud de Codd— es el resultado que da sentido a toda la pila: el usuario escribe en términos declarativos, parecidos al cálculo, y el sistema traduce a un plan algebraico que ejecutar. Reconoceremos ahí, ya formado, el germen del optimizador de consultas que el capítulo&nbsp;1 puso a trabajar.</p>
+<p>Hay además un hilo que conviene seguir desde ahora, porque vertebra el libro entero. El modelo relacional responde siempre a la misma pregunta: qué tuplas <em>coinciden</em> con un criterio, donde coincidir es satisfacer una condición de igualdad sobre valores. Ese <em>igual a</em> es el ancla de toda la primera parte. Mucho después, la recuperación vectorial lo sustituirá por el <em>cercano a</em> de la similitud, y veremos que esa sustitución no es inocua: rompe justamente la clausura que aquí hace del álgebra una maquinaria componible. Entender bien el edificio relacional es, por eso, el requisito para medir lo que la búsqueda por similitud gana y lo que cuesta.</p>
+<section id="relaciones-atributos-y-claves" class="level2">
+<h2 class="anchored" data-anchor-id="relaciones-atributos-y-claves">Relaciones, atributos y claves</h2>
+<p>Los sistemas anteriores al relacional —el jerárquico y el de red que el capítulo&nbsp;1 situó en su genealogía— ataban la consulta a la navegación física: para hallar un dato, el programa recorría punteros entre registros en un orden que reflejaba cómo estaban almacenados. Consultar y almacenar estaban entrelazados, y cambiar lo segundo rompía lo primero. La idea de Codd <span class="citation" data-cites="codd1970">(<a href="#ref-codd1970" role="doc-biblioref">Codd 1970</a>)</span> fue radical en su sencillez: fundar el dato en la teoría de conjuntos y la lógica de predicados, de modo que la descripción lógica de los datos quedara divorciada de su acceso físico. Una relación es un conjunto; una consulta, una fórmula; el resultado, otro conjunto. Dónde y cómo se guarden las tuplas deja de aparecer en la consulta.</p>
+<p>Ese divorcio es la independencia física del capítulo&nbsp;1 elevada a teoría, y trae tres regalos que justifican el rigor de este capítulo. Primero, una <em>semántica precisa</em>: una consulta significa exactamente el conjunto que su fórmula denota, sin ambigüedad. Segundo, la <em>optimizabilidad</em>: como distintas expresiones pueden denotar el mismo conjunto, el sistema es libre de elegir la más barata, según se vio en la práctica del capítulo&nbsp;1. Tercero, la <em>equivalencia demostrable</em> entre formas de preguntar, que la sección&nbsp;2.7 corona. La formalidad no es un lujo académico: es la fuente de la independencia y del optimizador. Por eso el capítulo empieza, como debe, por la definición matemática.</p>
+<section id="la-relación-como-objeto-matemático" class="level3">
+<h3 class="anchored" data-anchor-id="la-relación-como-objeto-matemático">La relación como objeto matemático</h3>
+<p>El punto de partida es deliberadamente abstracto. Cada atributo tiene asociado un <em>dominio</em>, el conjunto de valores que puede tomar: el dominio de un año son los enteros en un rango, el de un título las cadenas de texto. Una relación es, entonces, un subconjunto del producto cartesiano de esos dominios.</p>
+<p><strong>Definición&nbsp;(Relación).</strong>&nbsp; Dado un conjunto de atributos <span class="math inline">\(\{\mathit{A_1},\dots,\mathit{A_n}\}\)</span> con dominios <span class="math inline">\(\operatorname{dom}(\mathit{A_1}),\dots,\operatorname{dom}(\mathit{A_n})\)</span>, una <em>relación</em> <span class="math inline">\(\mathrm{R}\)</span> es un subconjunto finito del producto cartesiano <span class="math display">\[\mathrm{R} \subseteq \operatorname{dom}(\mathit{A_1}) \times \cdots \times \operatorname{dom}(\mathit{A_n}).\]</span> Cada elemento <span class="math inline">\(t \in \mathrm{R}\)</span> es una <em>tupla</em>, <span class="math inline">\(t = \langle v_1,\dots,v_n \rangle\)</span> con <span class="math inline">\(v_i \in \operatorname{dom}(\mathit{A_i})\)</span>; se escribe <span class="math inline">\(t[\mathit{A_i}] = v_i\)</span> para la proyección de la tupla sobre un atributo.</p>
+<p>De esta definición de una línea se siguen, sin añadir nada, dos propiedades que distinguen una relación de una tabla cualquiera de una hoja de cálculo. La primera: una relación es un <em>conjunto</em>, así que no contiene tuplas repetidas —dos filas idénticas son la misma tupla— y no hay un orden entre sus tuplas; hablar de «la tercera fila» no tiene sentido. La segunda: cada atributo toma un único valor de su dominio en cada tupla, un valor <em>atómico</em>, sin estructura interna que el modelo reconozca. Esta condición, llamada primera forma normal, es la que el capítulo&nbsp;4 examinará al detalle y la que los modelos de la segunda parte relajarán al admitir documentos anidados.</p>
+<p><strong>Observación.</strong>&nbsp; La semántica de conjuntos es del modelo, no de los sistemas reales. SQL, que el capítulo&nbsp;3 estudia, opera por omisión sobre <em>multiconjuntos</em> (admite filas duplicadas, y por eso <code>SELECT</code> sin <code>DISTINCT</code> puede repetirlas) y permite ordenar el resultado con <code>ORDER BY</code>. Esa brecha entre el modelo y el lenguaje no es un descuido: el duplicado y el orden tienen coste y utilidad prácticos. Pero el sustrato teórico sobre el que se razona es el conjunto, y conviene tenerlo presente cuando, más adelante, una consulta devuelva más filas de las esperadas.</p>
+<p>Dos magnitudes describen una relación. El <em>grado</em> (o aridad) es su número de atributos —una propiedad del esquema, fija—; la <em>cardinalidad</em> es su número de tuplas, <span class="math inline">\(\lvert \mathrm{R} \rvert\)</span> —una propiedad de la instancia, que cambia con cada operación—. Una relación de grado cero, sin atributos, es un caso límite legítimo: solo puede contener la tupla vacía o ninguna, de modo que representa los dos valores de verdad, y aparece como resultado de ciertas consultas. La relación de cardinalidad cero —la relación <em>vacía</em>— es el elemento neutro de la unión y absorbente de la reunión, y reaparecerá al hablar de restricciones: una restricción se cumple cuando cierta consulta da la relación vacía.</p>
+<p>La distinción que el capítulo&nbsp;1 fijó entre esquema e instancia se vuelve aquí precisa. El <em>esquema</em> de una relación es su nombre y la lista de sus atributos con sus dominios —<span class="math inline">\(\mathrm{Libro}(\mathit{id}, \mathit{titulo}, \mathit{tema},
+\mathit{id\_autor})\)</span>—; es la intensión, lo que la relación puede contener, y cambia rara vez. La <em>instancia</em> es el conjunto concreto de tuplas en un instante; es la extensión, lo que contiene ahora, y cambia con cada inserción o borrado. Toda la teoría de este capítulo opera sobre esquemas y vale para cualquier instancia; la práctica del final manipula instancias concretas.</p>
+</section>
+</section>
+<section id="claves-e-integridad-referencial" class="level2">
+<h2 class="anchored" data-anchor-id="claves-e-integridad-referencial">Claves e integridad referencial</h2>
+<p>Si una relación es un conjunto sin tuplas repetidas, cada tupla se distingue por el valor de todos sus atributos juntos. Pero casi siempre basta menos: un subconjunto de atributos identifica ya unívocamente cada tupla. Esa es la idea de clave.</p>
+<p><strong>Definición&nbsp;(Superclave, clave candidata, clave primaria).</strong>&nbsp; Un conjunto de atributos <span class="math inline">\(\mathrm{K}\)</span> de <span class="math inline">\(\mathrm{R}\)</span> es una <em>superclave</em> si no existen dos tuplas distintas de <span class="math inline">\(\mathrm{R}\)</span> que coincidan en todos los atributos de <span class="math inline">\(\mathrm{K}\)</span>. Una <em>clave candidata</em> es una superclave minimal: ningún subconjunto propio suyo es superclave. La <em>clave primaria</em> es la clave candidata que el diseñador elige para identificar la relación.</p>
+<p>Conviene notar que ser superclave es una propiedad del <em>esquema</em>, no de una instancia: que en la instancia de hoy no se repita un valor no lo convierte en clave si el esquema permite que mañana se repita. La clave expresa una restricción que toda instancia válida debe respetar, y el sistema gestor la hace cumplir rechazando las inserciones que la violen. A esta garantía —que la clave primaria identifica y nunca es nula— se la llama <em>integridad de entidad</em>.</p>
+<p><strong>Ejemplo&nbsp;(Claves de una relación de préstamos).</strong>&nbsp; Sea la relación <span class="math inline">\(\mathrm{Prestamo}\)</span> con atributos <span class="math inline">\(\mathit{id\_libro}\)</span>, <span class="math inline">\(\mathit{id\_socio}\)</span> y <span class="math inline">\(\mathit{fecha}\)</span>, que registra qué socio toma qué libro y cuándo. Si un socio no puede tener el mismo libro dos veces el mismo día, <span class="math inline">\(\{\mathit{id\_libro}, \mathit{id\_socio},
+\mathit{fecha}\}\)</span> es superclave. Si, además, un libro solo puede estar prestado a un socio a la vez, entonces <span class="math inline">\(\{\mathit{id\_libro}, \mathit{fecha}\}\)</span> ya identifica la tupla y es clave candidata, más pequeña. La elección de qué atributos forman la clave no la dicta la instancia, sino las reglas del dominio —qué combinaciones el mundo permite repetir—, y el capítulo&nbsp;4 mostrará que esas reglas, las dependencias funcionales, son la base del diseño.</p>
+<p>Las relaciones no viven aisladas: se referencian unas a otras. Una relación de libros no repite los datos del autor en cada tupla —eso era la redundancia que el fichero plano del capítulo&nbsp;1 sufría—, sino que guarda una referencia al autor, y los datos del autor viven una sola vez en otra relación. Esa referencia es la clave ajena.</p>
+<p><strong>Definición&nbsp;(Clave ajena e integridad referencial).</strong>&nbsp; Un conjunto de atributos <span class="math inline">\(\mathrm{F}\)</span> de <span class="math inline">\(\mathrm{R}\)</span> es una <em>clave ajena</em> que referencia a <span class="math inline">\(\mathrm{S}\)</span> si los valores de <span class="math inline">\(\mathrm{F}\)</span> en cada tupla de <span class="math inline">\(\mathrm{R}\)</span> coinciden con los de la clave primaria de alguna tupla de <span class="math inline">\(\mathrm{S}\)</span> (o son nulos). La <em>integridad referencial</em> es la garantía de que no hay referencias colgantes: ninguna tupla de <span class="math inline">\(\mathrm{R}\)</span> apunta a una de <span class="math inline">\(\mathrm{S}\)</span> que no exista.</p>
+<p>La figura&nbsp;2.1 muestra el esquema de juguete que la práctica usará: <span class="math inline">\(\mathrm{Libro}\)</span> con una clave ajena <span class="math inline">\(\mathit{id\_autor}\)</span> que referencia a <span class="math inline">\(\mathrm{Autor}\)</span>. La integridad referencial es lo que hace que borrar un autor con libros sin más sea un error que el gestor rechaza: la relación entre ambas tablas es un invariante que el sistema mantiene, no una convención que cada programa deba recordar. Es, de nuevo, la idea del capítulo&nbsp;1 — centralizar en el gestor las garantías que el fichero plano dejaba a cada aplicación—, ahora hecha estructura.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap02/fig_01.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;2.1.</strong> Un esquema relacional de juguete. La relación <span class="math inline">\(\mathrm{Libro}\)</span> guarda una clave ajena <span class="math inline">\(\mathit{id\_autor}\)</span> que referencia la clave primaria de <span class="math inline">\(\mathrm{Autor}\)</span>; la integridad referencial garantiza que todo <span class="math inline">\(\mathit{id\_autor}\)</span> de un libro existe como autor. El dato del autor vive una sola vez, sin la redundancia del fichero plano.</figcaption>
+</figure>
+</div>
+<p><strong>Ejemplo&nbsp;(De la redundancia a la referencia).</strong>&nbsp; Un catálogo plano que guardara en cada libro los datos completos de su autor repetiría esos datos en cada obra. Si Ada tiene tres libros, su ciudad aparece tres veces: <span class="math display">\[\begin{array}{llll}
+    \mathit{titulo} &amp; \mathit{autor} &amp; \mathit{ciudad} \\
+    \text{geometría} &amp; \text{ada} &amp; \text{londres} \\
+    \text{redes}     &amp; \text{ada} &amp; \text{londres} \\
+    \text{lógica}    &amp; \text{ada} &amp; \text{londres} \\
+    \text{álgebra}   &amp; \text{boole}&amp; \text{cork}
+  \end{array}\]</span> Cambiar la ciudad de Ada obliga a editar tres tuplas, y olvidar una deja el catálogo afirmando dos ciudades para una misma persona —la anomalía de actualización del capítulo&nbsp;1, ahora sobre una relación—. El modelo relacional la evita partiendo el catálogo en dos relaciones: <span class="math inline">\(\mathrm{Libro}(\mathit{titulo},
+\mathit{id\_autor})\)</span> y <span class="math inline">\(\mathrm{Autor}(\mathit{id\_autor},\mathit{autor},\mathit{ciudad})\)</span>, con los datos de cada autor almacenados una sola vez y una clave ajena que los referencia. Reconstruir la vista plana es entonces una reunión natural <span class="math inline">\(\mathrm{Libro}\bowtie\mathrm{Autor}\)</span>; eliminar la redundancia ha sido la operación inversa, una <em>descomposición</em> de una relación en dos. Que esa descomposición no pierda ni invente información —que la reunión devuelva exactamente lo de partida— es una propiedad delicada, y el capítulo&nbsp;4 la convierte en el corazón de la teoría de la normalización.</p>
+<section id="valores-nulos-y-lógica-trivaluada" class="level3">
+<h3 class="anchored" data-anchor-id="valores-nulos-y-lógica-trivaluada">Valores nulos y lógica trivaluada</h3>
+<p>Hay un valor que la definición austera de relación no contemplaba y que la práctica impone: la ausencia de valor. ¿Qué año de publicación tiene un libro cuya fecha se desconoce? ¿Qué autor, una obra anónima? El modelo relacional admite un marcador especial, el <em>nulo</em>, que no es un valor del dominio sino la señal de que no hay valor —porque se ignora, o porque no aplica—. Su introducción tiene una consecuencia profunda: la lógica deja de ser binaria.</p>
+<p>Comparar un nulo con cualquier cosa no da ni verdadero ni falso, sino un tercer valor: <em>desconocido</em>. Si no sé el año de un libro, la condición «el año es posterior a 2010» no es verdadera ni falsa para esa tupla: es desconocida. La selección, la reunión y las restricciones operan, por tanto, sobre una lógica <em>trivaluada</em>, cuyas tablas de verdad extienden las booleanas con el tercer valor (tabla&nbsp;2.1). La regla práctica que de ahí se sigue es constante: la selección <span class="math inline">\(\sigma_\theta\)</span> conserva solo las tuplas para las que <span class="math inline">\(\theta\)</span> es verdadero, nunca las que dan desconocido; por eso una condición sobre un atributo nulo descarta la tupla, y por eso una reunión natural no empareja dos nulos —dos ausencias no son una coincidencia—.</p>
+<table class="caption-top table">
+<caption>Lógica trivaluada: la conjunción, la disyunción y la negación con el tercer valor desconocido (<span class="math inline">\(\mathsf{U}\)</span>). La selección conserva solo lo verdadero (<span class="math inline">\(\mathsf{V}\)</span>); <span class="math inline">\(\mathsf{U}\)</span> se trata, a efectos de filtrado, como un no.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\(p\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(q\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(p\wedge q\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(p\vee q\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\neg p\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\mathsf{V}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{V}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{V}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{V}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\mathsf{V}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{V}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\mathsf{V}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{V}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{U}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{F}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathsf{V}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>El nulo es una de las decisiones más discutidas del modelo. Codd lo defendió como necesario para representar información incompleta; Date ha argumentado durante décadas que la lógica trivaluada introduce más problemas de los que resuelve y que un buen diseño puede prescindir de él <span class="citation" data-cites="date">(<a href="#ref-date" role="doc-biblioref">Date 2001</a>)</span>. El libro no toma partido, pero el lector debe retener el hecho operativo: en presencia de nulos, una consulta puede descartar tuplas que «intuitivamente» debería incluir, y esa sorpresa —el capítulo&nbsp;3 la verá morder en SQL— casi siempre se explica por una comparación que devolvió desconocido en vez de verdadero. La integridad de entidad, por su parte, prohíbe el nulo en la clave primaria: una tupla que no se puede identificar no es una entidad.</p>
+</section>
+</section>
+<section id="el-álgebra-relacional" class="level2">
+<h2 class="anchored" data-anchor-id="el-álgebra-relacional">El álgebra relacional</h2>
+<p>El álgebra relacional es un conjunto de operadores que toman una o dos relaciones y devuelven una relación. Esa frase encierra la propiedad que lo hace poderoso, y conviene nombrarla antes que a ningún operador concreto.</p>
+<p><strong>Definición&nbsp;(Clausura del álgebra).</strong>&nbsp; El álgebra relacional es <em>cerrada</em>: el resultado de aplicar cualquier operador a relaciones es, a su vez, una relación. No hay tipos intermedios ni objetos de otra clase.</p>
+<p>La clausura es la que permite <em>componer</em>: como la salida de un operador es del mismo tipo que su entrada, los operadores se encadenan sin límite, y una consulta compleja es una expresión construida anidando operadores simples, igual que una expresión aritmética anida sumas y productos. Es el mismo principio de composición que el capítulo&nbsp;1 atribuía a la indirección y que la arquitectura de tres niveles encarnaba; aquí se vuelve algebraico. Y es la razón de que, mucho más adelante, importe tanto preguntarse si la búsqueda por similitud conserva o rompe esta propiedad: un operador que no devuelve una relación no se puede encadenar con los demás sin más.</p>
+<section id="operadores-primitivos" class="level3">
+<h3 class="anchored" data-anchor-id="operadores-primitivos">Operadores primitivos</h3>
+<p>Codd mostró que basta un puñado de operadores primitivos; el resto se derivan de ellos. La tabla&nbsp;2.2 los reúne. La <em>selección</em> <span class="math inline">\(\sigma_\theta(\mathrm{R})\)</span> se queda con las tuplas que satisfacen una condición <span class="math inline">\(\theta\)</span> —filtra filas—; la <em>proyección</em> <span class="math inline">\(\pi_{\mathit{A_1}\dots
+\mathit{A_k}}(\mathrm{R})\)</span> se queda con unos atributos —elige columnas— y, como el resultado es un conjunto, elimina los duplicados que la pérdida de columnas pudiera crear. La <em>unión</em> <span class="math inline">\(\mathrm{R}\cup\mathrm{S}\)</span>, la <em>diferencia</em> <span class="math inline">\(\mathrm{R}\setminus\mathrm{S}\)</span> y la <em>intersección</em> <span class="math inline">\(\mathrm{R}\cap\mathrm{S}\)</span> son las de conjuntos, y exigen que ambas relaciones sean <em>compatibles</em>: mismos atributos sobre los mismos dominios. El <em>producto cartesiano</em> <span class="math inline">\(\mathrm{R}\times\mathrm{S}\)</span> empareja cada tupla de una con cada tupla de la otra. Y el <em>renombrado</em> <span class="math inline">\(\rho\)</span> cambia el nombre de un atributo o de la relación, pieza necesaria para, por ejemplo, reunir una relación consigo misma.</p>
+<p><strong>Ejemplo&nbsp;(Unión, diferencia y compatibilidad).</strong>&nbsp; Sean <span class="math inline">\(\mathrm{Novedades}\)</span> y <span class="math inline">\(\mathrm{Donados}\)</span>, ambas sobre los atributos <span class="math inline">\((\mathit{id},\mathit{titulo})\)</span> —son <em>compatibles</em>—. Su unión <span class="math inline">\(\mathrm{Novedades}\cup\mathrm{Donados}\)</span> es el catálogo combinado, sin repetir los libros que lleguen por ambas vías (el conjunto deduplica). La diferencia <span class="math inline">\(\mathrm{Novedades}\setminus\mathrm{Donados}\)</span> son las novedades que no son donaciones. Si una de las dos relaciones tuviera un atributo más —digamos <span class="math inline">\(\mathit{precio}\)</span>—, la unión no estaría definida: no se puede unir lo que no tiene la misma forma. Esa exigencia de compatibilidad de unión es la razón de que, en la práctica, una unión vaya casi siempre precedida de proyecciones que igualan los esquemas de los dos operandos.</p>
+<p><strong>Ejemplo&nbsp;(Selección y proyección, con sus sorpresas).</strong>&nbsp; Sea <span class="math inline">\(\mathrm{Libro}\)</span> sobre <span class="math inline">\((\mathit{id},\mathit{tema},\mathit{id\_autor})\)</span> con <span class="math display">\[\{\langle 1,\text{geometría},10 \rangle,\ \langle 2,\text{álgebra},11 \rangle,\
+  \langle 3,\text{geometría},10 \rangle,\ \langle 4,\text{redes},12 \rangle\}.\]</span> La selección <span class="math inline">\(\sigma_{\mathit{tema}=\text{geometría}}(\mathrm{Libro})\)</span> devuelve las tuplas <span class="math inline">\(1\)</span> y <span class="math inline">\(3\)</span> —filtra filas, conserva todas las columnas—. La proyección <span class="math inline">\(\pi_{\mathit{tema}}(\mathrm{Libro})\)</span>, en cambio, devuelve <span class="math inline">\(\{\langle \text{geometría} \rangle,\langle \text{álgebra} \rangle,\langle \text{redes} \rangle\}\)</span>: tres tuplas, no cuatro. La sorpresa es la pérdida de la cuarta: los libros <span class="math inline">\(1\)</span> y <span class="math inline">\(3\)</span> comparten tema, y al proyectar solo el tema sus dos tuplas se vuelven idénticas y el conjunto las fusiona en una. La proyección puede, así, reducir la cardinalidad, y esa deduplicación —invisible si uno piensa en tablas con filas numeradas— es consecuencia directa de la semántica de conjuntos. En SQL, que opera sobre multiconjuntos, la misma proyección devolvería cuatro filas salvo que se pida <code>DISTINCT</code>; la brecha entre el modelo y el lenguaje, otra vez.</p>
+<table class="caption-top table">
+<caption>Operadores del álgebra relacional. Los cinco primeros, más el renombrado, son primitivos; los demás se derivan de ellos.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Operador</th>
+<th style="text-align: left;">Símbolo</th>
+<th style="text-align: left;">Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Selección</td>
+<td style="text-align: left;"><span class="math inline">\(\sigma_\theta(\mathrm{R})\)</span></td>
+<td style="text-align: left;">tuplas de <span class="math inline">\(\mathrm{R}\)</span> que</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">cumplen <span class="math inline">\(\theta\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Proyección</td>
+<td style="text-align: left;"><span class="math inline">\(\pi_{\bar{A}}(\mathrm{R})\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{R}\)</span> reducida a los</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">atributos <span class="math inline">\(\bar{A}\)</span> (sin duplicados)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Unión</td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{R}\cup\mathrm{S}\)</span></td>
+<td style="text-align: left;">tuplas en <span class="math inline">\(\mathrm{R}\)</span> o en <span class="math inline">\(\mathrm{S}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">(compatibles)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Diferencia</td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{R}\setminus\mathrm{S}\)</span></td>
+<td style="text-align: left;">tuplas en <span class="math inline">\(\mathrm{R}\)</span> y no en</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{S}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Producto</td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{R}\times\mathrm{S}\)</span></td>
+<td style="text-align: left;">cada tupla de <span class="math inline">\(\mathrm{R}\)</span> con cada</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">una de <span class="math inline">\(\mathrm{S}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Renombrado</td>
+<td style="text-align: left;"><span class="math inline">\(\rho\)</span></td>
+<td style="text-align: left;">cambia nombres de atributo o relación</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Intersección</td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{R}\cap\mathrm{S}\)</span></td>
+<td style="text-align: left;">tuplas en ambas</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reunión <span class="math inline">\(\theta\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{R}\bowtie_\theta\mathrm{S}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(\sigma_\theta(\mathrm{R}\times\mathrm{S})\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Reunión natural</td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{R}\bowtie\mathrm{S}\)</span></td>
+<td style="text-align: left;">emparejada por los atributos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">comunes</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">División</td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{R}\div\mathrm{S}\)</span></td>
+<td style="text-align: left;">tuplas de <span class="math inline">\(\mathrm{R}\)</span> asociadas a</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><em>todas</em> las de <span class="math inline">\(\mathrm{S}\)</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="operadores-derivados-la-reunión-y-la-división" class="level3">
+<h3 class="anchored" data-anchor-id="operadores-derivados-la-reunión-y-la-división">Operadores derivados: la reunión y la división</h3>
+<p>De los primitivos salen los operadores que la práctica usa a diario. La intersección es <span class="math inline">\(\mathrm{R}\cap\mathrm{S} = \mathrm{R}\setminus(\mathrm{R}\setminus
+\mathrm{S})\)</span>. La <em>reunión</em> (o <em>join</em>) es la pieza central: combina tuplas de dos relaciones que concuerdan en algún criterio. La reunión <span class="math inline">\(\theta\)</span> es un producto seguido de una selección, <span class="math inline">\(\mathrm{R}\bowtie_\theta\mathrm{S} =
+\sigma_\theta(\mathrm{R}\times\mathrm{S})\)</span>; la <em>reunión natural</em> <span class="math inline">\(\mathrm{R}\bowtie\mathrm{S}\)</span> es el caso más común: empareja las tuplas que coinciden en todos los atributos de igual nombre y proyecta fuera la columna repetida.</p>
+<p><strong>Definición&nbsp;(Reunión natural).</strong>&nbsp; Sean <span class="math inline">\(\mathrm{R}\)</span> y <span class="math inline">\(\mathrm{S}\)</span> con atributos comunes <span class="math inline">\(\bar{C}\)</span>. La reunión natural <span class="math inline">\(\mathrm{R}\bowtie\mathrm{S}\)</span> es la relación sobre la unión de los atributos de ambas cuyas tuplas son las combinaciones <span class="math inline">\(t \cup u\)</span> con <span class="math inline">\(t\in\mathrm{R}\)</span>, <span class="math inline">\(u\in\mathrm{S}\)</span> y <span class="math inline">\(t[\bar{C}] = u[\bar{C}]\)</span>.</p>
+<p><strong>Ejemplo&nbsp;(Una reunión natural a mano).</strong>&nbsp; Con el esquema de la figura&nbsp;2.1, sean <span class="math display">\[\mathrm{Libro} = \{\langle 1,\text{geometría},10 \rangle,\ \langle 2,\text{álgebra},11 \rangle,\
+  \langle 3,\text{redes},12 \rangle\}\]</span> sobre <span class="math inline">\((\mathit{id},\mathit{tema},\mathit{id\_autor})\)</span>, y <span class="math inline">\(\mathrm{Autor}=\{\langle 10,\text{ada} \rangle,\langle 11,\text{boole} \rangle\}\)</span> sobre <span class="math inline">\((\mathit{id\_autor},\mathit{autor})\)</span>. El atributo común es <span class="math inline">\(\mathit{id\_autor}\)</span>. La reunión natural empareja el libro&nbsp;1 con y el&nbsp;2 con ; el libro&nbsp;3, cuyo <span class="math inline">\(\mathit{id\_autor}=12\)</span> no figura en <span class="math inline">\(\mathrm{Autor}\)</span>, se queda sin pareja y <em>no</em> aparece en el resultado. La reunión natural solo conserva las tuplas que casan. El resultado, sobre los atributos <span class="math inline">\((\mathit{id},\mathit{tema},\mathit{id\_autor},\mathit{autor})\)</span>, tiene la columna común <span class="math inline">\(\mathit{id\_autor}\)</span> una sola vez. La práctica de la sección&nbsp;2.9 calcula esta misma operación y muestra quince de sus tuplas.</p>
+<p>La <em>división</em> <span class="math inline">\(\mathrm{R}\div\mathrm{S}\)</span> responde a las consultas con «para todos»: devuelve las tuplas de <span class="math inline">\(\mathrm{R}\)</span> asociadas a <em>todas</em> las tuplas de <span class="math inline">\(\mathrm{S}\)</span>. Si <span class="math inline">\(\mathrm{R}\)</span> relaciona socios con los libros que han leído y <span class="math inline">\(\mathrm{S}\)</span> es un conjunto de libros, <span class="math inline">\(\mathrm{R}\div\mathrm{S}\)</span> son los socios que han leído todos los libros de <span class="math inline">\(\mathrm{S}\)</span>. Como los demás operadores derivados, también se construye con los primitivos: si <span class="math inline">\(\bar{A}\)</span> son los atributos de <span class="math inline">\(\mathrm{R}\)</span> que no están en <span class="math inline">\(\mathrm{S}\)</span>, <span class="math display">\[\mathrm{R}\div\mathrm{S} \;=\; \pi_{\bar{A}}(\mathrm{R})\;\setminus\;
+  \pi_{\bar{A}}\!\bigl((\pi_{\bar{A}}(\mathrm{R})\times\mathrm{S})\setminus\mathrm{R}\bigr).\]</span> El lado derecho se lee así: <span class="math inline">\(\pi_{\bar{A}}(\mathrm{R})\)</span> son los candidatos; el producto con <span class="math inline">\(\mathrm{S}\)</span> enumera los emparejamientos que <em>deberían</em> existir si un candidato se asociara con <em>todas</em> las tuplas de <span class="math inline">\(\mathrm{S}\)</span>; restarle <span class="math inline">\(\mathrm{R}\)</span> deja los que <em>faltan</em>, y proyectarlos sobre <span class="math inline">\(\bar{A}\)</span> da los candidatos descalificados; quitarlos del conjunto de candidatos deja los que no fallan ninguno. Es el operador menos intuitivo y, no por casualidad, el que SQL no ofrece directamente: hay que expresarlo, y el capítulo&nbsp;3 lo retomará como ejercicio de subconsultas.</p>
+<p><strong>Ejemplo&nbsp;(La división, en detalle).</strong>&nbsp; Sea <span class="math inline">\(\mathrm{Lectura}(\mathit{socio},\mathit{libro})\)</span> con las tuplas <span class="math inline">\(\{\langle \text{ana},l_1 \rangle, \langle \text{ana},l_2 \rangle, \langle \text{ana},l_3 \rangle,
+\langle \text{bea},l_1 \rangle, \langle \text{bea},l_3 \rangle\}\)</span>, y sea <span class="math inline">\(\mathrm{Exigidos}(\mathit{libro}) = \{\langle l_1 \rangle,\langle l_2 \rangle\}\)</span> el conjunto de libros que un club exige haber leído. La división <span class="math inline">\(\mathrm{Lectura}\div\mathrm{Exigidos}\)</span> devuelve los socios que han leído <em>todos</em> los libros exigidos: ana, que leyó <span class="math inline">\(l_1\)</span> y <span class="math inline">\(l_2\)</span> (y además <span class="math inline">\(l_3\)</span>), aparece; bea, que leyó <span class="math inline">\(l_1\)</span> pero no <span class="math inline">\(l_2\)</span>, no. El resultado es <span class="math inline">\(\{\langle \text{ana} \rangle\}\)</span>. La mecánica: se proyectan los socios candidatos y, para cada uno, se comprueba que el conjunto de sus libros incluye a <span class="math inline">\(\mathrm{Exigidos}\)</span>. Esa cuantificación universal —«para todos los exigidos»— es lo que ningún operador primitivo expresa de un golpe y lo que vuelve la división el operador más sutil del álgebra; la práctica de la sección&nbsp;2.9 propone implementarla y verificar que <span class="math inline">\((\mathrm{Lectura}\div\mathrm{Exigidos})\bowtie\mathrm{Exigidos}\subseteq\mathrm{Lectura}\)</span>.</p>
+<p>Conviene además separar dos reuniones que se confunden. La <em>reunión theta</em> <span class="math inline">\(\mathrm{R}\bowtie_\theta\mathrm{S}\)</span> admite cualquier condición <span class="math inline">\(\theta\)</span> sobre atributos de ambas relaciones —no solo la igualdad—: por ejemplo, emparejar cada libro con los autores nacidos <em>antes</em> de su publicación es una reunión theta con un <span class="math inline">\(&lt;\)</span>, que la reunión natural no puede expresar. La reunión natural es el caso particular en que <span class="math inline">\(\theta\)</span> es la igualdad de todos los atributos de igual nombre, con la columna repetida proyectada fuera. La theta con igualdad sobre un atributo se llama <em>equirreunión</em>; la natural es una equirreunión que además unifica las columnas comunes. La distinción importa porque el coste y los algoritmos de una reunión por igualdad (que puede usar índices y tablas de dispersión) difieren de los de una por desigualdad, un punto que el capítulo&nbsp;3 retoma al hablar de planes de ejecución.</p>
+<p><strong>Ejemplo&nbsp;(Una reunión consigo misma: el renombrado en acción).</strong>&nbsp; «Pares de libros distintos del mismo autor.» El dato vive en una sola relación, <span class="math inline">\(\mathrm{Libro}\)</span>, así que hay que reunirla consigo misma —y ahí el renombrado deja de ser anodino—. Una copia se renombra, <span class="math inline">\(\rho_{\mathrm{L'}}(\mathrm{Libro})\)</span>, dando atributos distintos (<span class="math inline">\(\mathit{id}'\)</span>, <span class="math inline">\(\mathit{titulo}'\)</span>); entonces <span class="math inline">\(\mathrm{Libro}\bowtie_{\,\mathit{id\_autor}=\mathit{id\_autor}'\,\wedge\,\mathit{id}&lt;\mathit{id}'}
+\rho_{\mathrm{L'}}(\mathrm{Libro})\)</span> empareja cada libro con los <em>otros</em> del mismo autor. La condición <span class="math inline">\(\mathit{id}&lt;\mathit{id}'\)</span> cumple doble función: evita emparejar un libro consigo mismo y evita contar cada pareja dos veces. Sin el renombrado, los atributos homónimos de las dos copias colisionarían y la reunión natural emparejaría cada tupla solo consigo misma —un resultado inútil—. El renombrado, el operador de aspecto más trivial de la tabla&nbsp;2.2, es el que habilita las consultas que comparan una relación con otras filas de sí misma: jerarquías, duplicados, comparaciones entre pares.</p>
+<p><strong>Ejemplo&nbsp;(Una consulta compuesta, paso a paso).</strong>&nbsp; «Títulos de los libros de geometría escritos por Ada.» La consulta es una composición de tres operadores, y la clausura permite leerla de dentro afuera, cada paso produciendo una relación que el siguiente consume: <span class="math display">\[\pi_{\mathit{titulo}}\big(
+    \sigma_{\mathit{tema}=\text{geometría}}(\mathrm{Libro})
+    \bowtie
+    \sigma_{\mathit{autor}=\text{ada}}(\mathrm{Autor})
+  \big).\]</span> Primero, dos selecciones independientes filtran cada relación —los libros de geometría, los autores llamados Ada—, y cada una devuelve una relación más pequeña. Luego la reunión natural las empareja por <span class="math inline">\(\mathit{id\_autor}\)</span>, devolviendo otra relación. Por último, la proyección se queda con los títulos. Cuatro operadores, cuatro relaciones intermedias, una expresión: eso es la clausura en acción. Y nótese que las selecciones se han escrito ya empujadas hacia las hojas —filtrando antes de reunir—, que es la forma que el optimizador prefiere y que la sección&nbsp;2.9 medirá.</p>
+</section>
+</section>
+<section id="las-leyes-del-álgebra-y-la-optimización" class="level2">
+<h2 class="anchored" data-anchor-id="las-leyes-del-álgebra-y-la-optimización">Las leyes del álgebra y la optimización</h2>
+<p>Dos expresiones distintas del álgebra pueden denotar siempre la misma relación. Esas identidades —las <em>leyes</em> del álgebra— son la base de la optimización de consultas, porque permiten reescribir una expresión en otra equivalente pero más barata de evaluar. La tabla&nbsp;2.3 recoge las principales.</p>
+<table class="caption-top table">
+<caption>Algunas leyes del álgebra relacional. Toda reescritura del optimizador preserva el resultado y cambia solo el coste.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Ley</th>
+<th style="text-align: left;">Identidad</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Cascada de selección</td>
+<td style="text-align: left;">$_{pq}() =</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">_p(_q())$</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Conmutatividad de selección</td>
+<td style="text-align: left;">$_p(_q()) =</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">_q(_p())$</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Empuje de selección</td>
+<td style="text-align: left;">$_p() =</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">_p()$ (si <span class="math inline">\(p\)</span> es sobre <span class="math inline">\(\mathrm{R}\)</span>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Conmutatividad de reunión</td>
+<td style="text-align: left;"><span class="math inline">\(\mathrm{R}\bowtie\mathrm{S} = \mathrm{S}\bowtie\mathrm{R}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Asociatividad de reunión</td>
+<td style="text-align: left;">$() =</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">()$</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Distributividad sobre unión</td>
+<td style="text-align: left;">$_p() =</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">_p()_p()$</td>
+</tr>
+</tbody>
+</table>
+<p>La más rentable es el <em>empuje de la selección</em>: si una consulta reúne dos relaciones y luego filtra por una condición que solo afecta a una de ellas, filtrar <em>antes</em> de reunir produce el mismo resultado pero reúne muchas menos tuplas. La figura&nbsp;2.2 muestra las dos expresiones como árboles: el optimizador recibe la primera —natural de escribir— y la reescribe en la segunda. Es exactamente el tipo de decisión que el optimizador del capítulo&nbsp;1 tomaba al elegir entre barrido e índice, ahora a nivel de la forma de la consulta, y la práctica de este capítulo la medirá.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap02/fig_02.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;2.2.</strong> El empuje de la selección como reescritura del árbol de expresión. Las dos formas denotan la misma relación (ley de la tabla&nbsp;2.3), pero (b) filtra <span class="math inline">\(\mathrm{Libro}\)</span> antes de reunir, de modo que la reunión procesa muchas menos tuplas. El optimizador recibe (a) y produce (b).</figcaption>
+</figure>
+</div>
+<p><strong>Ejemplo&nbsp;(Reescribir una consulta con las leyes).</strong>&nbsp; Partamos de la expresión <span class="math display">\[\sigma_{\mathit{tema}=\text{geom.}\,\wedge\,\mathit{autor}=\text{Ada}}
+  (\mathrm{Libro}\bowtie\mathrm{Autor}),\]</span> esto es, reunir las dos relaciones enteras y luego filtrar por una conjunción de dos condiciones. La cascada de selección parte la conjunción en dos selecciones encadenadas; la conmutatividad permite ordenarlas; y el empuje lleva cada una a la relación que menciona —el filtro por tema a <span class="math inline">\(\mathrm{Libro}\)</span>, el filtro por autor a <span class="math inline">\(\mathrm{Autor}\)</span>, pues cada predicado habla de una sola—. El resultado, <span class="math inline">\(\sigma_{\mathit{tema}=\text{geom.}}(\mathrm{Libro}) \bowtie
+\sigma_{\mathit{autor}=\text{Ada}}(\mathrm{Autor})\)</span>, reúne dos relaciones ya reducidas en lugar de la reunión completa. Tres leyes, una reescritura, el mismo conjunto resultado y mucho menos trabajo intermedio: es, en miniatura, lo que el optimizador hace con cada consulta que recibe.</p>
+</section>
+<section id="restricciones-de-integridad-y-vistas" class="level2">
+<h2 class="anchored" data-anchor-id="restricciones-de-integridad-y-vistas">Restricciones de integridad y vistas</h2>
+<p>El álgebra dice cómo <em>consultar</em> las relaciones; falta decir qué hace que una instancia sea <em>válida</em> y cómo se ofrece a cada aplicación una visión parcial de ella. Ambas cosas —las restricciones de integridad y las vistas— son la materialización, en el modelo, de dos ideas del capítulo&nbsp;1: las garantías centralizadas en el gestor y los tres niveles de la arquitectura.</p>
+<p>Una <em>restricción de integridad</em> es una condición que toda instancia válida debe satisfacer y que el gestor hace cumplir, rechazando las operaciones que la violarían. Conviene ordenarlas de la más local a la más global. Las <em>restricciones de dominio</em> acotan los valores de un atributo: un año es un entero en un rango, un tema pertenece a una lista. Las <em>restricciones de clave</em> —ya vistas— prohíben tuplas que coincidan en la clave. La <em>integridad referencial</em> prohíbe las claves ajenas colgantes. Y las <em>restricciones generales</em> expresan reglas arbitrarias del dominio —«ningún socio puede tener más de cinco préstamos simultáneos»— que no encajan en las categorías anteriores y que se enuncian como una condición lógica sobre el estado de la base, llamada aserción.</p>
+<p>La observación que conviene retener es que una restricción es, en el fondo, una consulta que debe dar siempre resultado vacío. «No hay claves ajenas colgantes» equivale a exigir que la consulta «libros cuyo <span class="math inline">\(\mathit{id\_autor}\)</span> no está en <span class="math inline">\(\mathrm{Autor}\)</span>» —una diferencia del álgebra— no devuelva ninguna tupla. Las restricciones se expresan, pues, en el mismo álgebra o cálculo de las consultas; verificarlas es evaluarlas y comprobar que el resultado es vacío. Esa unidad —consultar y restringir son la misma maquinaria— es una de las economías conceptuales del modelo relacional.</p>
+<section id="vistas-relaciones-derivadas" class="level3">
+<h3 class="anchored" data-anchor-id="vistas-relaciones-derivadas">Vistas: relaciones derivadas</h3>
+<p>El nivel externo del capítulo&nbsp;1 —cada aplicación ve solo la parte del esquema que le concierne— se realiza en el modelo relacional mediante la <em>vista</em>.</p>
+<p><strong>Definición&nbsp;(Vista).</strong>&nbsp; Una <em>vista</em> es una relación derivada, definida por una expresión del álgebra (o una consulta del cálculo) sobre otras relaciones. No almacena datos propios: es un nombre para una consulta, y su contenido se deduce del de las relaciones base cada vez que se consulta.</p>
+<p>Una vista «catálogo disponible» puede definirse como la proyección de <span class="math inline">\(\mathrm{Libro}\)</span> sobre título y tema, reunida con los ejemplares no prestados; la aplicación de préstamos la consulta como si fuera una relación más, sin saber que por debajo es una expresión algebraica. Esa indirección es exactamente la independencia lógica del capítulo&nbsp;1: si el esquema conceptual cambia de un modo que la definición de la vista puede absorber —reescribiéndose sin alterar lo que produce—, la aplicación que consume la vista no se entera.</p>
+<p>Hay una decisión de implementación con consecuencias. Una vista <em>virtual</em> no guarda nada: su consulta se evalúa cada vez, siempre al día pero pagando el cómputo en cada acceso. Una vista <em>materializada</em> almacena el resultado y lo sirve como una tabla, rápida de leer pero que hay que refrescar cuando las relaciones base cambian —el mismo compromiso entre cómputo y memoria, entre frescura y coste, que reaparecerá en la cuarta parte cuando un índice vectorial deba decidir si recalcular o cachear—. Y no toda vista es actualizable: si su definición proyecta fuera la clave o agrega varias tuplas en una, no hay forma unívoca de traducir una modificación de la vista en modificaciones de las relaciones base, y el gestor la declara de solo lectura. La vista hereda, así, los límites de la independencia lógica: aísla de los cambios que su expresión puede deshacer, no de todos.</p>
+</section>
+</section>
+<section id="el-cálculo-relacional" class="level2">
+<h2 class="anchored" data-anchor-id="el-cálculo-relacional">El cálculo relacional</h2>
+<p>El álgebra dice <em>cómo</em> construir el resultado: aplica esta selección, luego esta reunión. El cálculo relacional dice solo <em>qué</em> resultado se quiere, y deja la construcción al sistema. Es, por tanto, declarativo, y de él —no del álgebra— se parece SQL.</p>
+<section id="cálculo-de-tuplas-y-de-dominios" class="level3">
+<h3 class="anchored" data-anchor-id="cálculo-de-tuplas-y-de-dominios">Cálculo de tuplas y de dominios</h3>
+<p><strong>Definición&nbsp;(Cálculo relacional de tuplas).</strong>&nbsp; Una consulta del cálculo de tuplas tiene la forma <span class="math display">\[\{\,t \mid P(t)\,\},\]</span> donde <span class="math inline">\(t\)</span> es una variable de tupla y <span class="math inline">\(P(t)\)</span> una fórmula de la lógica de primer orden —con cuantificadores <span class="math inline">\(\forall\)</span>, <span class="math inline">\(\exists\)</span>, conectivas y predicados de comparación— cuyo valor de verdad determina si la tupla <span class="math inline">\(t\)</span> pertenece al resultado.</p>
+<p>La consulta «los títulos de los libros de Ada» se escribe en el cálculo de tuplas describiendo la tupla resultado y la condición que la liga a los datos: existe un libro cuyo autor es Ada y cuyo título es el de la tupla. No se indica en qué orden mirar las relaciones ni cómo emparejarlas; solo qué debe ser cierto. Esa es la diferencia con el álgebra, y la que hace del cálculo el modelo mental del lenguaje declarativo del capítulo siguiente.</p>
+<p>El cuantificador universal hace explícito lo que en el álgebra era el operador oscuro. «Socios que han leído todos los libros exigidos» —la consulta que la división resolvía— se escribe en el cálculo de tuplas con un <span class="math inline">\(\forall\)</span> literal: el socio pertenece al resultado si, <em>para todo</em> libro exigido, existe una tupla de lectura que lo asocia con ese libro. La cuantificación universal que en el álgebra había que codificar mediante dobles diferencias aquí se enuncia de frente. Eso ilustra por qué el cálculo resulta más natural de escribir y por qué la división, su contraparte algebraica, es tan poco intuitiva: una y otra expresan el mismo «para todos», pero el cálculo lo <em>dice</em> y el álgebra lo <em>construye</em>.</p>
+<p>El <em>cálculo de dominios</em> es una variante en la que las variables no recorren tuplas enteras sino valores de dominio. Una consulta tiene la forma <span class="math inline">\(\{\langle x_1,\dots,x_n \rangle \mid P(x_1,\dots,x_n)\}\)</span>, con cada <span class="math inline">\(x_i\)</span> una variable sobre un dominio. Es más cercano a la notación matemática de conjuntos y sustenta lenguajes históricos de consulta por ejemplo; su poder expresivo, como veremos, coincide con el del cálculo de tuplas y el del álgebra.</p>
+<p><strong>Ejemplo&nbsp;(La misma consulta en cálculo de dominios).</strong>&nbsp; «Títulos de libros de tema geometría» se escribe nombrando las variables de dominio que recorren las columnas y ligándolas con la relación: <span class="math display">\[\{\,\langle ti \rangle \mid \exists\,i\,\exists\,a\,\big(\mathrm{Libro}(i, ti,
+  \text{geometría}, a)\big)\,\},\]</span> donde <span class="math inline">\(\mathrm{Libro}(i,ti,t,a)\)</span> es verdadero si <span class="math inline">\(\langle i,ti,t,a \rangle\)</span> es una tupla de <span class="math inline">\(\mathrm{Libro}\)</span>. Frente al cálculo de tuplas, que cuantifica sobre tuplas enteras, aquí se cuantifica sobre valores: <span class="math inline">\(i\)</span> y <span class="math inline">\(a\)</span> existen (no nos importan sus valores) y <span class="math inline">\(ti\)</span> queda libre como la columna que se devuelve. La notación es más cercana a la matemática de conjuntos, y es la que inspiró lenguajes de consulta por ejemplo, donde el usuario rellena una plantilla de la relación con variables y constantes.</p>
+</section>
+<section id="la-seguridad-de-las-expresiones" class="level3">
+<h3 class="anchored" data-anchor-id="la-seguridad-de-las-expresiones">La seguridad de las expresiones</h3>
+<p>El cálculo, por su libertad declarativa, permite escribir consultas cuyo resultado sería infinito: <span class="math inline">\(\{t \mid \neg(t \in \mathrm{R})\}\)</span> denota todas las tuplas <em>que no están</em> en <span class="math inline">\(\mathrm{R}\)</span>, una infinidad. Una expresión es <em>segura</em> si su resultado es finito y depende solo de los valores que aparecen en la base de datos. La restricción a expresiones seguras no recorta el poder expresivo útil —toda consulta razonable es segura— y es la que permite enunciar la equivalencia con el álgebra, que solo produce relaciones finitas.</p>
+<p><strong>Ejemplo&nbsp;(Una expresión insegura y su arreglo).</strong>&nbsp; La consulta «libros que no son de geometría» parece inocente, pero escrita como <span class="math inline">\(\{t \mid \neg(t\in\mathrm{Libro} \wedge t[\mathit{tema}]=\text{geometría})\}\)</span> es <em>insegura</em>: su resultado incluye toda tupla del universo que no sea un libro de geometría —cadenas, números, tuplas de cualquier forma—, una infinidad, y además depende de dominios y no solo de lo almacenado. El arreglo consiste en anclar la variable a una relación: <span class="math inline">\(\{t \mid t\in\mathrm{Libro}
+\wedge t[\mathit{tema}]\neq\text{geometría}\}\)</span> recorre solo las tuplas de <span class="math inline">\(\mathrm{Libro}\)</span> y es finita. La diferencia es exactamente la que el álgebra impone por construcción: su diferencia <span class="math inline">\(\mathrm{R}\setminus\mathrm{S}\)</span> se toma siempre dentro de una relación existente, nunca contra el universo. La seguridad del cálculo no es una restricción artificiosa: es la condición para que el cálculo y el álgebra puedan coincidir, pues el álgebra no sabe producir infinitos.</p>
+<p><strong>Ejemplo&nbsp;(La misma consulta en álgebra y en cálculo).</strong>&nbsp; «Títulos de libros de tema geometría.» En álgebra es una composición de operaciones: <span class="math inline">\(\pi_{\mathit{titulo}}(\sigma_{\mathit{tema}=\text{geometría}}(\mathrm{Libro}))\)</span> —selecciona y luego proyecta—. En el cálculo de tuplas es una descripción: <span class="math inline">\(\{\,t \mid \exists\,\ell\,(\ell\in\mathrm{Libro} \wedge
+\ell[\mathit{tema}]=\text{geometría} \wedge t[\mathit{titulo}]=\ell[\mathit{titulo}])\}\)</span>. La primera es una receta; la segunda, una especificación. Que ambas denoten exactamente la misma relación es el contenido del teorema de la sección siguiente, y la razón de que un sistema pueda aceptar la segunda y ejecutar la primera.</p>
+</section>
+</section>
+<section id="equivalencia-y-poder-expresivo" class="level2">
+<h2 class="anchored" data-anchor-id="equivalencia-y-poder-expresivo">Equivalencia y poder expresivo</h2>
+<p>Llegamos al resultado que corona el capítulo y que justifica toda la pila de la primera parte.</p>
+<p><strong>Definición&nbsp;(Completitud relacional).</strong>&nbsp; Un lenguaje de consulta es <em>relacionalmente completo</em> si puede expresar toda consulta del álgebra relacional.</p>
+<p><strong>Ejemplo&nbsp;(Teorema de Codd).</strong>&nbsp; El álgebra relacional, el cálculo relacional de tuplas seguro y el cálculo relacional de dominios seguro tienen <em>el mismo poder expresivo</em>: toda consulta expresable en uno lo es en los otros dos <span class="citation" data-cites="codd1972 abiteboul">(<a href="#ref-codd1972" role="doc-biblioref">Codd 1972</a>; <a href="#ref-abiteboul" role="doc-biblioref">Abiteboul et&nbsp;al. 1995</a>)</span>. Los tres son relacionalmente completos.</p>
+<p>La importancia del teorema es práctica, no solo teórica. Significa que un lenguaje declarativo —donde el usuario describe el resultado, como en el cálculo— no pierde poder frente a uno procedimental —donde lo construye, como en el álgebra—. El usuario puede, pues, escribir en términos de qué quiere, y el sistema traducir esa descripción a una expresión algebraica que sabe ejecutar y, mejor aún, reescribir en una equivalente más barata mediante las leyes de la sección&nbsp;2.3. Toda la arquitectura de un procesador de consultas —aceptar SQL declarativo, traducirlo a un plan algebraico, optimizar ese plan— descansa sobre esta equivalencia. El optimizador del capítulo&nbsp;1 no era una pieza aislada: era la cara visible de la completitud relacional.</p>
+<section id="de-la-consulta-declarativa-al-plan-físico" class="level3">
+<h3 class="anchored" data-anchor-id="de-la-consulta-declarativa-al-plan-físico">De la consulta declarativa al plan físico</h3>
+<p>Conviene ver, aunque sea en esbozo, cómo una descripción se convierte en una receta, porque ese es el trabajo que el teorema vuelve posible. La traducción del cálculo al álgebra es <em>constructiva</em>: a cada cuantificador existencial de la fórmula le corresponde una reunión o una proyección; a cada conjunción de condiciones, una selección; a cada negación, una diferencia. La consulta declarativa «títulos de libros cuyo autor nació antes de 1900» se traduce mecánicamente en una reunión de <span class="math inline">\(\mathrm{Libro}\)</span> con <span class="math inline">\(\mathrm{Autor}\)</span>, una selección por el año de nacimiento y una proyección sobre el título. El sistema no adivina el plan: lo deriva de la estructura lógica de la consulta.</p>
+<p>Pero esa traducción mecánica produce <em>un</em> plan, rara vez el mejor, y aquí entran las leyes de la sección&nbsp;2.3. La asociatividad de la reunión es la más consecuente: en una consulta que reúne tres relaciones, <span class="math inline">\((\mathrm{R}\bowtie\mathrm{S})\bowtie\mathrm{T}\)</span> y <span class="math inline">\(\mathrm{R}\bowtie(\mathrm{S}\bowtie\mathrm{T})\)</span> denotan la misma relación, pero pueden costar órdenes de magnitud distintos según el tamaño de los resultados intermedios. Si <span class="math inline">\(\mathrm{R}\bowtie\mathrm{S}\)</span> es enorme y <span class="math inline">\(\mathrm{S}\bowtie\mathrm{T}\)</span> diminuto, el segundo orden gana de calle. Elegir el orden de reunión es uno de los problemas centrales del optimizador, y es combinatorio: el número de órdenes crece factorialmente con las relaciones implicadas. El empuje de la selección que la figura&nbsp;2.2 midió es el primer paso —reducir cuanto antes las tuplas—; la elección del orden de reunión es el segundo, y los dos juntos explican por qué dos formulaciones equivalentes de una misma consulta pueden tardar un milisegundo o un minuto. El usuario, gracias a la completitud, escribe la que le resulta natural; el sistema busca, entre las equivalentes, la barata.</p>
+<p><strong>Ejemplo&nbsp;(Una traducción del cálculo al álgebra).</strong>&nbsp; La consulta del cálculo de tuplas <span class="math display">\[\begin{multline*}
+  \{\,t \mid \exists\,\ell\,\exists\,a\,(\ell\in\mathrm{Libro} \wedge
+  a\in\mathrm{Autor} \wedge {} \\
+  \ell[\mathit{id\_autor}]=a[\mathit{id\_autor}] \wedge
+  a[\mathit{autor}]=\text{Ada} \wedge t[\mathit{titulo}]=\ell[\mathit{titulo}])\,\}
+\end{multline*}\]</span> se traduce pieza a pieza. Cada cuantificador existencial sobre una relación es una aparición de esa relación que habrá que reunir; la igualdad <span class="math inline">\(\ell[\mathit{id\_autor}]=a[\mathit{id\_autor}]\)</span> es la condición de la reunión —natural, por el atributo común—; la condición <span class="math inline">\(a[\mathit{autor}]=\text{Ada}\)</span> es una selección sobre <span class="math inline">\(\mathrm{Autor}\)</span>; y que la tupla resultado <span class="math inline">\(t\)</span> tenga solo el atributo <span class="math inline">\(\mathit{titulo}\)</span>, ligado al del libro, es una proyección final. Ensamblando las piezas: <span class="math inline">\(\pi_{\mathit{titulo}}(\mathrm{Libro}\bowtie\sigma_{\mathit{autor}=\text{Ada}}
+(\mathrm{Autor}))\)</span>. La fórmula declarativa se ha convertido en una expresión procedimental sin intervención humana; lo único que queda a criterio —del optimizador, no del usuario— es empujar la selección y elegir el orden de la reunión.</p>
+<p>El álgebra de este capítulo es <em>lógica</em>: <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(\pi\)</span> y <span class="math inline">\(\bowtie\)</span> dicen qué relación se computa, no con qué algoritmo. Y cada operador lógico admite varias realizaciones <em>físicas</em>, con costes muy distintos, entre las que el sistema elige. Ver esa correspondencia cierra el arco que el capítulo&nbsp;1 abrió con el plan de ejecución: lo que allí era una línea de <code>EXPLAIN</code> es, aquí, un operador del álgebra realizado por un algoritmo concreto.</p>
+<p>La selección lo ejemplifica de inmediato, y es justo el caso del capítulo&nbsp;1. <span class="math inline">\(\sigma_\theta(\mathrm{R})\)</span> puede realizarse recorriendo toda la relación y comprobando <span class="math inline">\(\theta\)</span> en cada tupla —el barrido secuencial— o, si existe un índice sobre el atributo de <span class="math inline">\(\theta\)</span>, consultando el índice para visitar solo las tuplas que pasan —el barrido por índice—. La misma selección lógica, dos operadores físicos; cuál gana lo decide la <em>selectividad</em> de la condición —definida en el capítulo&nbsp;1—, como medimos.</p>
+<p>La reunión es el caso más rico. El mismo <span class="math inline">\(\mathrm{R}\bowtie\mathrm{S}\)</span> lógico se realiza con al menos tres algoritmos físicos distintos. La <em>reunión por bucles anidados</em> compara cada tupla de una con cada tupla de la otra: simple, cuadrática, y la única que sirve para una reunión por desigualdad. La <em>reunión por dispersión</em> construye una tabla de dispersión con una relación y sondea con la otra, lineal en el número de tuplas, pero solo válida para la equirreunión —necesita la igualdad para dispersar—. La <em>reunión por ordenación y mezcla</em> ordena ambas relaciones por el atributo de reunión y las recorre en paralelo, ventajosa cuando los datos ya vienen ordenados o cuando se necesita el resultado ordenado. El optimizador escoge entre ellas según el tamaño de las relaciones, la memoria disponible, los índices y si el predicado es de igualdad o de rango. Que la reunión por dispersión no sirva para una reunión theta con <span class="math inline">\(&lt;\)</span> es la razón física de la distinción lógica entre equirreunión y reunión theta que hicimos antes: la teoría anticipaba una diferencia que la implementación cobra.</p>
+<p>El reparto de papeles es, así, nítido y es el del capítulo&nbsp;1 llevado a su conclusión. El usuario escribe una consulta declarativa; el sistema la traduce a una expresión del álgebra —lógica, sobre relaciones—; el optimizador la reescribe con las leyes y elige, para cada operador lógico, un operador físico —un algoritmo— según las estadísticas y los caminos de acceso disponibles. La independencia física del capítulo&nbsp;1 es exactamente esta libertad: cambiar el operador físico —añadir un índice, elegir dispersión en vez de bucles— sin tocar la consulta lógica, porque ambas se relacionan por una correspondencia que el sistema mantiene. Y la clausura del álgebra es lo que hace que esta maquinaria componga: como cada operador físico consume y produce flujos de tuplas —relaciones, en última instancia—, se encadenan en un plan igual que los operadores lógicos se encadenan en una expresión. Conviene retener este reparto, porque la cuarta parte lo tensará: la búsqueda por similitud aportará un operador físico nuevo —el índice de vecinos aproximados— que no realiza ningún operador del álgebra relacional, y esa orfandad lógica será otra cara de la ruptura de la clausura que cierra el capítulo.</p>
+</section>
+</section>
+<section id="los-límites-del-álgebra-relacional" class="level2">
+<h2 class="anchored" data-anchor-id="los-límites-del-álgebra-relacional">Los límites del álgebra relacional</h2>
+<p>La honestidad obliga a marcar la frontera. El álgebra relacional es un lenguaje de <em>primer orden</em>, y eso acota lo que puede decir. La consulta más famosa que no expresa es la <em>clausura transitiva</em>: dada una relación <span class="math inline">\(\mathrm{Supervisa}(\mathit{jefe},\mathit{empleado})\)</span>, no hay expresión del álgebra relacional que devuelva todos los pares <span class="math inline">\((\mathit{x},\mathit{y})\)</span> tales que <span class="math inline">\(x\)</span> supervisa a <span class="math inline">\(y\)</span> directa o indirectamente, a cualquier profundidad. La razón es que la profundidad de la recursión no está acotada de antemano, y un lenguaje de primer orden no puede iterar un número arbitrario de veces. Una expresión del álgebra es finita y aplica un número fijo de operadores; la clausura transitiva exigiría una unión de tantas reuniones como la cadena más larga, y esa longitud no se conoce de antemano ni está acotada. No es que sea difícil: es <em>imposible</em> dentro del formalismo, un resultado que se demuestra y no una mera carencia de ingenio <span class="citation" data-cites="abiteboul">(<a href="#ref-abiteboul" role="doc-biblioref">Abiteboul et&nbsp;al. 1995</a>)</span>.</p>
+<p>Tampoco expresa el <em>conteo</em> ni la <em>agregación</em>. El álgebra no puede responder «cuántos libros tiene cada autor» ni «cuál es el año medio de publicación»: no sabe contar ni sumar, porque esas operaciones colapsan un conjunto de tuplas en un único valor, algo ajeno a un álgebra cuyos resultados son siempre relaciones de la misma naturaleza que las entradas. Ni siquiera la paridad —«¿es par el número de tuplas?»— es expresable. Y, por la semántica de conjuntos, no hay noción de orden: «los tres libros más recientes» exige ordenar, que el modelo no contempla.</p>
+<p>El remedio teórico a la recursión tiene nombre: extender el álgebra con un operador de <em>punto fijo</em> que itere una reunión hasta que no añada nada nuevo, como hace el lenguaje Datalog y como SQL incorporó con sus consultas recursivas. El de la agregación, añadir operadores que agrupen y resuman. Ambas extensiones reconocen, por su sola existencia, que el núcleo de primer orden se quedaba corto.</p>
+<p>Estos límites no son defectos a ocultar, sino señales hacia el resto del libro. La incapacidad de agregar y de recorrer recursivamente es la que motiva las extensiones de SQL del capítulo&nbsp;3 —las funciones de agregación, las consultas recursivas, las funciones de ventana—, que añaden al núcleo relacional justamente lo que el álgebra de primer orden no alcanza. Y la dificultad con la clausura transitiva —recorrer relaciones encadenadas a profundidad arbitraria— es la que vuelve incómodo el modelo relacional para los datos intrínsecamente conectados, y anticipa por qué la segunda parte dedicará una familia entera, las bases de datos de grafo, a los problemas que son, en el fondo, de alcanzabilidad.</p>
+<p>Conviene cerrar la teoría señalando sobre qué descansa, porque es justo lo que la última parte del libro cambiará. Todo el edificio relacional se levanta sobre la <em>igualdad</em> de valores: la selección compara con un criterio, la reunión empareja tuplas cuyos atributos son iguales, las claves identifican por coincidencia exacta. El modelo responde siempre a la pregunta de qué tuplas <em>coinciden</em>. Y su clausura —relaciones que entran, relación que sale— descansa en que el resultado es de nuevo un conjunto de tuplas, sin orden ni grado.</p>
+<p>La búsqueda por similitud rompe las dos cosas a la vez. Su predicado no es la igualdad sino la proximidad —el <em>cercano a</em>—, que no parte el universo en los que cumplen y los que no, sino que lo gradúa por distancia. Y su resultado no es un conjunto sino una <em>lista ordenada</em>: los <span class="math inline">\(k\)</span> vecinos más próximos, donde el orden es la respuesta y no un adorno. Esa lista no es una relación en el sentido de este capítulo, así que la clausura algebraica no se sostiene: no se puede encadenar una búsqueda por similitud con una selección relacional como si ambas devolvieran lo mismo. La cuarta parte del libro mostrará qué operadores nuevos hacen falta —la recuperación de los <span class="math inline">\(k\)</span> vecinos, su filtrado, su recombinación— y la quinta, cómo se reconcilian con el álgebra exacta en una sola consulta híbrida. Pero la tensión nace aquí, en la distancia entre el <em>igual a</em> que cierra el álgebra y el <em>cercano a</em> que la desborda.</p>
+</section>
+<section id="práctica-un-álgebra-relacional-en-funcionamiento" class="level2">
+<h2 class="anchored" data-anchor-id="práctica-un-álgebra-relacional-en-funcionamiento">Práctica: un álgebra relacional en funcionamiento</h2>
+<p>La teoría de este capítulo se presta a una comprobación directa: implementar el álgebra y verificar sus leyes sobre datos concretos. El módulo <code>src/cap02_algebra.py</code> lo hace en Python puro —sin servicio de base de datos, sin GPU, según la tabla de recursos del repositorio—, representando cada relación, fiel al modelo, como un conjunto de tuplas.</p>
+<p>La elección de representación no es cosmética: una relación se modela con el tipo <code>frozenset</code> de Python, de modo que la ausencia de duplicados y de orden —las dos propiedades que la definición de relación impone— las garantiza el lenguaje, no un cuidado del programador. Los operadores son traducciones directas de sus definiciones: la selección es una comprensión de conjunto con un predicado, la proyección recorta cada tupla y deja que el conjunto deduplique, la reunión natural empareja por los atributos comunes. Quien lea el módulo verá el álgebra de la sección&nbsp;2.3 convertida en una veintena de líneas sin magia.</p>
+<section id="verificar-las-leyes-no-enunciarlas" class="level3">
+<h3 class="anchored" data-anchor-id="verificar-las-leyes-no-enunciarlas">Verificar las leyes, no enunciarlas</h3>
+<p>Las leyes de la tabla&nbsp;2.3 no se dan por buenas: se comprueban. El módulo construye relaciones de juguete y verifica, como identidades exactas entre conjuntos, seis leyes —el empuje de la selección, la conmutatividad de la reunión, la cascada de selecciones, De&nbsp;Morgan sobre el predicado, la distributividad de la selección sobre la unión y la intersección como <span class="math inline">\(\mathrm{R}\setminus(\mathrm{R}\setminus\mathrm{S})\)</span>— y, además, implementa la división y comprueba sobre el ejemplo del club de lectura que <span class="math inline">\((\mathrm{Lectura}\div\mathrm{Exigidos})\bowtie\mathrm{Exigidos}\subseteq\mathrm{Lectura}\)</span>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:empuje"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:empuje-1"><a href="#lst:empuje-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) empuje de la seleccion: filtrar antes o despues de reunir.</span></span>
+<span id="lst:empuje-2"><a href="#lst:empuje-2" aria-hidden="true" tabindex="-1"></a>izq <span class="op">=</span> seleccion(reunion_natural(libro, autor), p)</span>
+<span id="lst:empuje-3"><a href="#lst:empuje-3" aria-hidden="true" tabindex="-1"></a>der <span class="op">=</span> reunion_natural(seleccion(libro, p), autor)</span>
+<span id="lst:empuje-4"><a href="#lst:empuje-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> iguales(izq, der), <span class="st">"falla el empuje de la seleccion"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 2.1.</strong> Verificación del empuje de la selección como identidad exacta entre conjuntos.</p>
+<p>La comprobación es por igualdad de conjuntos, no por aproximación: si las dos expresiones difirieran en una sola tupla, el <code>assert</code> detendría el programa. Esa es la diferencia entre afirmar una ley y demostrarla sobre el dato —el mismo método con que el capítulo&nbsp;1 validaba el plan de ejecución—: la identidad algebraica se vuelve un hecho ejecutado, no una promesa. Y como la comparación ignora el orden de las columnas (compara tuplas como conjuntos de pares atributo-valor), la conmutatividad de la reunión, que reordena atributos, se verifica sin trampa.</p>
+</section>
+<section id="el-empuje-de-la-selección-medido" class="level3">
+<h3 class="anchored" data-anchor-id="el-empuje-de-la-selección-medido">El empuje de la selección, medido</h3>
+<p>Que el empuje de la selección preserve el resultado es una ley; que además lo abarate es una afirmación cuantitativa, y por tanto se mide. El módulo barre la selectividad de la condición —la fracción de tuplas que pasan el filtro— y, para cada valor, cuenta las tuplas del resultado <em>intermedio</em> con cada orden de evaluación. La predicción, declarada antes de medir: reunir y luego filtrar materializa la reunión entera, un coste constante e indiferente a la selectividad; filtrar y luego reunir produce un intermedio que crece con la selectividad y nunca lo supera.</p>
+<p>La medida confirma la predicción (figura&nbsp;2.3). Reunir primero materializa las dos mil tuplas de la reunión sea cual sea el filtro; empujar la selección reduce el intermedio a la fracción que pasa —doscientas tuplas con selectividad <span class="math inline">\(0{,}1\)</span>, diez veces menos— y solo iguala al otro orden cuando el filtro no descarta nada (selectividad&nbsp;<span class="math inline">\(1\)</span>). La distancia entre las dos curvas es el ahorro del empuje, y crece cuanto más selectiva es la consulta. No es un truco de implementación: es la ley de la tabla&nbsp;2.3 traducida a tuplas materializadas, y la razón de que el optimizador empuje siempre la selección hacia las hojas del árbol de expresión.</p>
+<p>Conviene leer la curva con el cuidado del capítulo&nbsp;1. El eje vertical es el tamaño del resultado <em>intermedio</em>, no del final: ambos órdenes devuelven exactamente las mismas tuplas al cabo, porque la ley garantiza la igualdad del resultado; lo que cambia es cuánto material se manipula por el camino. Que la recta de «reunir y luego filtrar» sea horizontal no es casualidad sino contenido: el coste de esa estrategia es indiferente a la selectividad porque construye la reunión completa antes de mirar el filtro, igual que el barrido secuencial del capítulo&nbsp;1 leía toda la tabla pasara lo que pasara con la consulta. Y, como allí, la ventaja del camino listo se desvanece cuando la consulta es poco selectiva: con selectividad uno las dos curvas se tocan, porque un filtro que no descarta nada no da nada que ahorrar. El paralelismo no es accidental: empujar la selección y elegir el índice son dos caras de la misma idea —tocar cuantos menos datos mejor, y decidirlo a partir de cuántos sobreviven al filtro—.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap02/fig_03.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;2.3.</strong> El empuje de la selección, medido. Tuplas del resultado intermedio frente a la selectividad del filtro, con los dos órdenes de evaluación de la figura&nbsp;2.2. Reunir y luego filtrar es indiferente a la selectividad; empujar la selección reduce el intermedio a la fracción que pasa. Datos generados por <code>src/cap02_algebra.py</code>.</figcaption>
+</figure>
+</div>
+</section>
+<section id="la-demostración-quince-tuplas" class="level3">
+<h3 class="anchored" data-anchor-id="la-demostración-quince-tuplas">La demostración: quince tuplas</h3>
+<p>Fiel a la convención del libro, el módulo cierra mostrando quince tuplas tomadas al azar de una reunión natural. Cada una combina un libro con su autor, con la columna común aparecida una sola vez —la reunión de la definición, ejecutada—. El resultado tiene el aspecto del listado&nbsp;2.2: la columna <span class="math inline">\(\mathit{id\_autor}\)</span>, compartida por las dos relaciones, figura una sola vez, como manda la reunión natural.</p>
+<pre class="{#lst:tuplas}"><code>id   titulo     id_autor  autor
+  ---  ---------  --------  -------
+  34   obra 034   6         autor-6
+  80   obra 080   3         autor-3
+  101  obra 101   3         autor-3
+  77   obra 077   0         autor-0
+  35   obra 035   0         autor-0
+  81   obra 081   4         autor-4
+  13   obra 013   6         autor-6
+  ...  ...        ...       ...</code></pre>
+<p><strong>Listado 2.2.</strong> Quince tuplas al azar de la reunión natural de <span class="math inline">\(\\mathrm{Libro}\)</span> y <span class="math inline">\(\\mathrm{Autor}\)</span> (semilla fija, reproducible).</p>
+<p>Inspeccionar una muestra concreta del resultado, y no solo su tamaño, es el hábito que el capítulo&nbsp;1 fijó y que todos los capítulos mantienen: aquí quince tuplas; más adelante, quince vecinos de un vector. El gesto es el mismo, y el contraste entre ambos —tuplas que coinciden frente a vecinos que se parecen— es, otra vez, el hilo del libro.</p>
+</section>
+</section>
+<section id="síntesis-y-puente-al-capítulo-siguiente" class="level2">
+<h2 class="anchored" data-anchor-id="síntesis-y-puente-al-capítulo-siguiente">Síntesis y puente al capítulo siguiente</h2>
+<p>Este capítulo ha convertido las tablas y claves del capítulo&nbsp;1 en objetos matemáticos precisos. La relación es un conjunto de tuplas sobre un producto de dominios; las claves y la integridad referencial son restricciones que el gestor hace cumplir; el álgebra relacional es un lenguaje cerrado cuyos operadores se componen porque todos devuelven relaciones, y cuyas leyes sostienen la optimización; el cálculo relacional es su gemelo declarativo, y el teorema de Codd garantiza que ambos expresan lo mismo —el resultado que hace posible un lenguaje declarativo ejecutable y, con él, el optimizador—. Hemos marcado también los límites del álgebra de primer orden y, sobre todo, el supuesto que la sostiene: la igualdad de valores, el <em>igual a</em> que la última parte del libro contrastará con el <em>cercano a</em>.</p>
+<p>Lo que este capítulo no ha hecho es dar un lenguaje concreto con el que escribir estas consultas. El álgebra y el cálculo son formalismos; SQL es el lenguaje real que los encarna y los extiende con lo que el núcleo relacional no alcanza —la agregación, las funciones de ventana, la recursión—. Ese es el contenido del capítulo&nbsp;3, que aterriza el álgebra de este capítulo en una sintaxis que se ejecuta sobre el PostgreSQL del repositorio, y que mostrará el primer tipo de dato compuesto —antesala lejana del tipo <span class="math inline">\(\mathbf{vector}\)</span> que la cuarta parte añadirá al mismo sistema de tipos.</p>
+</section>
+<section id="ejercicios-propuestos" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="ejercicios-propuestos">Ejercicios propuestos</h2>
+</section>
+<section id="lecturas-recomendadas" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecturas-recomendadas">Lecturas recomendadas</h2>
+<ul>
+<li><p><span class="citation" data-cites="codd1970">Codd (<a href="#ref-codd1970" role="doc-biblioref">1970</a>)</span>: el artículo que fundó el modelo relacional; la relación como conjunto de tuplas y el álgebra que la opera nacen aquí.</p></li>
+<li><p><span class="citation" data-cites="codd1972">Codd (<a href="#ref-codd1972" role="doc-biblioref">1972</a>)</span>: la completitud relacional, donde se establece la equivalencia entre álgebra y cálculo que corona este capítulo.</p></li>
+<li><p><span class="citation" data-cites="abiteboul">Abiteboul et&nbsp;al. (<a href="#ref-abiteboul" role="doc-biblioref">1995</a>)</span>: el tratamiento formal de referencia del modelo relacional, con las demostraciones de equivalencia y de los límites expresivos que aquí solo se enuncian.</p></li>
+<li><p><span class="citation" data-cites="silberschatz">Silberschatz et&nbsp;al. (<a href="#ref-silberschatz" role="doc-biblioref">2019</a>)</span>: exposición de manual del álgebra, el cálculo y las claves, con abundantes ejemplos sobre esquemas reales.</p></li>
+<li><p><span class="citation" data-cites="date">Date (<a href="#ref-date" role="doc-biblioref">2001</a>)</span>: discusión cuidadosa de la integridad, la semántica de conjuntos y la distancia entre el modelo y SQL.</p></li>
+</ul>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referencias</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-abiteboul" class="csl-entry" role="listitem">
+Abiteboul, Serge, Richard Hull, y Victor Vianu. 1995. <em>Foundations of Databases</em>. Addison-Wesley.
+</div>
+<div id="ref-codd1970" class="csl-entry" role="listitem">
+Codd, Edgar F. 1970. <span>«A Relational Model of Data for Large Shared Data Banks»</span>. <em>Communications of the ACM</em> 13 (6): 377-87.
+</div>
+<div id="ref-codd1972" class="csl-entry" role="listitem">
+Codd, Edgar F. 1972. <span>«Relational Completeness of Data Base Sublanguages»</span>. En <em>Data Base Systems</em>, vol. 6. Courant Computer Science Symposia Series. Prentice Hall.
+</div>
+<div id="ref-date" class="csl-entry" role="listitem">
+Date, Chris J. 2001. <em>Introducción a los sistemas de bases de datos</em>. 8.ª ed. Pearson / Addison-Wesley.
+</div>
+<div id="ref-silberschatz" class="csl-entry" role="listitem">
+Silberschatz, Abraham, Henry F. Korth, y S. Sudarshan. 2019. <em>Fundamentos de bases de datos</em>. 7.ª ed. McGraw-Hill.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cap01.html" class="pagination-link" aria-label="Capítulo 1. La persistencia y la disciplina de gestión de datos">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Capítulo 1. La persistencia y la disciplina de gestión de datos</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./cap03.html" class="pagination-link" aria-label="Capítulo 3. SQL: del DML declarativo a las extensiones">
+        <span class="nav-page-text">Capítulo 3. SQL: del DML declarativo a las extensiones</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 Manuel Muñoz Plá · Edición web bajo licencia <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es">CC BY-NC-ND 4.0</a> (uso académico con atribución; sin uso comercial ni obras derivadas) · El código va aparte bajo licencia MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

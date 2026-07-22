@@ -1,0 +1,7 @@
+# recall@10 del caso relevante segun la fuerza de la senal local: vector unico (media de parches) vs interaccion tardia (max-sim sobre parches, estilo ColPali) (n=4000, parches=9)
+senal_local  vector_unico  interaccion_tardia
+0.5  0.01  0.0433
+1.0  0.0233  0.43
+1.5  0.03  0.7633
+2.0  0.06  0.9033
+3.0  0.07  0.9833

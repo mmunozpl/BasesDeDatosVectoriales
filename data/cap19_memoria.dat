@@ -1,0 +1,7 @@
+# recall@5 del recuerdo relevante en la memoria de un agente segun el numero de recuerdos almacenados
+memoria  recall
+100  0.5567
+500  0.2833
+2000  0.1767
+10000  0.0767
+50000  0.0133

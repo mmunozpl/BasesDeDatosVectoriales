@@ -1,0 +1,4 @@
+# latencia (ms) de la busqueda cruda en el indice vs la consulta completa por la API del motor (n=100000, dim=256)
+capa  latencia_ms
+indice_crudo  18.479
+motor_completo  18.621

@@ -1,0 +1,7 @@
+# prob. de perder una particion segun RF (p_fallo=0.30, 20 nodos)
+rf  prob_perdida
+1  0.324243
+2  0.095802
+3  0.022828
+4  0.008368
+5  0.002677

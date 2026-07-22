@@ -1,0 +1,7 @@
+# recall@10 de la consulta (mismo habitat, por parecido) con prefiltrado vs postfiltrado segun la prevalencia del habitat (n=20000)
+prevalencia_habitat  prefiltrado  postfiltrado
+0.3  1.0  0.2863
+0.15  1.0  0.149
+0.07  1.0  0.063
+0.03  1.0  0.0313
+0.01  1.0  0.0097

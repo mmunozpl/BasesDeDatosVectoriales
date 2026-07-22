@@ -1,0 +1,7 @@
+# latencia de sumar una columna: por filas vs por columnas (100000 filas, ms)
+m  por_filas  por_columnas
+2  7.573  0.533
+4  11.648  2.209
+8  19.911  0.377
+16  36.375  1.836
+32  70.418  0.57

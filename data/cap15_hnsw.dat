@@ -1,0 +1,8 @@
+# HNSW: recall@10, comparaciones, % de la coleccion y latencia (ms) segun ef (n=20000, M=32)
+ef  recall  comparaciones  pct  latencia_ms
+8  0.4805  291  1.46  0.39
+16  0.581  357  1.78  0.507
+32  0.7235  492  2.46  0.789
+64  0.821  660  3.3  1.295
+128  0.9355  892  4.46  2.304
+256  0.9705  1169  5.84  4.381

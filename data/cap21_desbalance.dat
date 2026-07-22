@@ -1,0 +1,7 @@
+# precision@10 por especie segun su frecuencia en el corpus: las especies raras se recuperan peor (n=20000)
+especie  frecuencia  precision
+gorrion_comun  0.55  0.7018
+mirlo_comun  0.12  0.2795
+petirrojo  0.2  0.3758
+abubilla  0.08  0.2193
+alimoche  0.05  0.172

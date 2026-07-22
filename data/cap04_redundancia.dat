@@ -1,0 +1,8 @@
+# filas que almacenan datos de autor por tamano N
+N  desnormalizado  normalizado
+100  100  43
+500  500  50
+1000  1000  50
+5000  5000  50
+20000  20000  50
+100000  100000  50

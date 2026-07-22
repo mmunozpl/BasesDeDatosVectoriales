@@ -1,0 +1,12 @@
+# dispersion relativa de las distancias (std/media) y la referencia 1/raiz(d), segun la dimension
+dim  rel  ref
+2  0.2663  0.7071
+4  0.2816  0.5
+8  0.2472  0.3536
+16  0.1701  0.25
+32  0.113  0.1768
+64  0.0803  0.125
+128  0.0582  0.0884
+256  0.0418  0.0625
+512  0.0325  0.0442
+1024  0.0266  0.0312

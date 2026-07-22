@@ -1,0 +1,5 @@
+# 1 = anomalia ocurre, 0 = se evita
+nivel  sucia  no_repetible  fantasma  sesgo_escritura
+READ_COMMITTED  0  1  1  1
+REPEATABLE_READ  0  0  0  1
+SERIALIZABLE  0  0  0  0

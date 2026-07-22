@@ -1,0 +1,31 @@
+# dependencias del entorno VDB (python 3.11).
+# las versiones son el minimo con que se ha probado el libro.
+
+# nucleo de computo: la mayor parte del libro (figuras de la parte
+# vectorial) se reproduce solo con numpy, sin gpu ni servicios.
+numpy>=1.26
+
+# redes neuronales (capitulos que ilustran embeddings / vit)
+torch>=2.8
+
+# clientes de motor vectorial
+psycopg[binary]>=3.2     # postgres + pgvector
+qdrant-client>=1.12      # motor dedicado qdrant
+pymilvus>=2.5            # motor dedicado milvus
+
+# capa de embeddings y busqueda
+sentence-transformers>=3.3  # embeddings de texto; arrastra transformers
+faiss-cpu>=1.9           # indices ann de referencia (hnsw, ivf, pq)
+
+# evaluacion y utilidades de recuperacion
+rank-bm25>=0.2           # senal lexica para la consulta hibrida
+umap-learn>=0.5          # proyeccion 2d de embeddings (cap. 12)
+
+# familias nosql y especializadas (cap. 8)
+redis>=5.0               # clave-valor
+pymongo>=4.9             # documental
+duckdb>=1.1              # olap columnar embebido, sin servicio
+
+# recuperacion neuronal actual (cap. 12, 19)
+FlagEmbedding>=1.3       # bge-m3, embeddings multilingues
+pylate>=1.1             # colbert e interaccion tardia (multivector)

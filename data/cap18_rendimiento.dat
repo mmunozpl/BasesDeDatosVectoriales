@@ -1,0 +1,7 @@
+# latencia (ms) y rendimiento (QPS) de la busqueda exacta por fuerza bruta segun N (dim 256, una maquina)
+n  latencia_ms  qps
+1000  0.035  28347
+10000  2.874  347
+100000  8.206  121
+500000  39.708  25
+1000000  78.972  12

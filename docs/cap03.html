@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Capítulo 3. SQL: del DML declarativo a las extensiones – Bases de datos</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cap04.html" rel="next">
+<link href="./cap02.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-654c8d80848ee01bf5d57418afe456c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cap03.html">Capítulo 3. SQL: del DML declarativo a las extensiones</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Bases de datos</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Alternar modo lector">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 1. La persistencia y la disciplina de gestión de datos</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 2. El modelo relacional</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap03.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Capítulo 3. SQL: del DML declarativo a las extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 4. Diseño y normalización</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 5. Transacciones, concurrencia y recuperación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 6. Límites del relacional y el movimiento NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 7. Consistencia distribuida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 8. Las familias NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 9. Mecánica de la distribución</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 10. Recuperación de información clásica</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 11. De la representación dispersa a la densa</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 12. Deep learning para embeddings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 13. Geometría del espacio métrico</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 14. Anatomía de una base de datos vectorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 15. Índices de vecino aproximado</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 16. Motores: dedicados frente a extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 17. Consulta híbrida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 18. Evaluación y operación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 19. Recuperación aumentada y memoria de agentes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 20. El futuro híbrido</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 21. Caso de estudio integral</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#ddl-dml-y-dcl-la-anatomía-del-lenguaje" id="toc-ddl-dml-y-dcl-la-anatomía-del-lenguaje" class="nav-link active" data-scroll-target="#ddl-dml-y-dcl-la-anatomía-del-lenguaje">DDL, DML y DCL: la anatomía del lenguaje</a></li>
+  <li><a href="#definición-de-datos-ddl" id="toc-definición-de-datos-ddl" class="nav-link" data-scroll-target="#definición-de-datos-ddl">Definición de datos: DDL</a>
+  <ul class="collapse">
+  <li><a href="#evolución-del-esquema-índices-y-acciones-referenciales" id="toc-evolución-del-esquema-índices-y-acciones-referenciales" class="nav-link" data-scroll-target="#evolución-del-esquema-índices-y-acciones-referenciales">Evolución del esquema, índices y acciones referenciales</a></li>
+  </ul></li>
+  <li><a href="#manipulación-de-datos-dml" id="toc-manipulación-de-datos-dml" class="nav-link" data-scroll-target="#manipulación-de-datos-dml">Manipulación de datos: DML</a>
+  <ul class="collapse">
+  <li><a href="#la-consulta-como-álgebra-vestida" id="toc-la-consulta-como-álgebra-vestida" class="nav-link" data-scroll-target="#la-consulta-como-álgebra-vestida">La consulta como álgebra vestida</a></li>
+  <li><a href="#operaciones-de-conjunto-y-modificación-del-dato" id="toc-operaciones-de-conjunto-y-modificación-del-dato" class="nav-link" data-scroll-target="#operaciones-de-conjunto-y-modificación-del-dato">Operaciones de conjunto y modificación del dato</a></li>
+  <li><a href="#los-nulos-muerden-la-lógica-trivaluada-en-la-práctica" id="toc-los-nulos-muerden-la-lógica-trivaluada-en-la-práctica" class="nav-link" data-scroll-target="#los-nulos-muerden-la-lógica-trivaluada-en-la-práctica">Los nulos muerden: la lógica trivaluada en la práctica</a></li>
+  </ul></li>
+  <li><a href="#control-de-acceso-y-vistas-dcl" id="toc-control-de-acceso-y-vistas-dcl" class="nav-link" data-scroll-target="#control-de-acceso-y-vistas-dcl">Control de acceso y vistas: DCL</a></li>
+  <li><a href="#subconsultas-agregación-y-funciones-de-ventana" id="toc-subconsultas-agregación-y-funciones-de-ventana" class="nav-link" data-scroll-target="#subconsultas-agregación-y-funciones-de-ventana">Subconsultas, agregación y funciones de ventana</a>
+  <ul class="collapse">
+  <li><a href="#subconsultas" id="toc-subconsultas" class="nav-link" data-scroll-target="#subconsultas">Subconsultas</a></li>
+  <li><a href="#agregación-contar-lo-que-el-álgebra-no-contaba" id="toc-agregación-contar-lo-que-el-álgebra-no-contaba" class="nav-link" data-scroll-target="#agregación-contar-lo-que-el-álgebra-no-contaba">Agregación: contar lo que el álgebra no contaba</a></li>
+  <li><a href="#funciones-de-ventana-recursión-y-análisis" id="toc-funciones-de-ventana-recursión-y-análisis" class="nav-link" data-scroll-target="#funciones-de-ventana-recursión-y-análisis">Funciones de ventana, recursión y análisis</a></li>
+  </ul></li>
+  <li><a href="#sql-procedural-plpgsql" id="toc-sql-procedural-plpgsql" class="nav-link" data-scroll-target="#sql-procedural-plpgsql">SQL procedural: PL/pgSQL</a></li>
+  <li><a href="#tipos-compuestos-y-el-modelo-objeto-relacional" id="toc-tipos-compuestos-y-el-modelo-objeto-relacional" class="nav-link" data-scroll-target="#tipos-compuestos-y-el-modelo-objeto-relacional">Tipos compuestos y el modelo objeto-relacional</a></li>
+  <li><a href="#el-procesamiento-de-una-consulta" id="toc-el-procesamiento-de-una-consulta" class="nav-link" data-scroll-target="#el-procesamiento-de-una-consulta">El procesamiento de una consulta</a></li>
+  <li><a href="#práctica-sql-que-se-ejecuta-y-se-explica" id="toc-práctica-sql-que-se-ejecuta-y-se-explica" class="nav-link" data-scroll-target="#práctica-sql-que-se-ejecuta-y-se-explica">Práctica: SQL que se ejecuta y se explica</a>
+  <ul class="collapse">
+  <li><a href="#por-qué-el-índice-cambia-el-plan" id="toc-por-qué-el-índice-cambia-el-plan" class="nav-link" data-scroll-target="#por-qué-el-índice-cambia-el-plan">Por qué el índice cambia el plan</a></li>
+  <li><a href="#por-qué-un-plan-mejor-no-siempre-es-más-rápido" id="toc-por-qué-un-plan-mejor-no-siempre-es-más-rápido" class="nav-link" data-scroll-target="#por-qué-un-plan-mejor-no-siempre-es-más-rápido">Por qué un plan mejor no siempre es más rápido</a></li>
+  <li><a href="#la-demostración-y-sus-límites" id="toc-la-demostración-y-sus-límites" class="nav-link" data-scroll-target="#la-demostración-y-sus-límites">La demostración y sus límites</a></li>
+  </ul></li>
+  <li><a href="#síntesis-y-puente-al-capítulo-siguiente" id="toc-síntesis-y-puente-al-capítulo-siguiente" class="nav-link" data-scroll-target="#síntesis-y-puente-al-capítulo-siguiente">Síntesis y puente al capítulo siguiente</a></li>
+  <li><a href="#ejercicios-propuestos" id="toc-ejercicios-propuestos" class="nav-link" data-scroll-target="#ejercicios-propuestos">Ejercicios propuestos</a></li>
+  <li><a href="#lecturas-recomendadas" id="toc-lecturas-recomendadas" class="nav-link" data-scroll-target="#lecturas-recomendadas">Lecturas recomendadas</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Capítulo 3. SQL: del DML declarativo a las extensiones</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>El capítulo&nbsp;2 entregó dos formalismos —el álgebra y el cálculo relacional— y un teorema que los iguala. Ninguno de los dos es un lenguaje que se teclee en una terminal: son notación matemática. SQL es el lenguaje real que encarna ese sustrato y lo lleva a un sistema que se ejecuta. Su estructura básica —<code>SELECT</code>, <code>FROM</code>, <code>WHERE</code>— no es arbitraria: es la proyección, el producto y la selección del álgebra vestidos de sintaxis, y su talante es declarativo, heredado del cálculo, de modo que el usuario describe qué quiere y el optimizador del capítulo&nbsp;1 decide cómo obtenerlo. Aprender SQL, visto así, no es memorizar palabras clave, sino reconocer bajo ellas los operadores ya conocidos.</p>
+<p>Pero SQL es más que el álgebra con otra ropa, y el capítulo se organiza en torno a ese «más». Por un lado, arrastra la distancia entre el modelo y el lenguaje que el capítulo&nbsp;2 anticipó: SQL opera sobre multiconjuntos, no conjuntos —admite filas duplicadas—, permite ordenar el resultado, y hereda la lógica trivaluada de los nulos, con sus sorpresas. Por otro, y más importante, SQL <em>extiende</em> el núcleo relacional justamente con lo que el álgebra de primer orden no alcanzaba: la agregación que cuenta y suma, las consultas recursivas que recorren cadenas de profundidad arbitraria —la clausura transitiva que el capítulo&nbsp;2 declaró inexpresable—, y las funciones de ventana. Cada límite que allí marcamos reaparece aquí como una extensión del lenguaje. Y, por último, SQL descansa sobre un sistema de tipos <em>extensible</em>: los tipos compuestos, los arrays y el JSON son añadidos sobre el núcleo, y ese mismo mecanismo de extensión es el que, en la cuarta parte, acogerá el tipo <code>vector</code> sin que ello sea una ruptura. El capítulo aterriza, así, el formalismo del capítulo&nbsp;2 y abre las tres puertas —agregación, recursión, tipos— por las que el modelo relacional crece más allá de sí mismo.</p>
+<p>Los ejemplos se ejecutan sobre el PostgreSQL del repositorio <span class="citation" data-cites="postgresql">(<a href="#ref-postgresql" role="doc-biblioref">PostgreSQL Global Development Group 2024</a>)</span> y, donde el estándar y el dialecto difieren, se anota la diferencia; el lenguaje es de estándar ISO, pero vive en implementaciones concretas <span class="citation" data-cites="melton">(<a href="#ref-melton" role="doc-biblioref">Melton y Simon 2002</a>)</span>.</p>
+<section id="ddl-dml-y-dcl-la-anatomía-del-lenguaje" class="level2">
+<h2 class="anchored" data-anchor-id="ddl-dml-y-dcl-la-anatomía-del-lenguaje">DDL, DML y DCL: la anatomía del lenguaje</h2>
+<p>SQL no es un lenguaje monolítico, sino tres sublenguajes con propósitos distintos. El <em>lenguaje de definición de datos</em> (DDL) describe la estructura: crea y altera relaciones, tipos y restricciones. El <em>lenguaje de manipulación</em> (DML) consulta y modifica los datos. Y el <em>lenguaje de control</em> (DCL) gobierna quién puede hacer qué. Los tres realizan, en sintaxis, ideas que los capítulos previos ya fijaron: el DDL materializa el esquema conceptual del capítulo&nbsp;1 y las restricciones de integridad del capítulo&nbsp;2; el DML, el álgebra; el DCL, la función de seguridad del gestor.</p>
+<p>SQL nació en los años setenta como SEQUEL, en el seno del proyecto System&nbsp;R de IBM, y se estandarizó por primera vez en 1986. Desde entonces el estándar ISO ha crecido por revisiones sucesivas que incorporaron justamente las extensiones de este capítulo: las reuniones externas y los tipos en SQL-92, las consultas recursivas y los tipos estructurados en SQL:1999 <span class="citation" data-cites="melton">(<a href="#ref-melton" role="doc-biblioref">Melton y Simon 2002</a>)</span>, las funciones de ventana en SQL:2003, el JSON en SQL:2016 y las consultas de grafos de propiedades (SQL/PGQ) en SQL:2023 <span class="citation" data-cites="sqlpgq2023">(<a href="#ref-sqlpgq2023" role="doc-biblioref">ISO/IEC 2023</a>)</span>. El estándar fija un núcleo común, pero cada sistema añade su dialecto: tipos propios, sintaxis de optimización, extensiones. El código de este libro es de PostgreSQL <span class="citation" data-cites="postgresql">(<a href="#ref-postgresql" role="doc-biblioref">PostgreSQL Global Development Group 2024</a>)</span>, y donde usa algo no estándar se anota. La lección práctica es doble: lo esencial es portable porque descansa en el modelo relacional común, pero las extensiones —y el tipo <code>vector</code> será una— viven en implementaciones concretas, y conviene saber cuándo se pisa estándar y cuándo dialecto.</p>
+</section>
+<section id="definición-de-datos-ddl" class="level2">
+<h2 class="anchored" data-anchor-id="definición-de-datos-ddl">Definición de datos: DDL</h2>
+<p>Crear una relación es declarar su esquema —atributos y dominios— junto con las restricciones que toda instancia válida respetará. El listado&nbsp;3.1 crea el esquema de juguete que el capítulo usa, heredero del de los capítulos&nbsp;1 y&nbsp;2.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:ddl"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:ddl-1"><a href="#lst:ddl-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> autor (</span>
+<span id="lst:ddl-2"><a href="#lst:ddl-2" aria-hidden="true" tabindex="-1"></a>    id_autor <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="lst:ddl-3"><a href="#lst:ddl-3" aria-hidden="true" tabindex="-1"></a>    nombre   TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="lst:ddl-4"><a href="#lst:ddl-4" aria-hidden="true" tabindex="-1"></a>    pais     TEXT</span>
+<span id="lst:ddl-5"><a href="#lst:ddl-5" aria-hidden="true" tabindex="-1"></a>);</span>
+<span id="lst:ddl-6"><a href="#lst:ddl-6" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> libro (</span>
+<span id="lst:ddl-7"><a href="#lst:ddl-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span>       <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="lst:ddl-8"><a href="#lst:ddl-8" aria-hidden="true" tabindex="-1"></a>    titulo   TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="lst:ddl-9"><a href="#lst:ddl-9" aria-hidden="true" tabindex="-1"></a>    anio     <span class="dt">INTEGER</span> <span class="kw">CHECK</span> (anio <span class="kw">BETWEEN</span> <span class="dv">1450</span> <span class="kw">AND</span> <span class="dv">2100</span>),</span>
+<span id="lst:ddl-10"><a href="#lst:ddl-10" aria-hidden="true" tabindex="-1"></a>    tema     TEXT,</span>
+<span id="lst:ddl-11"><a href="#lst:ddl-11" aria-hidden="true" tabindex="-1"></a>    id_autor <span class="dt">INTEGER</span> <span class="kw">REFERENCES</span> autor (id_autor)</span>
+<span id="lst:ddl-12"><a href="#lst:ddl-12" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.1.</strong> DDL: el esquema con sus restricciones de integridad.</p>
+<p>Cada cláusula es una restricción del capítulo&nbsp;2 hecha sintaxis. <code>PRIMARY KEY</code> declara la clave primaria —e impone la integridad de entidad: no nula, única—. <code>REFERENCES</code> declara la clave ajena y, con ella, la integridad referencial: el gestor rechazará todo libro cuyo <code>id_autor</code> no exista en <code>autor</code>, y se negará a borrar un autor con libros salvo que se le indique qué hacer en cascada. <code>CHECK</code> expresa una restricción de dominio arbitraria —un año verosímil—, y <code>NOT NULL</code>, la prohibición de ausencia. No hay aquí ninguna lógica de validación dispersa por las aplicaciones, como en el fichero plano del capítulo&nbsp;1: las reglas viven en el esquema, centralizadas, y el gestor las hace cumplir en cada operación. Declarar el esquema es, pues, declarar también qué hace que el dato sea correcto.</p>
+<section id="evolución-del-esquema-índices-y-acciones-referenciales" class="level3">
+<h3 class="anchored" data-anchor-id="evolución-del-esquema-índices-y-acciones-referenciales">Evolución del esquema, índices y acciones referenciales</h3>
+<p>El esquema rara vez nace completo. <code>ALTER TABLE</code> permite modificarlo —añadir una columna, una restricción, un valor por defecto— sin recrear la relación, y es la forma sintáctica de las migraciones, esos cambios deliberados del esquema que el capítulo&nbsp;2 distinguió de los cambios de instancia. Una migración bien hecha respeta la independencia lógica del capítulo&nbsp;1: añadir una columna opcional no rompe las consultas existentes, que siguen viendo las que ya nombraban. Por eso el DDL es tan crítico como el DML: gobierna la pieza estable —el esquema— de la que cuelga todo lo demás.</p>
+<p>Dos elementos del DDL conviene fijar desde ya. El primero es el índice: <code>CREATE INDEX idx ON libro (anio)</code> crea la estructura del nivel interno del capítulo&nbsp;1 que el optimizador podrá usar para acelerar las consultas. El índice no cambia lo que la base <em>contiene</em> —no es dato del usuario— sino cómo se <em>accede</em> a él; es la palanca de la independencia física, y la práctica del capítulo lo hará visible en el plan de ejecución. El segundo son las <em>acciones referenciales</em>: al declarar una clave ajena se indica qué hacer cuando se borra o actualiza la fila referenciada. <code>ON DELETE CASCADE</code> borra en cascada los libros de un autor que se elimina; <code>ON DELETE RESTRICT</code> prohíbe borrar un autor con libros; <code>ON DELETE SET NULL</code> deja los libros huérfanos con la referencia nula. La elección codifica una regla del dominio —qué significa que desaparezca lo referenciado— y, de nuevo, la hace cumplir el gestor, no cada programa.</p>
+<p>El índice merece más que una mención, porque es donde el capítulo&nbsp;1 y la cuarta parte del libro se dan la mano. Un índice es una estructura auxiliar que acelera el acceso a ciertas consultas a cambio de espacio y de un coste de mantenimiento en cada escritura. No hay un índice universal: cada familia sirve a un tipo de consulta. El <em>B-tree</em>, el más común, mantiene las claves ordenadas y es óptimo para las comparaciones de igualdad y de rango y para entregar filas en orden —justo lo que la función de ventana de la práctica aprovechará—. El índice <em>hash</em> solo sirve para la igualdad, pero la resuelve en tiempo casi constante. El <em>GiST</em> y el <em>GIN</em> son índices generalizados, pensados para tipos no escalares: GIN indexa el contenido de un documento JSON o los elementos de un array; GiST sostiene datos geométricos y de texto. Y el <em>BRIN</em> resume bloques enteros, barato y eficaz cuando los datos están físicamente ordenados por el atributo.</p>
+<p>Un índice puede, además, ser <em>compuesto</em> —sobre varios atributos, como el <code>(cliente, ts)</code> de la práctica—, <em>parcial</em> —solo sobre las filas que cumplen una condición— o <em>de expresión</em> —sobre el resultado de una función, no sobre una columna cruda—. El optimizador decide si usar un índice comparando el coste estimado de hacerlo frente al del barrido, exactamente como en el capítulo&nbsp;1. La conexión que conviene retener mira a la cuarta parte: GiST y GIN existen porque PostgreSQL permite que un tipo nuevo traiga su propio método de acceso, y ese mismo mecanismo es el que, en el capítulo&nbsp;15, sostendrá el índice HNSW de los vectores. El catálogo de familias de índices no se cierra con el B-tree: se amplía con cada tipo de dato que trae su forma de buscarse.</p>
+</section>
+</section>
+<section id="manipulación-de-datos-dml" class="level2">
+<h2 class="anchored" data-anchor-id="manipulación-de-datos-dml">Manipulación de datos: DML</h2>
+<section id="la-consulta-como-álgebra-vestida" class="level3">
+<h3 class="anchored" data-anchor-id="la-consulta-como-álgebra-vestida">La consulta como álgebra vestida</h3>
+<p>El corazón del DML es la consulta <code>SELECT</code>, y su forma canónica se lee casi literalmente como una expresión del álgebra. El listado&nbsp;3.2 recupera los títulos de los libros de geometría posteriores a 2010 junto con el nombre de su autor.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:select"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:select-1"><a href="#lst:select-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span>   l.titulo, a.nombre</span>
+<span id="lst:select-2"><a href="#lst:select-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span>     libro l <span class="kw">JOIN</span> autor a <span class="kw">ON</span> l.id_autor <span class="op">=</span> a.id_autor</span>
+<span id="lst:select-3"><a href="#lst:select-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span>    l.anio <span class="op">&gt;</span> <span class="dv">2010</span></span>
+<span id="lst:select-4"><a href="#lst:select-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> l.titulo;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.2.</strong> Una consulta SELECT y su lectura algebraica.</p>
+<p>La correspondencia con el capítulo&nbsp;2 es directa: el <code>JOIN …&nbsp;ON</code> es la reunión <span class="math inline">\(\bowtie\)</span>, el <code>WHERE</code> es la selección <span class="math inline">\(\sigma\)</span>, y la lista del <code>SELECT</code> es la proyección <span class="math inline">\(\pi\)</span>. La consulta entera denota <span class="math inline">\(\pi_{\mathit{titulo},\mathit{nombre}}(\sigma_{\mathit{anio}&gt;2010}(\mathrm{Libro}
+\bowtie\mathrm{Autor}))\)</span>. Conviene notar, sin embargo, que el orden en que se <em>escriben</em> las cláusulas no es el orden en que se <em>evalúan</em>: conceptualmente primero actúa el <code>FROM</code> (las relaciones y su reunión), luego el <code>WHERE</code> (la selección), después el <code>SELECT</code> (la proyección) y por último el <code>ORDER BY</code>. Y, como vimos, el optimizador es libre de reordenar físicamente cuanto preserve el resultado —empujar la selección, elegir el algoritmo de reunión—: la consulta dice qué, no cómo.</p>
+<p>La reunión del listado&nbsp;3.2 es una <em>reunión interna</em> (<code>INNER JOIN</code>): empareja las filas que casan y descarta las que no, como la reunión natural del capítulo&nbsp;2 —un libro sin autor registrado, o un autor sin libros, no aparecen—. A menudo se quiere lo contrario: conservar las filas sin pareja, rellenando con nulos los atributos del lado que falta. Eso es la <em>reunión externa</em>, y es una de las fuentes más comunes de nulos en SQL.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:outer"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:outer-1"><a href="#lst:outer-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span>   a.nombre, l.titulo</span>
+<span id="lst:outer-2"><a href="#lst:outer-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span>     autor a <span class="kw">LEFT</span> <span class="kw">JOIN</span> libro l <span class="kw">ON</span> l.id_autor <span class="op">=</span> a.id_autor;</span>
+<span id="lst:outer-3"><a href="#lst:outer-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- un autor sin libros aparece con titulo NULL</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.3.</strong> Reunión externa por la izquierda: todos los autores, tengan libros o no.</p>
+<p>La <code>LEFT JOIN</code> conserva todas las filas de la relación izquierda y, para las que no casan a la derecha, rellena con nulos; la <code>RIGHT JOIN</code> hace lo simétrico, y la <code>FULL JOIN</code> conserva las no emparejadas de ambos lados. La consecuencia conecta con la sección anterior: una reunión externa <em>fabrica</em> nulos donde no los había, y esos nulos arrastran la lógica trivaluada a los cálculos que sigan. Contar con <code>COUNT(l.titulo)</code> tras una <code>LEFT JOIN</code> no cuenta los autores sin libros —porque los agregados ignoran los nulos—, mientras que <code>COUNT(*)</code> sí los cuenta; la diferencia entre ambas cuentas es, de hecho, una forma idiomática de hallar los autores sin obra. La reunión externa es imprescindible, pero exige tener presente, otra vez, que el nulo que introduce no es un valor sino una ausencia.</p>
+<p>SQL se aparta del modelo de conjuntos del capítulo&nbsp;2 en dos puntos que conviene fijar para no llevarse sorpresas. El primero es que SQL opera sobre <em>multiconjuntos</em>: una consulta puede devolver filas duplicadas, y de hecho las devuelve salvo que se pida lo contrario. <code>SELECT pais FROM autor</code> repite el país tantas veces como autores lo compartan; <code>SELECT DISTINCT pais</code> recupera la semántica de conjunto del álgebra, eliminando duplicados —la misma deduplicación que la proyección <span class="math inline">\(\pi\)</span> hacía gratis—. El duplicado no es un descuido del lenguaje: contarlos importa, y eliminarlos cuesta (exige ordenar o dispersar), así que SQL deja la decisión al usuario. El segundo apartamiento es el <code>ORDER BY</code>: el modelo no tiene noción de orden entre tuplas, pero el resultado de una consulta sí puede ordenarse para presentarlo. El orden es una propiedad de la salida, no de las relaciones.</p>
+</section>
+<section id="operaciones-de-conjunto-y-modificación-del-dato" class="level3">
+<h3 class="anchored" data-anchor-id="operaciones-de-conjunto-y-modificación-del-dato">Operaciones de conjunto y modificación del dato</h3>
+<p>Los operadores de conjunto del capítulo&nbsp;2 tienen su sintaxis directa: <code>UNION</code>, <code>INTERSECT</code> y <code>EXCEPT</code> (la diferencia) combinan los resultados de dos consultas compatibles. Con el matiz multiconjunto de siempre: <code>UNION</code> elimina duplicados —recupera la semántica de conjunto—, mientras <code>UNION ALL</code> los conserva y, por no tener que deduplicar, es más barata. La distinción no es cosmética: <code>UNION ALL</code> evita un ordenado o una dispersión, y en consultas grandes esa diferencia se nota.</p>
+<p>Modificar el dato son tres verbos. <code>INSERT</code> añade filas; <code>UPDATE</code> cambia las que cumplen una condición; <code>DELETE</code> las borra. Los tres operan <em>en bloque</em>, sobre todas las filas que casan a la vez, no una a una: un solo <code>UPDATE libro SET anio = anio + 1 WHERE …</code> corrige miles de filas en una operación, y esa es la forma idiomática y eficiente de modificar en SQL, frente al bucle fila a fila que la mentalidad procedimental tentaría a escribir. PostgreSQL añade el <em>UPSERT</em> —<code>INSERT …&nbsp;ON CONFLICT …&nbsp;DO UPDATE</code>—, que inserta o, si la clave ya existe, actualiza, resolviendo en una sentencia atómica la carrera entre comprobar y escribir. Toda modificación, además, ocurre dentro de una transacción —la unidad atómica del capítulo&nbsp;5—, de modo que un <code>UPDATE</code> que toca mil filas las cambia todas o ninguna.</p>
+<p>Esa última frase esconde una de las garantías capitales del capítulo&nbsp;1, que el capítulo&nbsp;5 desarrollará y que aquí conviene nombrar. Las sentencias de modificación no flotan sueltas: se agrupan en <em>transacciones</em>, delimitadas por <code>BEGIN</code> y <code>COMMIT</code> (o <code>ROLLBACK</code> para deshacer), y la transacción es <em>atómica</em> —se aplica entera o no se aplica—. Transferir un préstamo de un socio a otro, que son un borrado y una inserción, debe ocurrir de golpe: si el sistema cae entre ambos, la transacción no confirmada se deshace y la base queda coherente. SQL expone, además, <em>niveles de aislamiento</em> que gradúan cuánto se protege una transacción de las que corren a la vez, un compromiso entre coherencia y concurrencia que el capítulo&nbsp;5 formaliza. Por ahora basta retener que toda modificación vive dentro de una transacción, y que esa es la razón de que un <code>UPDATE</code> masivo sea seguro pese a tocar miles de filas.</p>
+</section>
+<section id="los-nulos-muerden-la-lógica-trivaluada-en-la-práctica" class="level3">
+<h3 class="anchored" data-anchor-id="los-nulos-muerden-la-lógica-trivaluada-en-la-práctica">Los nulos muerden: la lógica trivaluada en la práctica</h3>
+<p>La lógica trivaluada que el capítulo&nbsp;2 introdujo deja de ser una sutileza teórica en cuanto se escribe SQL. El <code>WHERE</code> conserva una fila solo si su condición es <em>verdadera</em>; si la condición es desconocida —porque compara con un nulo—, la fila se descarta. De ahí la regla operativa: para preguntar por la ausencia hay que usar <code>IS NULL</code>, nunca <code>= NULL</code>, porque <code>anio = NULL</code> no es verdadero ni falso, sino desconocido, y no selecciona nada. El listado&nbsp;3.4 muestra la trampa clásica.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:null"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:null-1"><a href="#lst:null-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- NO encuentra los libros sin anio: "= NULL" da siempre desconocido</span></span>
+<span id="lst:null-2"><a href="#lst:null-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> libro <span class="kw">WHERE</span> anio <span class="op">=</span> <span class="kw">NULL</span>;        <span class="co">-- 0 filas, siempre</span></span>
+<span id="lst:null-3"><a href="#lst:null-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- correcto:</span></span>
+<span id="lst:null-4"><a href="#lst:null-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> libro <span class="kw">WHERE</span> anio <span class="kw">IS</span> <span class="kw">NULL</span>;</span>
+<span id="lst:null-5"><a href="#lst:null-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- sorpresa de NOT IN con un nulo en la subconsulta:</span></span>
+<span id="lst:null-6"><a href="#lst:null-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> libro</span>
+<span id="lst:null-7"><a href="#lst:null-7" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> id_autor <span class="kw">NOT</span> <span class="kw">IN</span> (<span class="kw">SELECT</span> id_autor <span class="kw">FROM</span> autor);  <span class="co">-- vacio si hay NULL</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.4.</strong> El nulo y la lógica trivaluada: una trampa frecuente.</p>
+<p>La última consulta es la más insidiosa. Si la subconsulta devuelve algún nulo, <code>NOT IN</code> se evalúa comparando con cada valor, y una comparación con el nulo da desconocido; basta un desconocido para que la condición entera deje de ser verdadera, y la consulta devuelve cero filas en silencio. Es la ley del tercio excluido rota que el capítulo&nbsp;2 anticipó, ahora con consecuencias prácticas: una consulta aparentemente correcta que, ante un solo nulo, miente. La defensa es conocer el mecanismo —toda comparación con nulo es desconocido— y preferir <code>NOT EXISTS</code>, que no padece el problema.</p>
+</section>
+</section>
+<section id="control-de-acceso-y-vistas-dcl" class="level2">
+<h2 class="anchored" data-anchor-id="control-de-acceso-y-vistas-dcl">Control de acceso y vistas: DCL</h2>
+<p>El tercer sublenguaje es breve pero realiza una función capital del capítulo&nbsp;1: la seguridad. <code>GRANT SELECT ON libro TO consulta</code> concede a un rol el derecho a leer una relación; <code>REVOKE</code> lo retira. Combinado con las vistas del capítulo&nbsp;2 —que exponen solo parte del esquema—, el control de acceso permite que cada aplicación vea y modifique exactamente lo que le corresponde, ni más ni menos. La seguridad no se programa en cada aplicación: se declara en el gestor, centralizada como las demás garantías.</p>
+<p>La vista del capítulo&nbsp;2 —una relación derivada, un nombre para una consulta— tiene su sintaxis en SQL: <code>CREATE VIEW catalogo AS SELECT …</code> define una vista virtual que se evalúa cada vez que se consulta, siempre al día. Es la realización del nivel externo del capítulo&nbsp;1: cada aplicación consulta su vista sin saber qué expresión hay debajo, y si el esquema base cambia de un modo que la definición de la vista absorbe, la aplicación no se entera.</p>
+<p>Cuando reevaluar la consulta en cada acceso resulta caro, SQL ofrece la <em>vista materializada</em>: <code>CREATE MATERIALIZED VIEW</code> guarda el resultado como una tabla, rápida de leer, que hay que refrescar con <code>REFRESH</code> cuando los datos base cambian. Es exactamente el compromiso que el capítulo&nbsp;2 anticipó —frescura frente a coste— y que reaparecerá, con otro ropaje, en la cuarta parte: un índice vectorial es, en el fondo, una estructura materializada que acelera la consulta a cambio de tener que reconstruirse cuando los vectores cambian. La tensión entre calcular al vuelo y cachear el resultado no es exclusiva de los vectores; vive ya aquí, en una vista materializada de SQL.</p>
+</section>
+<section id="subconsultas-agregación-y-funciones-de-ventana" class="level2">
+<h2 class="anchored" data-anchor-id="subconsultas-agregación-y-funciones-de-ventana">Subconsultas, agregación y funciones de ventana</h2>
+<p>Aquí SQL deja de ser trivial. Las tres construcciones de esta sección son las que separan al que conoce la sintaxis del que sabe consultar, y dos de ellas —la agregación y la recursión— son precisamente las que rebasan el álgebra de primer orden del capítulo&nbsp;2.</p>
+<section id="subconsultas" class="level3">
+<h3 class="anchored" data-anchor-id="subconsultas">Subconsultas</h3>
+<p>Una <em>subconsulta</em> es una consulta anidada dentro de otra. Las hay de varias formas: la <em>escalar</em>, que devuelve un único valor y se usa donde cabría una constante; la de <em>lista</em>, tras <code>IN</code>, que comprueba pertenencia a un conjunto; y la <em>correlacionada</em>, que se refiere a la fila de la consulta externa y se reevalúa para cada una. Esta última es la más expresiva, y con <code>EXISTS</code> expresa la cuantificación que el álgebra codificaba con la división.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:exists"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:exists-1"><a href="#lst:exists-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> a.nombre</span>
+<span id="lst:exists-2"><a href="#lst:exists-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span>   autor a</span>
+<span id="lst:exists-3"><a href="#lst:exists-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span>  <span class="kw">EXISTS</span> (<span class="kw">SELECT</span> <span class="dv">1</span> <span class="kw">FROM</span> libro l</span>
+<span id="lst:exists-4"><a href="#lst:exists-4" aria-hidden="true" tabindex="-1"></a>               <span class="kw">WHERE</span> l.id_autor <span class="op">=</span> a.id_autor</span>
+<span id="lst:exists-5"><a href="#lst:exists-5" aria-hidden="true" tabindex="-1"></a>                 <span class="kw">AND</span> l.tema <span class="op">=</span> <span class="st">'geometria'</span>);</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.5.</strong> Una subconsulta correlacionada con EXISTS: autores con al menos un libro de geometría.</p>
+<p>La consulta «socios que han leído todos los libros exigidos» —la división del capítulo&nbsp;2— se escribe con una doble negación de <code>EXISTS</code>: no hay ningún libro exigido que el socio no haya leído. Esa traducción del «para todos» a un «no existe uno que no» es exactamente cómo el álgebra realizaba la división con diferencias, y muestra que SQL, pese a su apariencia, sigue anclado en la lógica de primer orden del cálculo relacional. El listado&nbsp;3.6 lo escribe.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:division"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:division-1"><a href="#lst:division-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> s.id_socio</span>
+<span id="lst:division-2"><a href="#lst:division-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span>   socio s</span>
+<span id="lst:division-3"><a href="#lst:division-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span>  <span class="kw">NOT</span> <span class="kw">EXISTS</span> (                       <span class="co">-- no hay un libro exigido...</span></span>
+<span id="lst:division-4"><a href="#lst:division-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> <span class="dv">1</span> <span class="kw">FROM</span> exigido e</span>
+<span id="lst:division-5"><a href="#lst:division-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> (                    <span class="co">-- ...que el socio no haya leido</span></span>
+<span id="lst:division-6"><a href="#lst:division-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">SELECT</span> <span class="dv">1</span> <span class="kw">FROM</span> lectura l</span>
+<span id="lst:division-7"><a href="#lst:division-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">WHERE</span> l.id_socio <span class="op">=</span> s.id_socio</span>
+<span id="lst:division-8"><a href="#lst:division-8" aria-hidden="true" tabindex="-1"></a>          <span class="kw">AND</span> l.id_libro <span class="op">=</span> e.id_libro));</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.6.</strong> La división como doble NOT EXISTS: socios que han leido todos los libros exigidos.</p>
+<p>Léase de fuera adentro: un socio entra en el resultado si no existe ningún libro exigido para el cual no exista una lectura suya de ese libro; es decir, si ha leído todos. Las dos negaciones anidadas son la forma en que la lógica de primer orden expresa el «para todos», y el motivo de que la división no tenga una palabra clave propia en SQL: no hace falta, porque el cuantificador universal se reduce, mecánicamente, a dos «no existe». El capítulo&nbsp;2 lo anticipó al llamar a la división el operador más sutil; aquí se ve por qué la sutileza sobrevive a la sintaxis.</p>
+<p>Una subconsulta puede aparecer también en el <code>FROM</code>, como una relación más: es una <em>tabla derivada</em>, el equivalente sintáctico de una relación intermedia del álgebra. Cuando esa relación intermedia se reutiliza o se quiere nombrar para legibilidad, SQL ofrece las <em>expresiones de tabla comunes</em> (CTE), introducidas con <code>WITH</code>: dan nombre a una consulta para usarla después, descomponiendo una consulta compleja en pasos legibles, como las relaciones intermedias con nombre de una demostración. Una CTE no recursiva es azúcar sintáctico —el optimizador suele poder integrarla en la consulta principal—, pero su variante <code>WITH RECURSIVE</code>, que veremos enseguida, no lo es: añade poder expresivo que el resto de SQL no tiene.</p>
+<p>Una subconsulta correlacionada tiene un coste que conviene entender. Como se reevalúa para cada fila de la consulta externa, una lectura ingenua sugiere un coste del orden del producto de los tamaños —cuadrático—, y escrita a mano así sería. Pero el optimizador rara vez la ejecuta de ese modo: reconoce el patrón y lo reescribe como una <em>semirreunión</em> (semijoin), una reunión que solo comprueba la existencia de pareja sin duplicar filas, y la realiza con los mismos algoritmos eficientes —dispersión, índice— que cualquier reunión. Es, una vez más, la completitud del capítulo&nbsp;2 en acción: el usuario escribe la forma que le resulta clara —<code>EXISTS</code> correlacionado— y el sistema elige una ejecución equivalente y barata. Por eso conviene escribir la consulta legible y fiarse del optimizador, en lugar de retorcerla por un miedo al coste que casi nunca se materializa.</p>
+</section>
+<section id="agregación-contar-lo-que-el-álgebra-no-contaba" class="level3">
+<h3 class="anchored" data-anchor-id="agregación-contar-lo-que-el-álgebra-no-contaba">Agregación: contar lo que el álgebra no contaba</h3>
+<p>El capítulo&nbsp;2 marcó un límite tajante: el álgebra relacional no sabe contar ni sumar. SQL levanta ese límite con las <em>funciones de agregación</em> —<code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code>— y la cláusula <code>GROUP BY</code>, que parte la relación en grupos y aplica la agregación a cada uno. El listado&nbsp;3.7 cuenta los libros de cada autor y se queda con los prolíficos.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:groupby"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:groupby-1"><a href="#lst:groupby-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span>   a.nombre, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> n_libros</span>
+<span id="lst:groupby-2"><a href="#lst:groupby-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span>     autor a <span class="kw">JOIN</span> libro l <span class="kw">ON</span> l.id_autor <span class="op">=</span> a.id_autor</span>
+<span id="lst:groupby-3"><a href="#lst:groupby-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> a.id_autor, a.nombre</span>
+<span id="lst:groupby-4"><a href="#lst:groupby-4" aria-hidden="true" tabindex="-1"></a><span class="kw">HAVING</span>   <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;</span> <span class="dv">3</span></span>
+<span id="lst:groupby-5"><a href="#lst:groupby-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> n_libros <span class="kw">DESC</span>;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.7.</strong> Agregación: libros por autor, filtrando por la cuenta con HAVING.</p>
+<p>Hay aquí dos novedades sobre el álgebra. La primera es la agregación misma, que <em>colapsa</em> un grupo de tuplas en una sola fila de resumen —una operación que reduce la cardinalidad de un modo que ningún operador del álgebra de primer orden podía—. La segunda es <code>HAVING</code>, que filtra <em>grupos</em> por una condición sobre el agregado, frente a <code>WHERE</code>, que filtra <em>filas</em> antes de agrupar. La distinción importa y es fuente de errores: <code>WHERE</code> actúa antes del <code>GROUP BY</code>, sobre las tuplas individuales; <code>HAVING</code>, después, sobre los grupos ya formados. Filtrar por la cuenta exige <code>HAVING</code>, porque la cuenta no existe hasta que el grupo se ha formado.</p>
+<p>Dos detalles de la agregación enlazan con los nulos del capítulo&nbsp;2 y conviene fijarlos. Primero: los agregados <em>ignoran</em> los nulos. <code>AVG(anio)</code> promedia solo los años conocidos, y <code>COUNT(anio)</code> cuenta solo los no nulos, frente a <code>COUNT(*)</code> que cuenta todas las filas; la diferencia entre ambas cuentas es, de nuevo, el número de nulos. Segundo: muchos agregados admiten <code>DISTINCT</code> —<code>COUNT(DISTINCT pais)</code> cuenta países distintos— y, en el SQL moderno, una cláusula <code>FILTER</code> que restringe qué filas entran en cada agregado, de modo que una sola consulta puede calcular varios agregados sobre subconjuntos distintos a la vez. Son refinamientos, pero ilustran que la agregación, ausente por completo del álgebra de primer orden, llega a SQL con una riqueza considerable.</p>
+</section>
+<section id="funciones-de-ventana-recursión-y-análisis" class="level3">
+<h3 class="anchored" data-anchor-id="funciones-de-ventana-recursión-y-análisis">Funciones de ventana, recursión y análisis</h3>
+<p>La agregación con <code>GROUP BY</code> resume a costa de perder el detalle: tras agrupar, las filas individuales desaparecen. A menudo se quiere lo contrario —conservar cada fila y, además, anexarle un cálculo sobre su grupo—: la posición de cada libro en el ranking de su autor, la suma acumulada de préstamos en el tiempo, la diferencia con la fila anterior. Para eso están las <em>funciones de ventana</em>, una de las extensiones más potentes del SQL moderno. Una función de ventana calcula un agregado sobre un conjunto de filas —la «ventana» relacionada con la fila actual— pero, a diferencia del <code>GROUP BY</code>, no colapsa: cada fila de entrada produce una fila de salida, con la columna agregada añadida (figura&nbsp;3.1).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap03/fig_01.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;3.1.</strong> <code>GROUP BY</code> frente a función de ventana sobre la misma entrada. El primero colapsa cada grupo en una fila de resumen; la segunda conserva todas las filas y añade una columna con el agregado (aquí, la suma acumulada por cliente). Misma agregación, dos formas: resumir o enriquecer.</figcaption>
+</figure>
+</div>
+<p>Las funciones de ventana piden un dominio con orden temporal, de modo que los ejemplos que siguen dejan el catálogo de autores y libros por una tabla de movimientos, <code>evento(cliente, ts, importe)</code> —un cliente, un instante <code>ts</code> y un importe—, que la práctica del capítulo crea y puebla. Sobre ella, la suma acumulada del importe por cliente se escribe así:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:window"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:window-1"><a href="#lst:window-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> cliente, ts, importe,</span>
+<span id="lst:window-2"><a href="#lst:window-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">SUM</span>(importe) <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> cliente <span class="kw">ORDER</span> <span class="kw">BY</span> ts) <span class="kw">AS</span> acum,</span>
+<span id="lst:window-3"><a href="#lst:window-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> cliente <span class="kw">ORDER</span> <span class="kw">BY</span> ts) <span class="kw">AS</span> n</span>
+<span id="lst:window-4"><a href="#lst:window-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span>   evento;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.8.</strong> Una función de ventana: suma acumulada del importe por cliente, en orden temporal.</p>
+<p>La cláusula <code>OVER</code> define la ventana: <code>PARTITION BY</code> la divide en grupos —como un <code>GROUP BY</code> que no colapsa— y <code>ORDER BY</code> fija el orden dentro de cada grupo, sobre el que se acumula. Funciones como <code>ROW_NUMBER</code>, <code>RANK</code> o <code>LAG</code> —que mira la fila anterior— solo cobran sentido con ese orden. Las funciones de ventana son el caballo de batalla de la analítica sobre SQL, y su coste tiene una estructura clara que la práctica del capítulo examinará en el plan: la ventana necesita las filas ordenadas por partición, y un índice que ya las entregue así elimina el nodo de ordenación —aunque, como veremos, suprimir ese nodo no implica siempre menor latencia—.</p>
+<p>La ventana admite, además, un <em>marco</em> (frame) que precisa qué filas, dentro de la partición y relativas a la actual, entran en el cálculo. Por omisión, una ventana con <code>ORDER BY</code> acumula desde el inicio de la partición hasta la fila actual —de ahí la suma acumulada—, pero <code>ROWS BETWEEN 2 PRECEDING AND CURRENT ROW</code> la restringe a una ventana deslizante de tres filas, con la que se calcula, por ejemplo, una media móvil. El listado&nbsp;3.9 ilustra la suma acumulada con dos clientes y unos pocos eventos construidos a mano —no es la salida de la práctica, que corre sobre una tabla mayor, sino una muestra mínima para ver la mecánica—: nótese que la columna <code>acum</code> crece dentro de cada cliente y se reinicia al cambiar de partición, y que el número de filas de salida es el de entrada —la ventana no colapsa—.</p>
+<pre class="{#lst:salida-ventana}"><code>cliente  ts   importe  acum   n
+  -------  ---  -------  -----  -
+  A        10   30       30     1
+  A        14   20       50     2
+  A        21   50      100     3
+  B         9   40       40     1
+  B        17   10       50     2</code></pre>
+<p><strong>Listado 3.9.</strong> Ilustración construida de la suma acumulada (dos clientes, unos pocos eventos), no la salida de la práctica: la columna acum crece dentro de cada partición.</p>
+<p>El límite más sonado del capítulo&nbsp;2 fue la clausura transitiva: el álgebra de primer orden no puede recorrer una cadena de profundidad arbitraria, así que no expresa «todos los subordinados, directos e indirectos, de un jefe». SQL lo resuelve con las <em>consultas recursivas</em>, mediante <code>WITH RECURSIVE</code>, que itera una consulta hasta que no añade filas nuevas —un cálculo de punto fijo, exactamente la iteración no acotada que faltaba—.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:recursive"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:recursive-1"><a href="#lst:recursive-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> RECURSIVE subordinados <span class="kw">AS</span> (</span>
+<span id="lst:recursive-2"><a href="#lst:recursive-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> empleado <span class="kw">FROM</span> supervisa <span class="kw">WHERE</span> jefe <span class="op">=</span> <span class="st">'ada'</span></span>
+<span id="lst:recursive-3"><a href="#lst:recursive-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">UNION</span></span>
+<span id="lst:recursive-4"><a href="#lst:recursive-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> s.empleado</span>
+<span id="lst:recursive-5"><a href="#lst:recursive-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span>   supervisa s <span class="kw">JOIN</span> subordinados r <span class="kw">ON</span> s.jefe <span class="op">=</span> r.empleado</span>
+<span id="lst:recursive-6"><a href="#lst:recursive-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="lst:recursive-7"><a href="#lst:recursive-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> subordinados;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.10.</strong> WITH RECURSIVE: la clausura transitiva que el algebra no podia expresar.</p>
+<p>La estructura tiene dos partes: un caso base —los subordinados directos— y un paso recursivo que, partiendo de los ya hallados, encuentra los del siguiente nivel; la <code>UNION</code> acumula y, al deduplicar, garantiza que la iteración termine cuando deja de aparecer nadie nuevo. Esto es Datalog —el operador de punto fijo que el capítulo&nbsp;2 mencionó— dentro de SQL, y es la prueba de que el lenguaje trasciende su núcleo de primer orden. Conviene retener la conexión con la segunda parte: una consulta recursiva es, en el fondo, un recorrido de grafo expresado en SQL, y su incomodidad sintáctica —comparada con la naturalidad de un lenguaje de grafos— es uno de los argumentos que motivan las bases de datos de grafo del capítulo&nbsp;8. El propio estándar dio un paso hacia esa naturalidad al incorporar en SQL:2023 una sintaxis nativa de emparejamiento de patrones de grafo, SQL/PGQ <span class="citation" data-cites="sqlpgq2023">(<a href="#ref-sqlpgq2023" role="doc-biblioref">ISO/IEC 2023</a>)</span>.</p>
+<p>Las piezas de esta sección rara vez actúan solas; una consulta analítica real las combina. El listado&nbsp;3.11 responde a «para cada país, el autor con más libros y cuántos tiene», y encadena casi todo lo visto: una CTE que agrega libros por autor, una función de ventana que clasifica los autores dentro de cada país, y una selección final que se queda con el primero de cada uno.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:analitica"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:analitica-1"><a href="#lst:analitica-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> por_autor <span class="kw">AS</span> (</span>
+<span id="lst:analitica-2"><a href="#lst:analitica-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> a.id_autor, a.pais, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> n</span>
+<span id="lst:analitica-3"><a href="#lst:analitica-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span>   autor a <span class="kw">JOIN</span> libro l <span class="kw">ON</span> l.id_autor <span class="op">=</span> a.id_autor</span>
+<span id="lst:analitica-4"><a href="#lst:analitica-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GROUP</span>  <span class="kw">BY</span> a.id_autor, a.pais</span>
+<span id="lst:analitica-5"><a href="#lst:analitica-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="lst:analitica-6"><a href="#lst:analitica-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pais, id_autor, n</span>
+<span id="lst:analitica-7"><a href="#lst:analitica-7" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> (</span>
+<span id="lst:analitica-8"><a href="#lst:analitica-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> pais, id_autor, n,</span>
+<span id="lst:analitica-9"><a href="#lst:analitica-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> pais <span class="kw">ORDER</span> <span class="kw">BY</span> n <span class="kw">DESC</span>) <span class="kw">AS</span> r</span>
+<span id="lst:analitica-10"><a href="#lst:analitica-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span>   por_autor</span>
+<span id="lst:analitica-11"><a href="#lst:analitica-11" aria-hidden="true" tabindex="-1"></a>) q</span>
+<span id="lst:analitica-12"><a href="#lst:analitica-12" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> r <span class="op">=</span> <span class="dv">1</span>;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.11.</strong> Una consulta analítica: el autor mas prolifico de cada pais.</p>
+<p>Léase de dentro afuera, como una expresión del álgebra: la CTE <code>por_autor</code> reúne y agrega —el conteo que el álgebra no tenía—; la ventana <code>RANK() OVER (PARTITION BY pais ORDER BY n DESC)</code> ordena los autores dentro de cada país sin colapsar las filas; y el <code>WHERE r = 1</code> se queda con el de mayor cuenta de cada país. Tres extensiones —agregación, tabla derivada, ventana— al servicio de una sola pregunta, y todas declarativas: el usuario describe el resultado y el optimizador decide el plan, reuniendo, agrupando y ordenando en el orden que estime barato. Es SQL en su registro analítico, y la mejor muestra de cuánto ha crecido el lenguaje sobre el núcleo relacional del capítulo&nbsp;2.</p>
+</section>
+</section>
+<section id="sql-procedural-plpgsql" class="level2">
+<h2 class="anchored" data-anchor-id="sql-procedural-plpgsql">SQL procedural: PL/pgSQL</h2>
+<p>Todo lo anterior es declarativo: se describe el resultado y el sistema lo construye, operando sobre conjuntos enteros de una vez. Hay tareas, sin embargo, que no se dejan expresar así —lógica condicional compleja, bucles, procesos por pasos con estado— y para las que SQL ofrece una extensión procedimental. En PostgreSQL es PL/pgSQL, un lenguaje imperativo que vive dentro del gestor y se incrusta en funciones y disparadores.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:plpgsql"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:plpgsql-1"><a href="#lst:plpgsql-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">FUNCTION</span> categoria_autor(n <span class="dt">INTEGER</span>) RETURNS TEXT <span class="kw">AS</span> $$</span>
+<span id="lst:plpgsql-2"><a href="#lst:plpgsql-2" aria-hidden="true" tabindex="-1"></a><span class="cf">BEGIN</span></span>
+<span id="lst:plpgsql-3"><a href="#lst:plpgsql-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">IF</span> n <span class="op">&gt;</span> <span class="dv">10</span> <span class="cf">THEN</span> <span class="kw">RETURN</span> <span class="st">'prolifico'</span>;</span>
+<span id="lst:plpgsql-4"><a href="#lst:plpgsql-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ELSIF</span> n <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">THEN</span> <span class="kw">RETURN</span> <span class="st">'activo'</span>;</span>
+<span id="lst:plpgsql-5"><a href="#lst:plpgsql-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ELSE</span> <span class="kw">RETURN</span> <span class="st">'sin obra'</span>;</span>
+<span id="lst:plpgsql-6"><a href="#lst:plpgsql-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">END</span> <span class="cf">IF</span>;</span>
+<span id="lst:plpgsql-7"><a href="#lst:plpgsql-7" aria-hidden="true" tabindex="-1"></a><span class="cf">END</span>;</span>
+<span id="lst:plpgsql-8"><a href="#lst:plpgsql-8" aria-hidden="true" tabindex="-1"></a>$$ LANGUAGE plpgsql;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.12.</strong> Una funcion en PL/pgSQL: logica procedimental dentro del gestor.</p>
+<p>Una <em>función</em> encapsula lógica reutilizable que se invoca desde una consulta; un <em>disparador</em> (trigger) asocia una función a un evento —antes o después de una inserción, una actualización, un borrado— y permite, por ejemplo, mantener un registro de auditoría o derivar un valor automáticamente. El poder tiene un precio que conviene declarar: lo procedimental opera a menudo fila a fila, y un bucle que recorre una tabla con PL/pgSQL casi siempre es más lento que la consulta declarativa equivalente, que el optimizador puede ejecutar en bloque. La regla práctica es preferir lo declarativo y reservar lo procedimental para lo que de verdad no se expresa en una consulta —la misma lección que la segunda parte repetirá al elegir entre pedir al motor o programar en el cliente—.</p>
+<p>El disparador (trigger) merece su ejemplo, porque es la forma de que el gestor <em>reaccione</em> a los cambios. El listado&nbsp;3.13 mantiene al día un contador de libros por autor sin que ninguna aplicación tenga que recordarlo: la función se ejecuta automáticamente tras cada inserción en <code>libro</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:trigger"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:trigger-1"><a href="#lst:trigger-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">FUNCTION</span> inc_contador() RETURNS <span class="kw">TRIGGER</span> <span class="kw">AS</span> $$</span>
+<span id="lst:trigger-2"><a href="#lst:trigger-2" aria-hidden="true" tabindex="-1"></a><span class="cf">BEGIN</span></span>
+<span id="lst:trigger-3"><a href="#lst:trigger-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">UPDATE</span> autor <span class="kw">SET</span> n_libros <span class="op">=</span> n_libros <span class="op">+</span> <span class="dv">1</span></span>
+<span id="lst:trigger-4"><a href="#lst:trigger-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">WHERE</span> id_autor <span class="op">=</span> <span class="kw">NEW</span>.id_autor;</span>
+<span id="lst:trigger-5"><a href="#lst:trigger-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">RETURN</span> <span class="kw">NEW</span>;</span>
+<span id="lst:trigger-6"><a href="#lst:trigger-6" aria-hidden="true" tabindex="-1"></a><span class="cf">END</span>;</span>
+<span id="lst:trigger-7"><a href="#lst:trigger-7" aria-hidden="true" tabindex="-1"></a>$$ LANGUAGE plpgsql;</span>
+<span id="lst:trigger-8"><a href="#lst:trigger-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:trigger-9"><a href="#lst:trigger-9" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TRIGGER</span> tras_insertar_libro</span>
+<span id="lst:trigger-10"><a href="#lst:trigger-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">AFTER</span> <span class="kw">INSERT</span> <span class="kw">ON</span> libro</span>
+<span id="lst:trigger-11"><a href="#lst:trigger-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">FOR</span> <span class="kw">EACH</span> <span class="kw">ROW</span> <span class="kw">EXECUTE</span> <span class="kw">FUNCTION</span> inc_contador();</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.13.</strong> Un disparador: mantener un contador derivado de forma automatica.</p>
+<p>El disparador centraliza en el gestor una regla que, de otro modo, cada aplicación que insertara libros tendría que recordar —y alguna olvidaría—, con el consiguiente riesgo de un contador inconsistente. Es la filosofía del capítulo&nbsp;1 llevada a la lógica derivada: lo que debe cumplirse siempre, que lo imponga el gestor. El precio, otra vez, es que los disparadores se ejecutan fila a fila y pueden encarecer las inserciones masivas; como todo lo procedimental, se usan con criterio.</p>
+</section>
+<section id="tipos-compuestos-y-el-modelo-objeto-relacional" class="level2">
+<h2 class="anchored" data-anchor-id="tipos-compuestos-y-el-modelo-objeto-relacional">Tipos compuestos y el modelo objeto-relacional</h2>
+<p>Llegamos al apartado que más lejos mira. El modelo relacional puro exige atributos atómicos —la primera forma normal del capítulo&nbsp;2—, pero los sistemas reales hace décadas que admiten tipos más ricos, y entender ese sistema de tipos <em>extensible</em> es la antesala de toda la cuarta parte.</p>
+<p>PostgreSQL ofrece, sobre los tipos escalares, una jerarquía de tipos compuestos. Los <em>dominios</em> son tipos escalares con restricciones (un <code>codigo_postal</code> es un texto que cumple un patrón). Los <em>arrays</em> permiten un atributo con varios valores ordenados. Los <em>tipos compuestos</em> agrupan varios campos en uno solo, como una tupla anidada. Y el <em>JSON</em> —en su forma binaria <code>JSONB</code>— guarda documentos de estructura flexible dentro de una columna, con operadores propios para navegarlos e índices <code>GIN</code> para buscarlos. Cada uno de estos tipos relaja, de un modo controlado, la atomicidad estricta, y cada uno llegó como una <em>extensión</em> del sistema, no como una reescritura del núcleo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:tipos"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:tipos-1"><a href="#lst:tipos-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> obra (</span>
+<span id="lst:tipos-2"><a href="#lst:tipos-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span>     <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="lst:tipos-3"><a href="#lst:tipos-3" aria-hidden="true" tabindex="-1"></a>    temas  TEXT[],          <span class="co">-- array: varios valores ordenados</span></span>
+<span id="lst:tipos-4"><a href="#lst:tipos-4" aria-hidden="true" tabindex="-1"></a>    meta   JSONB            <span class="co">-- documento de estructura flexible</span></span>
+<span id="lst:tipos-5"><a href="#lst:tipos-5" aria-hidden="true" tabindex="-1"></a>);</span>
+<span id="lst:tipos-6"><a href="#lst:tipos-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- operadores propios de cada tipo:</span></span>
+<span id="lst:tipos-7"><a href="#lst:tipos-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> obra <span class="kw">WHERE</span> <span class="st">'geometria'</span> <span class="op">=</span> <span class="kw">ANY</span> (temas);   <span class="co">-- array</span></span>
+<span id="lst:tipos-8"><a href="#lst:tipos-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> obra <span class="kw">WHERE</span> meta<span class="op">-&gt;&gt;</span><span class="st">'idioma'</span> <span class="op">=</span> <span class="st">'es'</span>;      <span class="co">-- JSON</span></span>
+<span id="lst:tipos-9"><a href="#lst:tipos-9" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> idx_meta <span class="kw">ON</span> obra <span class="kw">USING</span> GIN (meta);       <span class="co">-- indice GIN</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 3.14.</strong> Tipos extendidos: un array y un documento JSON, con sus operadores e índice.</p>
+<p>Cada tipo del listado&nbsp;3.14 trae las tres piezas que definen a un tipo extendido: una <em>representación</em> (<code>TEXT[]</code>, <code>JSONB</code>), unos <em>operadores</em> propios (<code>ANY</code> para el array, <code>-&gt;&gt;</code> para navegar el JSON) y un <em>índice</em> que los acelera (<code>GIN</code>). Reténgase ese trío —tipo, operadores, índice—, porque es el patrón exacto que el vector seguirá: el tipo <code>vector</code>, los operadores de distancia y el índice HNSW. Lo que aquí se ve con el JSON, allí se verá con los embeddings; la maquinaria de extensión es la misma.</p>
+<p>En el extremo más sencillo del sistema de tipos están los <em>dominios</em> y los <em>enumerados</em>, que merecen una mención porque encarnan una idea: el tipo como contrato. Un dominio es un tipo escalar con una restricción incorporada —<code>CREATE DOMAIN anio_valido AS INTEGER CHECK (VALUE BETWEEN 1450 AND 2100)</code>—, de modo que la regla viaja con el tipo y no hay que repetir el <code>CHECK</code> en cada tabla que lo use. Un enumerado fija un conjunto cerrado de valores admitidos —<code>CREATE TYPE formato AS ENUM (’tapa dura’, ’bolsillo’, ’digital’)</code>—, que el gestor hace cumplir. Ambos trasladan al sistema de tipos lo que de otro modo serían restricciones dispersas, y refuerzan la lección del capítulo&nbsp;1: cuanto más sepa el gestor sobre la forma del dato, menos tiene que recordar cada aplicación. El tipo no es solo un formato de almacenamiento; es un contrato que el motor garantiza.</p>
+<p>Esa capacidad de añadir tipos nuevos sin tocar el motor es la herencia del <em>modelo objeto-relacional</em>, cuyo origen está en el sistema POSTGRES de Stonebraker <span class="citation" data-cites="stonebraker1986">(<a href="#ref-stonebraker1986" role="doc-biblioref">Stonebraker y Rowe 1986</a>)</span>. Su idea rectora: un tipo de dato no es algo cerrado que el sistema ofrezca de fábrica, sino algo que se <em>define</em> — con su representación, sus operadores y, crucialmente, su soporte de indexación—. PostgreSQL expone interfaces de método de acceso (como <code>GiST</code> y <code>GIN</code>) precisamente para que un tipo nuevo pueda traer su propio índice, del mismo modo que el B-tree sirve a los escalares ordenables.</p>
+<p><strong>Observación.</strong>&nbsp; Aquí se cierra el arco que apunta a la cuarta parte. Cuando, en el capítulo&nbsp;14, aparezca el tipo <code>vector</code> de la extensión <code>pgvector</code>, no será una ruptura del modelo relacional, sino un ejemplo más de su extensibilidad: un tipo nuevo (<code>vector</code>), con sus operadores de distancia (<code>&lt;-&gt;</code> para la euclídea, <code>&lt;=&gt;</code> para el coseno) y su método de acceso propio (un índice HNSW sobre la interfaz de PostgreSQL), añadido sobre el mismo sistema de tipos que ya acogió el JSON y los arrays. El <code>igual a</code> del álgebra convivirá con el <code>cercano a</code> de la distancia como dos operadores sobre tipos distintos del mismo motor. La búsqueda vectorial no llega de fuera del mundo relacional: crece desde su sistema de tipos.</p>
+</section>
+<section id="el-procesamiento-de-una-consulta" class="level2">
+<h2 class="anchored" data-anchor-id="el-procesamiento-de-una-consulta">El procesamiento de una consulta</h2>
+<p>Conviene ahora juntar las piezas y ver el camino completo que recorre una consulta desde el texto que el usuario escribe hasta las filas que recibe, porque ese camino es la completitud del capítulo&nbsp;2 puesta en marcha y el marco en el que la práctica del capítulo examinará el plan. Son cuatro etapas.</p>
+<p>Primero, el <em>análisis sintáctico</em>: el texto SQL se valida contra la gramática y se comprueba contra el catálogo del capítulo&nbsp;1 —que las tablas y columnas existan, que los tipos cuadren—, produciendo un árbol de la consulta. Segundo, la <em>reescritura</em>: se expanden las vistas (sustituyendo cada vista por su definición, según el capítulo&nbsp;2) y se aplican reglas, dejando una consulta en términos de las relaciones base. Tercero, la <em>optimización</em>: la consulta se traduce a una expresión del álgebra y el optimizador explora expresiones equivalentes —empujando selecciones, eligiendo el orden de las reuniones y, para cada operador lógico, un operador físico— guiándose por las estadísticas del catálogo para estimar costes; el resultado es un <em>plan de ejecución</em>. Cuarto, la <em>ejecución</em>: el motor recorre el plan, normalmente como un flujo de tuplas que asciende de las hojas a la raíz.</p>
+<p>Las dos etapas centrales son las del capítulo&nbsp;2 hechas software: la traducción del SQL declarativo a álgebra realiza la equivalencia del teorema de Codd, y la optimización aplica las leyes algebraicas para reescribir. El usuario, gracias a la completitud, escribe lo que le resulta natural; el sistema busca un plan barato —bueno según su modelo de coste, no necesariamente el óptimo absoluto—. La orden <code>EXPLAIN</code> de la práctica abre justamente esta caja: pide al motor el plan elegido sin ejecutarlo, y en él se leen las decisiones —qué índice usa, en qué orden reúne, dónde ordena— que el capítulo&nbsp;1 ya nos había mostrado para una consulta simple y que aquí gobiernan una con funciones de ventana.</p>
+</section>
+<section id="práctica-sql-que-se-ejecuta-y-se-explica" class="level2">
+<h2 class="anchored" data-anchor-id="práctica-sql-que-se-ejecuta-y-se-explica">Práctica: SQL que se ejecuta y se explica</h2>
+<p>La práctica cierra el capítulo poniendo a trabajar lo anterior sobre el PostgreSQL del repositorio. El módulo <code>src/cap03_sql_ventana.py</code> crea una tabla sintética de eventos, ejecuta la consulta de ventana del listado&nbsp;3.8 —la suma acumulada por cliente en orden temporal— y pide su <em>plan de ejecución</em> con y sin un índice B-tree sobre <code>(cliente, ts)</code>. Como manda la convención, anuncia los recursos —aquí PostgreSQL y la CPU, nunca la GPU—, avisa antes de poblar la tabla y muestra progreso durante la carga.</p>
+<section id="por-qué-el-índice-cambia-el-plan" class="level3">
+<h3 class="anchored" data-anchor-id="por-qué-el-índice-cambia-el-plan">Por qué el índice cambia el plan</h3>
+<p>La predicción, declarada antes de mirar el plan, sale de la estructura de la consulta. Una función de ventana con <code>PARTITION BY cliente ORDER BY ts</code> necesita las filas ordenadas por cliente y, dentro de cada cliente, por tiempo. Sin un índice adecuado, el motor debe <em>ordenar</em> la tabla entera antes de acumular: un nodo <code>Sort</code> de coste estimado del orden de <span class="math inline">\(N\log N\)</span>. Con un índice B-tree sobre <code>(cliente, ts)</code>, las filas ya están disponibles en ese orden, y el motor las recorre sin ordenar: el <code>Sort</code> desaparece del plan. La predicción, pues, no es sobre el reloj sino sobre la <em>forma</em> del plan —un nodo menos—, y es la misma lógica de la decisión barrido/índice del capítulo&nbsp;1, ahora sobre el coste de ordenar en vez del de filtrar.</p>
+<p>El módulo lo comprueba pidiéndole a PostgreSQL el plan con <code>EXPLAIN</code>, con el índice y sin él, sobre la misma consulta de ventana (listado&nbsp;3.8, idéntica en ambos casos). Sin el índice, el plan ordena explícitamente antes de calcular la ventana; con él, lee directamente del índice y el <code>Sort</code> desaparece (listado&nbsp;3.15, figura&nbsp;3.2).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:explain"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:explain-1"><a href="#lst:explain-1" aria-hidden="true" tabindex="-1"></a>  sobre PostgreSQL~<span class="dv">16</span>.<span class="fl">14.</span><span class="ot">" label="</span>lst<span class="ch">:explain</span><span class="ot">"}</span></span>
+<span id="lst:explain-2"><a href="#lst:explain-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- sin indice: hay que ordenar para la ventana</span></span>
+<span id="lst:explain-3"><a href="#lst:explain-3" aria-hidden="true" tabindex="-1"></a>WindowAgg</span>
+<span id="lst:explain-4"><a href="#lst:explain-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">-&gt;</span>  <span class="kw">Sort</span></span>
+<span id="lst:explain-5"><a href="#lst:explain-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">Sort</span> <span class="kw">Key</span>: cliente, ts</span>
+<span id="lst:explain-6"><a href="#lst:explain-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">-&gt;</span>  Seq <span class="kw">Scan</span> <span class="kw">on</span> evento</span>
+<span id="lst:explain-7"><a href="#lst:explain-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- con indice sobre (cliente, ts): se lee en orden, sin Sort</span></span>
+<span id="lst:explain-8"><a href="#lst:explain-8" aria-hidden="true" tabindex="-1"></a>WindowAgg</span>
+<span id="lst:explain-9"><a href="#lst:explain-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">-&gt;</span>  <span class="kw">Index</span> <span class="kw">Scan</span> <span class="kw">using</span> idx_evento_cli_ts <span class="kw">on</span> evento</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap03/fig_02.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;3.2.</strong> Los dos árboles de plan de la consulta de ventana. Sin índice, el motor inserta un nodo <code>Sort</code> para ordenar por <code>(cliente, ts)</code> antes de la <code>WindowAgg</code>; con el índice B-tree sobre esas columnas, lee en orden y el <code>Sort</code> desaparece. Las tuplas ascienden de la hoja a la raíz. Es la estructura del listado&nbsp;3.15, hecha visible. Resaltar el <code>Sort</code> marca el nodo que el índice suprime, no un coste dominante: como se ve enseguida, suprimirlo cambia el plan pero no implica, por sí solo, menor latencia.</figcaption>
+</figure>
+</div>
+<p>La causa queda hecha visible en el plan, como en el capítulo&nbsp;1: el mismo instrumento de allí, ahora sobre una consulta que el álgebra de primer orden no podría siquiera expresar. El índice no cambia la consulta —no cambia una coma— sino el camino físico que el motor toma para resolverla: la independencia física, otra vez, leída en el plan.</p>
+</section>
+<section id="por-qué-un-plan-mejor-no-siempre-es-más-rápido" class="level3">
+<h3 class="anchored" data-anchor-id="por-qué-un-plan-mejor-no-siempre-es-más-rápido">Por qué un plan mejor no siempre es más rápido</h3>
+<p>Sería tentador rematar aquí con una curva de latencia que mostrara al índice ganando por un orden de magnitud. La medición real lo desaconseja, y la lección está justo en por qué. Sobre esta tabla —que cabe holgada en memoria—, eliminar el <code>Sort</code> <em>no</em> acelera la consulta: cronometradas, ambas versiones tardan prácticamente lo mismo. Dos razones lo explican. La primera: con la tabla en la caché, ordenar unos cientos de miles de filas en RAM es barato, de modo que el <code>Sort</code> que el índice ahorra no era el cuello de botella. La segunda: el índice <code>(cliente, ts)</code> no <em>cubre</em> la columna <code>importe</code>, así que el <code>Index Scan</code> todavía visita la tabla una vez por fila para leerla. La ventaja del índice asoma en otro régimen —cuando la tabla no cabe en memoria y leerla en orden de índice evita ordenar en disco—, que esta práctica, sobre una tabla cacheada, no alcanza. La moraleja afina la del capítulo&nbsp;1: una mejora estructural visible en el plan —un nodo menos— es necesaria pero no suficiente para ir más rápido; que rinda depende de qué domine el coste, y aquí no lo dominaba la ordenación.</p>
+</section>
+<section id="la-demostración-y-sus-límites" class="level3">
+<h3 class="anchored" data-anchor-id="la-demostración-y-sus-límites">La demostración y sus límites</h3>
+<p>Fiel a la convención, el módulo termina mostrando quince filas del resultado de la ventana —muestreadas con la semilla fija, como en el capítulo&nbsp;1, no con <code>order by random()</code>—, con su suma acumulada y su número de orden dentro del cliente (listado&nbsp;3.16).</p>
+<pre class="{#lst:artefacto3}"><code>id      cliente  importe  acum   orden
+  ------  -------  -------  -----  -----
+  94364   1223     118      8232   25
+  106911  894      928      22762  45
+  20901   2521     582      22726  47
+  156721  1362     490      21609  38
+  38103   8        227      15422  27
+  83046   156      426      3185   7
+  142045  2038     422      3652   8
+  24592   1935     563      19688  49
+  141587  1755     26       11373  27
+  13807   2245     935      20321  35
+  126370  582      394      10585  22
+  78607   1131     551      551    1
+  133042  987      603      21354  50
+  95927   1006     53       15653  33
+  44908   395      1        14408  31</code></pre>
+<p><strong>Listado 3.16.</strong> Quince filas del resultado de la ventana, muestreadas con la semilla fija (reproducible): `acum<code>es la suma acumulada por cliente y \</code>orden`, el número de fila dentro del cliente.</p>
+<p>Inspeccionar una muestra concreta —y comprobar a ojo que la columna acumulada crece, en efecto, dentro de cada cliente— es el hábito que el capítulo&nbsp;1 fijó: aquí quince filas de una función de ventana; más adelante, quince vecinos de un vector. El gesto, una vez más, es el mismo, y el contraste —filas que se agregan frente a vecinos que se aproximan— vuelve a ser el hilo del libro.</p>
+<p>Conviene, para cerrar con honestidad, declarar los límites de lo mostrado. La práctica enseña una cosa concreta y reproducible —que el índice cambia la <em>forma</em> del plan, eliminando el <code>Sort</code>— y se abstiene deliberadamente de prometer un número de latencia: medirlo con justicia exigiría declarar un régimen —dentro o fuera de caché, con índice cubridor o sin él— y un entorno, y una curva fabricada para el caso en memoria, donde el índice no rinde, engañaría más de lo que ilustraría. Tampoco entra la práctica en el coste de <em>mantener</em> el índice: cada inserción en la tabla obliga a actualizarlo, de modo que el índice que reordena la lectura encarece la escritura, un compromiso que solo vale si la tabla se consulta mucho más de lo que se modifica. Declarar qué queda fuera —y no inventar lo que no se ha medido— es parte de proceder con rigor, la misma cautela que la cuarta parte del libro exigirá al comparar motores vectoriales, donde es fácil medir la latencia de consulta y olvidar el coste de construir el índice. Una cifra sin sus límites engaña tanto como una cifra inventada.</p>
+</section>
+</section>
+<section id="síntesis-y-puente-al-capítulo-siguiente" class="level2">
+<h2 class="anchored" data-anchor-id="síntesis-y-puente-al-capítulo-siguiente">Síntesis y puente al capítulo siguiente</h2>
+<p>Este capítulo ha aterrizado el formalismo del capítulo&nbsp;2 en un lenguaje que se ejecuta. SQL realiza el álgebra y el cálculo —<code>SELECT</code>-<code>FROM</code>- <code>WHERE</code> es <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(\bowtie\)</span>, <span class="math inline">\(\pi\)</span>—, hereda la distancia del modelo a la práctica —multiconjuntos, orden, la lógica trivaluada de los nulos con sus trampas— y, sobre todo, extiende el núcleo relacional justamente con lo que el álgebra de primer orden no alcanzaba: la agregación que cuenta, las consultas recursivas que recorren cadenas de profundidad arbitraria, las funciones de ventana que agregan sin colapsar. Hemos visto, por último, que el sistema de tipos es extensible, y que esa extensibilidad —no una ruptura— es la puerta por la que entrará el tipo <code>vector</code> de la cuarta parte.</p>
+<p>Conviene retener el capítulo como tres puertas y una grieta. Las tres puertas por las que SQL crece sobre el álgebra de primer orden son la agregación (contar y sumar, lo que colapsa conjuntos en valores), la recursión (recorrer cadenas de profundidad arbitraria, la clausura transitiva que faltaba) y los tipos extensibles (acoger representaciones nuevas con sus operadores e índices). La grieta es la distancia entre el modelo y el lenguaje: los multiconjuntos, el orden de la salida y, sobre todo, los nulos con su lógica trivaluada, que muerde en el <code>WHERE</code>, en el <code>NOT IN</code> y en las reuniones externas. Quien maneje SQL con soltura es quien tiene presentes a la vez las tres puertas —para aprovecharlas— y la grieta —para no caer en ella—.</p>
+<p>Pero todo el poder de SQL para consultar no sirve de nada sobre un esquema mal diseñado. Una tabla que mezcla hechos independientes obliga a repetir datos, y con la repetición vuelven las anomalías de actualización del capítulo&nbsp;1, ahora dentro de una base relacional. ¿Cómo se reparte la información entre relaciones de modo que cada hecho viva una sola vez y que reunirlas reconstruya la verdad sin pérdida ni invención? Esa es la pregunta del diseño y la normalización, el reverso de la consulta: antes de consultar bien hay que diseñar bien. Y es el contenido del capítulo&nbsp;4, que toma la descomposición que asomó al final del capítulo&nbsp;2 y la convierte en una teoría.</p>
+</section>
+<section id="ejercicios-propuestos" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="ejercicios-propuestos">Ejercicios propuestos</h2>
+</section>
+<section id="lecturas-recomendadas" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecturas-recomendadas">Lecturas recomendadas</h2>
+<ul>
+<li><p><span class="citation" data-cites="melton">Melton y Simon (<a href="#ref-melton" role="doc-biblioref">2002</a>)</span>: la referencia sobre el estándar SQL:1999 y sus componentes, donde se documentan las extensiones —recursión, tipos— que este capítulo recorre.</p></li>
+<li><p><span class="citation" data-cites="postgresql">PostgreSQL Global Development Group (<a href="#ref-postgresql" role="doc-biblioref">2024</a>)</span>: la documentación de PostgreSQL, fuente viva del dialecto, las funciones de ventana, PL/pgSQL y los tipos extendidos usados en la práctica.</p></li>
+<li><p><span class="citation" data-cites="stonebraker1986">Stonebraker y Rowe (<a href="#ref-stonebraker1986" role="doc-biblioref">1986</a>)</span>: el diseño de POSTGRES, origen del modelo objeto-relacional y de la extensibilidad de tipos que acogerá el vector.</p></li>
+<li><p><span class="citation" data-cites="silberschatz">Silberschatz et&nbsp;al. (<a href="#ref-silberschatz" role="doc-biblioref">2019</a>)</span>: tratamiento de manual de SQL, las subconsultas y la agregación, con la correspondencia con el álgebra bien explicada.</p></li>
+<li><p><span class="citation" data-cites="date">Date (<a href="#ref-date" role="doc-biblioref">2001</a>)</span>: discusión crítica de la distancia entre SQL y el modelo relacional —multiconjuntos, nulos— que este capítulo hace operativa.</p></li>
+</ul>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referencias</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-date" class="csl-entry" role="listitem">
+Date, Chris J. 2001. <em>Introducción a los sistemas de bases de datos</em>. 8.ª ed. Pearson / Addison-Wesley.
+</div>
+<div id="ref-sqlpgq2023" class="csl-entry" role="listitem">
+ISO/IEC. 2023. <em><span>ISO/IEC 9075-16:2023</span>. Information technology — Database languages <span>SQL</span> — Part&nbsp;16: Property Graph Queries (<span>SQL/PGQ</span>)</em>. International Organization for Standardization.
+</div>
+<div id="ref-melton" class="csl-entry" role="listitem">
+Melton, Jim, y Alan R. Simon. 2002. <em>SQL:1999 — Understanding Relational Language Components</em>. Morgan Kaufmann.
+</div>
+<div id="ref-postgresql" class="csl-entry" role="listitem">
+PostgreSQL Global Development Group. 2024. <em>PostgreSQL Documentation</em>. <a href="https://www.postgresql.org/docs/">https://www.postgresql.org/docs/</a>.
+</div>
+<div id="ref-silberschatz" class="csl-entry" role="listitem">
+Silberschatz, Abraham, Henry F. Korth, y S. Sudarshan. 2019. <em>Fundamentos de bases de datos</em>. 7.ª ed. McGraw-Hill.
+</div>
+<div id="ref-stonebraker1986" class="csl-entry" role="listitem">
+Stonebraker, Michael, y Lawrence A. Rowe. 1986. <span>«The Design of <span>POSTGRES</span>»</span>. <em>ACM SIGMOD International Conference on Management of Data</em>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cap02.html" class="pagination-link" aria-label="Capítulo 2. El modelo relacional">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Capítulo 2. El modelo relacional</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./cap04.html" class="pagination-link" aria-label="Capítulo 4. Diseño y normalización">
+        <span class="nav-page-text">Capítulo 4. Diseño y normalización</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 Manuel Muñoz Plá · Edición web bajo licencia <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es">CC BY-NC-ND 4.0</a> (uso académico con atribución; sin uso comercial ni obras derivadas) · El código va aparte bajo licencia MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

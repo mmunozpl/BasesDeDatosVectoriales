@@ -1,0 +1,7 @@
+# memoria y comparaciones relativas del multivector segun el numero de tokens por documento (single = 1)
+tokens  memoria_rel  comparaciones_rel
+1  1.0  1.0
+8  8.0  64.0
+16  16.0  256.0
+32  32.0  1024.0
+64  64.0  4096.0

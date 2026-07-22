@@ -1,0 +1,9 @@
+# recall@10 de la combinacion lineal lexico-denso segun el peso alpha (0=solo lexico, 1=solo denso)
+alpha  recall
+0.0  0.5117
+0.2  0.8937
+0.4  0.8937
+0.5  0.8937
+0.6  0.8937
+0.8  0.857
+1.0  0.477

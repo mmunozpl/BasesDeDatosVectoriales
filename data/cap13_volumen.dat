@@ -1,0 +1,12 @@
+# volumen de la bola unidad de radio 1 segun la dimension
+dim  volumen
+1  2.0
+2  3.14159
+3  4.18879
+4  4.9348
+5  5.26379
+6  5.16771
+8  4.05871
+10  2.55016
+15  0.38144
+20  0.02581

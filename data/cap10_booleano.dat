@@ -1,0 +1,7 @@
+# tamano del resultado booleano segun k terminos (AND/OR)
+k  and  or
+1  4  4
+2  4  4
+3  1  5
+4  0  7
+5  0  7

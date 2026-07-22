@@ -1,0 +1,8 @@
+# distorsion media de las distancias al proyectar de 512 a k dimensiones (Johnson-Lindenstrauss)
+k  distorsion
+8  0.1986
+16  0.1417
+32  0.1
+64  0.0705
+128  0.0497
+256  0.0353

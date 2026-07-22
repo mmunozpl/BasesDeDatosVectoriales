@@ -1,0 +1,7 @@
+# factor de sobremuestreo (candidatos / k) que el postfiltrado necesita para entregar 10 resultados validos segun la selectividad del filtro (n=20000)
+selectividad  factor
+0.5  2.0
+0.2  4.82
+0.1  10.43
+0.05  21.09
+0.01  105.99

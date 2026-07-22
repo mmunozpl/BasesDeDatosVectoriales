@@ -1,0 +1,6 @@
+# desbalance (max/media) por rango vs por hash con claves sesgadas
+n  por_rango  por_hash
+2  1.8014  1.0043
+4  3.399  1.0045
+8  6.5987  1.0142
+16  8.2091  1.0309

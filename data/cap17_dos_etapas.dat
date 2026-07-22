@@ -1,0 +1,4 @@
+# MRR de la recuperacion densa de una etapa vs la reordenacion de los 50 primeros candidatos (cross-encoder simulado)
+metodo  mrr
+una_etapa_denso  0.0659
+dos_etapas_rerank  0.5268

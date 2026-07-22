@@ -1,0 +1,7 @@
+# disponibilidad del quorum de mayoria segun N (p=0.20)
+n  quorum  disponibilidad
+3  2  0.8966
+5  3  0.9412
+7  4  0.9676
+9  5  0.9805
+11  6  0.9895

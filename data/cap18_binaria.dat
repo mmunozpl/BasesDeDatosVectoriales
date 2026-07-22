@@ -1,0 +1,8 @@
+# recall@10 del cribado binario (top-R por signo) seguido de reordenacion exacta, segun R (n=30000, dim=128)
+R  recall
+50  0.156
+100  0.2515
+200  0.3615
+500  0.5685
+1000  0.726
+2000  0.8585

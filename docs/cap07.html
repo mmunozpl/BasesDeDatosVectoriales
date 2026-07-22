@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Capítulo 7. Consistencia distribuida – Bases de datos</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cap08.html" rel="next">
+<link href="./cap06.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-654c8d80848ee01bf5d57418afe456c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cap07.html">Capítulo 7. Consistencia distribuida</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Bases de datos</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Alternar modo lector">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 1. La persistencia y la disciplina de gestión de datos</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 2. El modelo relacional</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 3. SQL: del DML declarativo a las extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 4. Diseño y normalización</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 5. Transacciones, concurrencia y recuperación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 6. Límites del relacional y el movimiento NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap07.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Capítulo 7. Consistencia distribuida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 8. Las familias NoSQL</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 9. Mecánica de la distribución</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 10. Recuperación de información clásica</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 11. De la representación dispersa a la densa</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 12. Deep learning para embeddings</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 13. Geometría del espacio métrico</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 14. Anatomía de una base de datos vectorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 15. Índices de vecino aproximado</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 16. Motores: dedicados frente a extensiones</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 17. Consulta híbrida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 18. Evaluación y operación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 19. Recuperación aumentada y memoria de agentes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 20. El futuro híbrido</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cap21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capítulo 21. Caso de estudio integral</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#el-teorema-cap" id="toc-el-teorema-cap" class="nav-link active" data-scroll-target="#el-teorema-cap">El teorema CAP</a></li>
+  <li><a href="#más-allá-del-cap-pacelc" id="toc-más-allá-del-cap-pacelc" class="nav-link" data-scroll-target="#más-allá-del-cap-pacelc">Más allá del CAP: PACELC</a></li>
+  <li><a href="#el-modelo-base-y-la-consistencia-eventual" id="toc-el-modelo-base-y-la-consistencia-eventual" class="nav-link" data-scroll-target="#el-modelo-base-y-la-consistencia-eventual">El modelo BASE y la consistencia eventual</a>
+  <ul class="collapse">
+  <li><a href="#cómo-convergen-las-réplicas" id="toc-cómo-convergen-las-réplicas" class="nav-link" data-scroll-target="#cómo-convergen-las-réplicas">Cómo convergen las réplicas</a></li>
+  <li><a href="#la-convergencia-medida" id="toc-la-convergencia-medida" class="nav-link" data-scroll-target="#la-convergencia-medida">La convergencia, medida</a></li>
+  </ul></li>
+  <li><a href="#reconciliar-valores-en-conflicto" id="toc-reconciliar-valores-en-conflicto" class="nav-link" data-scroll-target="#reconciliar-valores-en-conflicto">Reconciliar valores en conflicto</a></li>
+  <li><a href="#grados-de-consistencia-eventual" id="toc-grados-de-consistencia-eventual" class="nav-link" data-scroll-target="#grados-de-consistencia-eventual">Grados de consistencia eventual</a></li>
+  <li><a href="#acid-frente-a-base" id="toc-acid-frente-a-base" class="nav-link" data-scroll-target="#acid-frente-a-base">ACID frente a BASE</a></li>
+  <li><a href="#coherencia-ajustable" id="toc-coherencia-ajustable" class="nav-link" data-scroll-target="#coherencia-ajustable">Coherencia ajustable</a></li>
+  <li><a href="#práctica-el-quórum-medido" id="toc-práctica-el-quórum-medido" class="nav-link" data-scroll-target="#práctica-el-quórum-medido">Práctica: el quórum, medido</a>
+  <ul class="collapse">
+  <li><a href="#las-tres-leyes-del-quórum-medidas" id="toc-las-tres-leyes-del-quórum-medidas" class="nav-link" data-scroll-target="#las-tres-leyes-del-quórum-medidas">Las tres leyes del quórum, medidas</a></li>
+  <li><a href="#cómo-se-ejecuta-el-experimento" id="toc-cómo-se-ejecuta-el-experimento" class="nav-link" data-scroll-target="#cómo-se-ejecuta-el-experimento">Cómo se ejecuta el experimento</a></li>
+  <li><a href="#lo-que-la-práctica-no-decide" id="toc-lo-que-la-práctica-no-decide" class="nav-link" data-scroll-target="#lo-que-la-práctica-no-decide">Lo que la práctica no decide</a></li>
+  </ul></li>
+  <li><a href="#síntesis-y-puente-al-capítulo-siguiente" id="toc-síntesis-y-puente-al-capítulo-siguiente" class="nav-link" data-scroll-target="#síntesis-y-puente-al-capítulo-siguiente">Síntesis y puente al capítulo siguiente</a></li>
+  <li><a href="#ejercicios-propuestos" id="toc-ejercicios-propuestos" class="nav-link" data-scroll-target="#ejercicios-propuestos">Ejercicios propuestos</a></li>
+  <li><a href="#lecturas-recomendadas" id="toc-lecturas-recomendadas" class="nav-link" data-scroll-target="#lecturas-recomendadas">Lecturas recomendadas</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Capítulo 7. Consistencia distribuida</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>El capítulo anterior contrajo una deuda y la dejó sin saldar. Se dijo que NoSQL «relaja las garantías» y «renuncia a la consistencia fuerte» para poder repartirse y seguir disponible, pero no se dijo con qué derecho ni hasta dónde. ¿Es una chapuza renunciar a la consistencia, o hay un teorema que demuestre que, repartidos los datos y pudiendo fallar la red, no queda más remedio que elegir? Lo hay, y es el teorema CAP. Este capítulo lo enuncia, deriva de él el modelo BASE y la consistencia eventual, los compara término a término con el ACID del capítulo&nbsp;5, y muestra que entre la consistencia fuerte y la eventual no hay un abismo sino un dial: la coherencia ajustable por quórumes.</p>
+<p>El capítulo es deliberadamente conceptual, pero no abstracto. Fija el coste real de distribuir, y para que ese coste no quede en palabras lo <em>mide</em>: una simulación de quórum, en Python puro, reproduce las tres tensiones —consistencia, disponibilidad y latencia— y las convierte en tres gráficas que se leen de un vistazo. El lector saldrá sabiendo no solo que distribuir cuesta, sino cuánto y en qué moneda, y por qué ese mismo coste reaparecerá, idéntico, cuando en la cuarta parte se repliquen los índices vectoriales. El puente al capítulo&nbsp;8 será entonces taxonómico: entendido el coste de la distribución, se podrán recorrer las familias NoSQL como respuestas distintas a la misma elección.</p>
+<section id="el-teorema-cap" class="level2">
+<h2 class="anchored" data-anchor-id="el-teorema-cap">El teorema CAP</h2>
+<p>Sitúese el escenario. Un dato no vive ya en un nodo, sino replicado en varios, para tolerar fallos y repartir la carga. Sobre ese sistema replicado se quieren tres propiedades, cuyas iniciales dan nombre al teorema (figura&nbsp;7.1). La <em>consistencia</em> (C): toda lectura ve la escritura más reciente, como si hubiera una sola copia. La <em>disponibilidad</em> (A, de <em>availability</em>): toda petición a un nodo vivo recibe respuesta, sin errores ni esperas indefinidas. Y la <em>tolerancia a particiones</em> (P): el sistema sigue funcionando aunque la red se parta y los nodos no puedan comunicarse entre sí.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_01.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.1.</strong> El teorema CAP. De las tres propiedades —consistencia, disponibilidad y tolerancia a particiones— un sistema distribuido solo puede garantizar dos a la vez. Como la partición no se elige sino que ocurre, la decisión real se da entre C y A.</figcaption>
+</figure>
+</div>
+<p>El teorema, conjeturado por <span class="citation" data-cites="brewer2000">Brewer (<a href="#ref-brewer2000" role="doc-biblioref">2000</a>)</span> y demostrado por <span class="citation" data-cites="gilbert2002">Gilbert y Lynch (<a href="#ref-gilbert2002" role="doc-biblioref">2002</a>)</span>, afirma que un sistema no puede garantizar las tres a la vez: ha de renunciar a una. Pero el enunciado «elige dos de tres» es engañoso, porque las tres no están al mismo nivel. La partición no es una opción de diseño: en una red real, los cables se cortan, los conmutadores fallan y los centros de datos se aíslan, de modo que las particiones <em>ocurren</em> se quiera o no. Un sistema distribuido que pretenda ignorarlas simplemente se romperá cuando lleguen. Por eso la lectura honesta del teorema es condicional: <em>cuando hay una partición</em>, hay que elegir entre consistencia y disponibilidad; cuando no la hay, se pueden tener ambas.</p>
+<p>La razón es concreta y se ve mejor con un ejemplo (figura&nbsp;7.2). Dos réplicas, A y B, guardan el dato <code>x</code>. La red se parte y dejan de verse. Un cliente escribe <code>x=1</code> en A; otro, al mismo tiempo, escribe <code>x=2</code> en B. Ahora las dos réplicas discrepan, y el sistema se enfrenta a un dilema sin escapatoria. Si quiere seguir <em>disponible</em>, cada réplica responde con su valor local —A dirá 1, B dirá 2—, pero entonces no es <em>consistente</em>, porque dos lecturas simultáneas ven valores distintos. Si quiere seguir <em>consistente</em>, al menos una réplica ha de negarse a responder hasta que la partición sane y pueda confirmar cuál es el valor bueno, pero entonces no es <em>disponible</em>. No hay tercera vía: bajo partición, consistencia y disponibilidad son incompatibles.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_02.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.2.</strong> Una partición de red corta el enlace entre dos réplicas. Cada cliente escribe en su lado y las copias divergen: A cree <code>x=1</code>, B cree <code>x=2</code>. El sistema ha de elegir entre responder con valores que discrepan (disponible, no consistente) o dejar de responder hasta reconciliar (consistente, no disponible).</figcaption>
+</figure>
+</div>
+<p>La diferencia entre un sistema CP y uno AP se ve, en el fondo, en una sola rama de código: qué hace el nodo cuando detecta que no alcanza a sus compañeros (listado&nbsp;7.1). El sistema CP, si no puede confirmar en un quórum, devuelve un error antes que arriesgarse a servir un dato divergente; el AP responde con su copia local y anota que habrá que reconciliar. La misma operación, dos respuestas opuestas: esa rama <em>es</em> la elección del CAP.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:capdecision"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:capdecision-1"><a href="#lst:capdecision-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> escribir_bajo_particion(nodo, clave, valor, w):</span>
+<span id="lst:capdecision-2"><a href="#lst:capdecision-2" aria-hidden="true" tabindex="-1"></a>    confirmadas <span class="op">=</span> nodo.replicar_a_alcanzables(clave, valor)</span>
+<span id="lst:capdecision-3"><a href="#lst:capdecision-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> confirmadas <span class="op">&gt;=</span> w:</span>
+<span id="lst:capdecision-4"><a href="#lst:capdecision-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"ok"</span>                      <span class="co"># hubo quorum: ambos contentos</span></span>
+<span id="lst:capdecision-5"><a href="#lst:capdecision-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> politica <span class="op">==</span> <span class="st">"CP"</span>:</span>
+<span id="lst:capdecision-6"><a href="#lst:capdecision-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"error: sin quorum"</span>       <span class="co"># CP: mejor fallar que divergir</span></span>
+<span id="lst:capdecision-7"><a href="#lst:capdecision-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:  <span class="co"># politica == "AP"</span></span>
+<span id="lst:capdecision-8"><a href="#lst:capdecision-8" aria-hidden="true" tabindex="-1"></a>        nodo.guardar_local(clave, valor) <span class="co"># AP: responder con lo que hay</span></span>
+<span id="lst:capdecision-9"><a href="#lst:capdecision-9" aria-hidden="true" tabindex="-1"></a>        nodo.marcar_para_reconciliar(clave)</span>
+<span id="lst:capdecision-10"><a href="#lst:capdecision-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"ok (eventual)"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.1.</strong> La eleccion del CAP en una rama: ante la imposibilidad de quorum, el sistema CP falla y el AP responde local.</p>
+<p><strong>Definición&nbsp;(Teorema CAP).</strong>&nbsp; En un sistema de datos distribuido sujeto a particiones de red, no es posible garantizar simultáneamente la consistencia (toda lectura ve la última escritura) y la disponibilidad (todo nodo vivo responde). Ante una partición, el diseño ha de sacrificar una de las dos.</p>
+<p>Según qué sacrifiquen bajo partición, los sistemas se clasifican en dos grandes grupos. Los <em>CP</em> eligen la consistencia: ante la partición, rechazan operaciones para no servir datos divergentes; así se comportan, por defecto, los almacenes que priorizan la corrección, como HBase o las configuraciones fuertes de MongoDB. Los <em>AP</em> eligen la disponibilidad: siguen respondiendo en cada lado de la partición y reconcilian después; así nacieron Dynamo <span class="citation" data-cites="dynamo2007">(<a href="#ref-dynamo2007" role="doc-biblioref"><span class="nocase">DeCandia et&nbsp;al.</span> 2007</a>)</span> y su descendiente Cassandra. Ninguno es mejor en abstracto: un banco preferirá CP para el saldo, una red social preferirá AP para los «me gusta», y la misma empresa usará ambos para datos distintos. Situar los sistemas reales en este eje ayuda a fijar las categorías:</p>
+<dl>
+<dt>Cassandra, Riak (AP/EL).</dt>
+<dd>
+<p>Herederos de Dynamo: bajo partición siguen disponibles y reconcilian después; sin partición priorizan la latencia. Coherencia ajustable por quórumes.</p>
+</dd>
+<dt>HBase, MongoDB en modo fuerte (CP/EC).</dt>
+<dd>
+<p>Herederos de Bigtable o configurados para consistencia: bajo partición sacrifican la disponibilidad del lado minoritario para no servir datos divergentes.</p>
+</dd>
+<dt>Spanner, CockroachDB (CP/EC).</dt>
+<dd>
+<p>SQL distribuido que conserva ACID a escala global a costa de latencia de coordinación; eligen consistencia en ambos regímenes.</p>
+</dd>
+<dt>DNS, cachés web (AP/EL).</dt>
+<dd>
+<p>El extremo disponible: responden siempre con lo que tienen, aunque sea viejo, y convergen con el tiempo de vida de la caché.</p>
+</dd>
+</dl>
+<p>La lista deja claro que la clasificación no es una etiqueta de marketing sino una decisión de ingeniería con consecuencias medibles, las que la práctica de este capítulo cuantifica.</p>
+<p><strong>Observación.</strong>&nbsp; El teorema CAP se enuncia mal con frecuencia, y conviene precisarlo. Primero, la elección no es del sistema entero de una vez, sino que puede tomarse <em>operación a operación</em>: el mismo almacén puede servir una lectura de forma consistente y otra de forma disponible. Segundo, y más importante, CAP solo habla del caso de partición; pero incluso sin partición hay un compromiso, esta vez entre consistencia y <em>latencia</em>, porque garantizar que todas las réplicas coincidan antes de responder cuesta esperas. Esa extensión —que cuando hay partición se elige entre C y A, y si no, entre consistencia y latencia— se conoce como PACELC, y la práctica de este capítulo la medirá: la consistencia cuesta, haya partición o no.</p>
+</section>
+<section id="más-allá-del-cap-pacelc" class="level2">
+<h2 class="anchored" data-anchor-id="más-allá-del-cap-pacelc">Más allá del CAP: PACELC</h2>
+<p>La extensión que la observación anterior anticipa merece su propio nombre, porque corrige el malentendido más común sobre el CAP: que la consistencia solo cuesta cuando hay una avería. El marco PACELC <span class="citation" data-cites="abadi2012">(<a href="#ref-abadi2012" role="doc-biblioref">Abadi 2012</a>)</span> lo enuncia en una fórmula mnemotécnica (tabla&nbsp;7.1): si hay partición (P), elegir entre disponibilidad (A) y consistencia (C); <em>else</em> (E), es decir, en funcionamiento normal, elegir entre latencia (L) y consistencia (C). La segunda mitad es la importante, porque describe el caso de todos los días: incluso sin avería, garantizar que todas las réplicas coincidan antes de responder obliga a esperarlas, y esa espera es latencia. Un sistema se describe, así, por dos letras: un almacén AP/EL prioriza disponibilidad y latencia (Cassandra por defecto); uno CP/EC prioriza consistencia en ambos casos (un sistema fuertemente consistente). La práctica de la sección&nbsp;7.8 medirá las dos mitades: el coste en disponibilidad bajo partición y el coste en latencia sin ella.</p>
+<table class="caption-top table">
+<caption>El marco PACELC: la consistencia tiene un precio en los dos regímenes, no solo bajo partición. La segunda fila es la que el CAP clásico omitía.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Régimen</th>
+<th style="text-align: left;">La elección es entre</th>
+<th style="text-align: left;">Coste de elegir consistencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Con partición (P)</td>
+<td style="text-align: left;">disponibilidad y consistencia</td>
+<td style="text-align: left;">dejar de responder</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sin partición (E)</td>
+<td style="text-align: left;">latencia y consistencia</td>
+<td style="text-align: left;">esperar a las réplicas</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="el-modelo-base-y-la-consistencia-eventual" class="level2">
+<h2 class="anchored" data-anchor-id="el-modelo-base-y-la-consistencia-eventual">El modelo BASE y la consistencia eventual</h2>
+<p>Los sistemas AP, que eligen la disponibilidad, necesitan una filosofía de consistencia distinta de la ACID del capítulo&nbsp;5, y se la dieron con un acrónimo deliberadamente opuesto. Frente a ACID —ácido—, BASE —base—: <em>Basically Available</em> (básicamente disponible), <em>Soft state</em> (estado blando, que puede cambiar sin entrada nueva mientras las réplicas se sincronizan) y <em>Eventual consistency</em> (consistencia eventual) <span class="citation" data-cites="pritchett2008">(<a href="#ref-pritchett2008" role="doc-biblioref">Pritchett 2008</a>)</span>. Donde ACID exige que cada transacción deje la base en un estado consistente al instante, BASE acepta un estado transitoriamente incoherente a cambio de no dejar nunca de responder.</p>
+<p>El corazón del modelo es la <em>consistencia eventual</em>, cuya definición es modesta y precisa: si dejan de llegar escrituras nuevas, con el tiempo todas las réplicas convergen al mismo valor <span class="citation" data-cites="vogels2009">(<a href="#ref-vogels2009" role="doc-biblioref">Vogels 2009</a>)</span>. No promete que todas coincidan <em>ahora</em>, solo que coincidirán <em>al final</em>. Entre la escritura y esa convergencia hay una <em>ventana de inconsistencia</em> durante la cual distintas réplicas pueden devolver valores distintos (figura&nbsp;7.3). La pregunta práctica no es si esa ventana existe —existe siempre—, sino cuánto dura y si la aplicación la tolera: para el contador de «me gusta», unos segundos de desfase son inocuos; para un saldo bancario, inaceptables.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_03.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.3.</strong> La consistencia eventual en el tiempo. Tras una escritura en la réplica A, las copias divergen durante una ventana de inconsistencia; un proceso de reconciliación —anti-entropía o <em>read-repair</em>— propaga el valor y, si no llegan más escrituras, ambas convergen.</figcaption>
+</figure>
+</div>
+<section id="cómo-convergen-las-réplicas" class="level3">
+<h3 class="anchored" data-anchor-id="cómo-convergen-las-réplicas">Cómo convergen las réplicas</h3>
+<p>La convergencia no es magia: la consiguen mecanismos concretos que propagan los valores entre réplicas. La <em>anti-entropía</em> compara periódicamente el estado de pares de réplicas y reconcilia las diferencias en segundo plano. El <em>read-repair</em> aprovecha cada lectura: si al leer de varias réplicas se detecta que una está rezagada, se la actualiza de paso (figura&nbsp;7.4), de modo que la reconciliación viaja a cuestas del tráfico normal, sin un proceso aparte.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_04.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.4.</strong> <em>Read-repair</em>: el cliente lee de varias réplicas, detecta que una lleva una versión vieja y, aprovechando la misma operación, le reenvía el valor fresco. La convergencia se paga con el tráfico de lectura que ya existía.</figcaption>
+</figure>
+</div>
+<p>escrituras que le tocaban, y se las entrega cuando vuelve (figura&nbsp;7.5), de modo que una caída breve no impide aceptar escrituras.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_05.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.5.</strong> <em>Hinted handoff</em>: si la réplica destino está caída, el coordinador acepta la escritura, la sirve en otra réplica y guarda una nota; cuando la caída sana, entrega lo pendiente. La disponibilidad de escritura sobrevive a caídas breves.</figcaption>
+</figure>
+</div>
+<p>cambios de nodo en nodo como un rumor, hasta que todos se enteran. Son las tuberías por las que el valor fluye hasta que el sistema converge. El listado&nbsp;7.2 esboza los dos primeros, que son los que la práctica simula.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:mecanismos"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:mecanismos-1"><a href="#lst:mecanismos-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> anti_entropia(rep_a, rep_b):</span>
+<span id="lst:mecanismos-2"><a href="#lst:mecanismos-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># en segundo plano: igualar dos replicas a la mas reciente</span></span>
+<span id="lst:mecanismos-3"><a href="#lst:mecanismos-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> clave <span class="kw">in</span> rep_a.claves() <span class="op">|</span> rep_b.claves():</span>
+<span id="lst:mecanismos-4"><a href="#lst:mecanismos-4" aria-hidden="true" tabindex="-1"></a>        va, vb <span class="op">=</span> rep_a.leer(clave), rep_b.leer(clave)</span>
+<span id="lst:mecanismos-5"><a href="#lst:mecanismos-5" aria-hidden="true" tabindex="-1"></a>        nueva <span class="op">=</span> va <span class="cf">if</span> va.version <span class="op">&gt;=</span> vb.version <span class="cf">else</span> vb</span>
+<span id="lst:mecanismos-6"><a href="#lst:mecanismos-6" aria-hidden="true" tabindex="-1"></a>        rep_a.guardar(clave, nueva)<span class="op">;</span> rep_b.guardar(clave, nueva)</span>
+<span id="lst:mecanismos-7"><a href="#lst:mecanismos-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:mecanismos-8"><a href="#lst:mecanismos-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_repair(respuestas):</span>
+<span id="lst:mecanismos-9"><a href="#lst:mecanismos-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># al leer de R replicas: devolver la mas reciente y reparar las viejas</span></span>
+<span id="lst:mecanismos-10"><a href="#lst:mecanismos-10" aria-hidden="true" tabindex="-1"></a>    fresca <span class="op">=</span> <span class="bu">max</span>(respuestas, key<span class="op">=</span><span class="kw">lambda</span> x: x.version)</span>
+<span id="lst:mecanismos-11"><a href="#lst:mecanismos-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> respuestas:</span>
+<span id="lst:mecanismos-12"><a href="#lst:mecanismos-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> r.version <span class="op">&lt;</span> fresca.version:</span>
+<span id="lst:mecanismos-13"><a href="#lst:mecanismos-13" aria-hidden="true" tabindex="-1"></a>            r.replica.guardar(fresca.clave, fresca)  <span class="co"># repara de paso</span></span>
+<span id="lst:mecanismos-14"><a href="#lst:mecanismos-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fresca</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.2.</strong> Anti-entropia y read-repair: comparar y reconciliar, en segundo plano o a cuestas de una lectura.</p>
+<p><strong>Observación.</strong>&nbsp; «Eventual» no significa «nunca» ni «cuando le apetezca»: significa que la convergencia está <em>garantizada</em> si cesan las escrituras, y que en la práctica ocurre en un plazo acotado —las pocas rondas de la figura&nbsp;7.6—. El <em>soft state</em> de BASE nombra justo esa fase intermedia en la que el estado de una réplica puede cambiar sin que llegue ninguna escritura nueva, solo porque la reconciliación le trae el valor de otra. No es un estado corrupto, sino uno en tránsito hacia la convergencia; confundirlo con un fallo es el malentendido que esta observación previene.</p>
+</section>
+<section id="la-convergencia-medida" class="level3">
+<h3 class="anchored" data-anchor-id="la-convergencia-medida">La convergencia, medida</h3>
+<p>¿Cuánto tarda en cerrarse la ventana de inconsistencia? También se puede medir. El módulo de la práctica simula la propagación epidémica: una sola réplica recibe la escritura y, ronda a ronda, cada réplica desactualizada contacta a otra al azar y copia el valor si esta ya lo tiene (listado&nbsp;7.3). La fracción de réplicas convergidas dibuja una curva en S característica (figura&nbsp;7.6): arranca lenta —pocas réplicas informadas, pocos contactos útiles—, se acelera en el centro —cuando la mitad ya sabe, casi todo contacto informa— y se satura al final, cuando apenas quedan rezagadas. Con cincuenta réplicas, el sistema pasa del 2 % al 97 % en nueve rondas: la convergencia es rápida y, sobre todo, automática. Esa curva <em>es</em> la ventana de inconsistencia, y su anchura —unas pocas rondas— es lo que la aplicación ha de estar dispuesta a tolerar.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:simgossip"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:simgossip-1"><a href="#lst:simgossip-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(replicas):</span>
+<span id="lst:simgossip-2"><a href="#lst:simgossip-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> informado[i]:</span>
+<span id="lst:simgossip-3"><a href="#lst:simgossip-3" aria-hidden="true" tabindex="-1"></a>        otro <span class="op">=</span> rng.randrange(replicas)</span>
+<span id="lst:simgossip-4"><a href="#lst:simgossip-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> informado[otro]:      <span class="co"># contacto util: copia el valor</span></span>
+<span id="lst:simgossip-5"><a href="#lst:simgossip-5" aria-hidden="true" tabindex="-1"></a>            nuevos.append(i)</span>
+<span id="lst:simgossip-6"><a href="#lst:simgossip-6" aria-hidden="true" tabindex="-1"></a><span class="co"># tras unas rondas, 'informado' es cierto para casi todas</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.3.</strong> El nucleo de la simulacion de gossip: cada replica desactualizada copia el valor si quien contacta ya lo tiene.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_06.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.6.</strong> La ventana de inconsistencia, medida. Tras una escritura que solo una réplica conoce, la propagación epidémica informa al resto: la fracción convergida sube en S y tiende a uno en pocas rondas. Simulación con <span class="math inline">\(50\)</span> réplicas. Datos de <code>src/cap07_cap_quorum.py</code>.</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="reconciliar-valores-en-conflicto" class="level2">
+<h2 class="anchored" data-anchor-id="reconciliar-valores-en-conflicto">Reconciliar valores en conflicto</h2>
+<p>Queda el problema más espinoso, el de la figura&nbsp;7.2: cuando dos réplicas divergen y luego se reencuentran, ¿qué valor gana? Hay varias estrategias, y la elección tiene consecuencias.</p>
+<p>La más simple es <em>el último que escribe gana</em> (<em>last-write-wins</em>, LWW): se sella cada escritura con una marca de tiempo y, ante un conflicto, se conserva la de marca mayor (listado&nbsp;7.4). Es trivial de implementar, pero <em>pierde</em> datos en silencio: la escritura descartada desaparece sin rastro, y si los relojes de los nodos no están perfectamente sincronizados, puede ganar la escritura equivocada.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:lww"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:lww-1"><a href="#lst:lww-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> resolver_lww(a, b):</span>
+<span id="lst:lww-2"><a href="#lst:lww-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># a, b: (valor, marca_de_tiempo)</span></span>
+<span id="lst:lww-3"><a href="#lst:lww-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="cf">if</span> a[<span class="dv">1</span>] <span class="op">&gt;=</span> b[<span class="dv">1</span>] <span class="cf">else</span> b</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.4.</strong> Resolución de conflictos por último-en-escribir-gana: simple, pero descarta una escritura.</p>
+<p>Una alternativa que no pierde información usa <em>relojes vectoriales</em>, basados en la relación «sucede antes» de <span class="citation" data-cites="lamport1978">Lamport (<a href="#ref-lamport1978" role="doc-biblioref">1978</a>)</span>. Cada réplica lleva un contador por nodo; al escribir, incrementa el suyo (listado&nbsp;7.5). Comparando dos relojes se sabe si una escritura sucedió antes que otra —y entonces la posterior gana— o si son <em>concurrentes</em> —ninguna vio a la otra—, en cuyo caso el sistema no decide a ciegas, sino que conserva ambas versiones y delega la reconciliación en la aplicación, que conoce la semántica (sumar dos carritos de la compra, por ejemplo, en lugar de descartar uno).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:vclock"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:vclock-1"><a href="#lst:vclock-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fusionar(a, b):</span>
+<span id="lst:vclock-2"><a href="#lst:vclock-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># combina dos relojes tomando el maximo por nodo</span></span>
+<span id="lst:vclock-3"><a href="#lst:vclock-3" aria-hidden="true" tabindex="-1"></a>    nodos <span class="op">=</span> <span class="bu">set</span>(a) <span class="op">|</span> <span class="bu">set</span>(b)</span>
+<span id="lst:vclock-4"><a href="#lst:vclock-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {n: <span class="bu">max</span>(a.get(n, <span class="dv">0</span>), b.get(n, <span class="dv">0</span>)) <span class="cf">for</span> n <span class="kw">in</span> nodos}</span>
+<span id="lst:vclock-5"><a href="#lst:vclock-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:vclock-6"><a href="#lst:vclock-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> relacion(a, b):</span>
+<span id="lst:vclock-7"><a href="#lst:vclock-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 'a&lt;b' si a precede a b; 'concurrente' si ninguno precede</span></span>
+<span id="lst:vclock-8"><a href="#lst:vclock-8" aria-hidden="true" tabindex="-1"></a>    ae <span class="op">=</span> <span class="bu">all</span>(a.get(n, <span class="dv">0</span>) <span class="op">&lt;=</span> b.get(n, <span class="dv">0</span>) <span class="cf">for</span> n <span class="kw">in</span> <span class="bu">set</span>(a) <span class="op">|</span> <span class="bu">set</span>(b))</span>
+<span id="lst:vclock-9"><a href="#lst:vclock-9" aria-hidden="true" tabindex="-1"></a>    be <span class="op">=</span> <span class="bu">all</span>(b.get(n, <span class="dv">0</span>) <span class="op">&lt;=</span> a.get(n, <span class="dv">0</span>) <span class="cf">for</span> n <span class="kw">in</span> <span class="bu">set</span>(a) <span class="op">|</span> <span class="bu">set</span>(b))</span>
+<span id="lst:vclock-10"><a href="#lst:vclock-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ae <span class="kw">and</span> <span class="kw">not</span> be:</span>
+<span id="lst:vclock-11"><a href="#lst:vclock-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"a precede a b"</span></span>
+<span id="lst:vclock-12"><a href="#lst:vclock-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> be <span class="kw">and</span> <span class="kw">not</span> ae:</span>
+<span id="lst:vclock-13"><a href="#lst:vclock-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"b precede a a"</span></span>
+<span id="lst:vclock-14"><a href="#lst:vclock-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">"concurrente: conservar ambas"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.5.</strong> Relojes vectoriales: detectan si dos escrituras son causales o concurrentes, sin perder ninguna.</p>
+<p>Una traza concreta hace ver la diferencia (listado&nbsp;7.6). Dos réplicas parten del mismo estado; durante una partición, cada una recibe una escritura e incrementa su contador. Al reencontrarse, sus relojes son <code>{A:1}</code> y <code>{B:1}</code>: ninguno domina al otro, así que el sistema los declara concurrentes y conserva ambos valores en lugar de elegir uno a ciegas, como habría hecho el LWW.</p>
+<pre class="{#lst:trazavc}"><code>estado inicial   A: {}        B: {}
+A escribe x=1    A: {A:1}            (incrementa su contador)
+B escribe x=2          B: {B:1}      (en el otro lado de la particion)
+reencuentro      comparar {A:1} y {B:1}
+  -&gt; {A:1} no precede a {B:1} ni al reves
+  -&gt; CONCURRENTE: conservar x=1 y x=2 para que la app decida</code></pre>
+<p><strong>Listado 7.6.</strong> Traza de dos relojes vectoriales en una particion: el resultado es ‘concurrente’, y no se pierde ninguna escritura.</p>
+<p>El mismo mecanismo escala a más nodos. El listado&nbsp;7.7 sigue tres réplicas a lo largo de una secuencia con causalidad y concurrencia: B responde a A (causal, su reloj domina al de A), mientras C escribe por su cuenta durante una partición (concurrente con ambos). Al reconciliar, el sistema sabe que el valor de B sustituye al de A pero que el de C es independiente, así que conserva dos versiones, no una ni tres.</p>
+<pre class="{#lst:vc3}"><code>A escribe        A:{A:1}
+B lee A, escribe B:{A:1, B:1}     (vio a A: B sucede a A)
+C escribe (part.) C:{C:1}         (aislada: no vio ni a A ni a B)
+reconciliar B:{A:1,B:1} y C:{C:1}
+  -&gt; {A:1,B:1} no precede a {C:1} ni al reves -&gt; CONCURRENTE
+  -&gt; resultado: conservar el valor de B y el de C (dos versiones)</code></pre>
+<p><strong>Listado 7.7.</strong> Tres relojes vectoriales: B sucede a A (causal), C es concurrente. La reconciliacion conserva las versiones no comparables.</p>
+<p>La tercera vía, más reciente, son los <em>tipos de datos replicados sin conflicto</em> (CRDT) <span class="citation" data-cites="shapiro2011">(<a href="#ref-shapiro2011" role="doc-biblioref">Shapiro et&nbsp;al. 2011</a>)</span>: estructuras diseñadas para que la fusión de dos réplicas sea siempre determinista y sin pérdida, sea cual sea el orden en que llegaron los cambios. El ejemplo mínimo es un contador que cada nodo incrementa por separado y que se fusiona tomando el máximo por nodo y sumando (listado&nbsp;7.8): dos incrementos concurrentes no se pisan, se suman.</p>
+<p>La tabla&nbsp;7.2 resume las tres estrategias. No hay una mejor en abstracto: se elige según cuánto duele perder una escritura y cuánta complejidad se está dispuesto a asumir.</p>
+<table class="caption-top table">
+<caption>Tres estrategias de reconciliación de réplicas divergentes. Se compran ausencia de pérdida y corrección con complejidad y restricciones.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Estrategia</th>
+<th style="text-align: left;">¿Pierde datos?</th>
+<th style="text-align: left;">Complejidad</th>
+<th style="text-align: left;">Cuándo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Último gana (LWW)</td>
+<td style="text-align: left;">sí, en silencio</td>
+<td style="text-align: left;">mínima</td>
+<td style="text-align: left;">el desfase es inocuo</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Relojes vectoriales</td>
+<td style="text-align: left;">no (conserva ambos)</td>
+<td style="text-align: left;">media</td>
+<td style="text-align: left;">la app sabe fusionar</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CRDT</td>
+<td style="text-align: left;">no (fusión sin pérdida)</td>
+<td style="text-align: left;">alta, restringe ops</td>
+<td style="text-align: left;">el tipo encaja</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:crdt"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:crdt-1"><a href="#lst:crdt-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fusionar_contador(a, b):</span>
+<span id="lst:crdt-2"><a href="#lst:crdt-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># cada nodo cuenta sus propios incrementos; el total es la suma</span></span>
+<span id="lst:crdt-3"><a href="#lst:crdt-3" aria-hidden="true" tabindex="-1"></a>    nodos <span class="op">=</span> <span class="bu">set</span>(a) <span class="op">|</span> <span class="bu">set</span>(b)</span>
+<span id="lst:crdt-4"><a href="#lst:crdt-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {n: <span class="bu">max</span>(a.get(n, <span class="dv">0</span>), b.get(n, <span class="dv">0</span>)) <span class="cf">for</span> n <span class="kw">in</span> nodos}</span>
+<span id="lst:crdt-5"><a href="#lst:crdt-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:crdt-6"><a href="#lst:crdt-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> valor(c):</span>
+<span id="lst:crdt-7"><a href="#lst:crdt-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(c.values())</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.8.</strong> Un contador CRDT: la fusion por maximo-por-nodo es asociativa y conmutativa, asi que converge sin conflicto.</p>
+</section>
+<section id="grados-de-consistencia-eventual" class="level2">
+<h2 class="anchored" data-anchor-id="grados-de-consistencia-eventual">Grados de consistencia eventual</h2>
+<p>«Eventual» es el grado más débil, y entre él y la consistencia fuerte hay variantes intermedias que las aplicaciones a menudo necesitan. <em>Lee tus propias escrituras</em> (<em>read-your-writes</em>): un usuario ve siempre lo que él acaba de escribir, aunque otros tarden en verlo. <em>Lecturas monótonas</em> (<em>monotonic reads</em>): si un usuario vio un valor, no verá luego uno más antiguo, de modo que el tiempo no «retrocede» para él. <em>Consistencia causal</em>: si una escritura depende de otra —una respuesta a un mensaje—, todos las ven en ese orden (figura&nbsp;7.7). Estas garantías son más fuertes que la eventual pura y más baratas que la fuerte, y forman un continuo que la sección&nbsp;7.7 convierte en un dial.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_07.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.7.</strong> Consistencia causal. Una respuesta depende causalmente de la pregunta que la motivó; toda réplica que muestre la respuesta debe haber mostrado antes la pregunta. Se respeta el orden de «sucede antes», pero no necesariamente el de eventos no relacionados.</figcaption>
+</figure>
+</div>
+</section>
+<section id="acid-frente-a-base" class="level2">
+<h2 class="anchored" data-anchor-id="acid-frente-a-base">ACID frente a BASE</h2>
+<p>Conviene ahora poner las dos filosofías una al lado de la otra, porque se contraponen término a término (tabla&nbsp;7.3). No es una jerarquía —BASE no es «ACID defectuoso», ni ACID es «BASE anticuado»—, sino dos puntos de diseño para dos conjuntos de restricciones, exactamente como el capítulo&nbsp;6 presentó relacional y NoSQL.</p>
+<table class="caption-top table">
+<caption>ACID y BASE, término a término. Dos filosofías de consistencia para dos conjuntos de prioridades: corrección inmediata frente a disponibilidad continua.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Eje</th>
+<th style="text-align: left;">ACID</th>
+<th style="text-align: left;">BASE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Prioridad</td>
+<td style="text-align: left;">consistencia inmediata</td>
+<td style="text-align: left;">disponibilidad continua</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Estado</td>
+<td style="text-align: left;">siempre coherente</td>
+<td style="text-align: left;">blando, converge con el tiempo</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Consistencia</td>
+<td style="text-align: left;">fuerte, al instante</td>
+<td style="text-align: left;">eventual, con ventana</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bajo partición</td>
+<td style="text-align: left;">deja de escribir (CP)</td>
+<td style="text-align: left;">sigue disponible (AP)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Encaja en</td>
+<td style="text-align: left;">un nodo o pocos, ACID</td>
+<td style="text-align: left;">muchos nodos, escala web</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Coste</td>
+<td style="text-align: left;">latencia y bloqueo</td>
+<td style="text-align: left;">reconciliación y desfase</td>
+</tr>
+</tbody>
+</table>
+<p>La elección entre las dos no es ideológica sino del dato. Para el saldo de una cuenta, una ventana de inconsistencia es inaceptable y se paga con gusto la latencia de ACID; para el número de visitas de un vídeo, la latencia de ACID es un lujo absurdo y un desfase de segundos no molesta a nadie. La madurez consiste en no aplicar una filosofía a todo, sino en clasificar cada dato por cuánta incoherencia tolera —ninguna, alguna, mucha— y elegir en consecuencia. Y, como muestra la sección siguiente, esa elección no tiene por qué ser binaria.</p>
+<p>Un ejercicio de clasificación sobre una misma aplicación —una tienda en línea— hace tangible el método. Tres datos, tres elecciones distintas:</p>
+<ol type="1">
+<li><p><strong>El pago de un pedido</strong> no tolera ninguna incoherencia: cobrar dos veces o perder un cobro es inaceptable. Va con ACID, consistencia fuerte, aunque cueste latencia y deje de aceptarse bajo partición.</p></li>
+<li><p><strong>El stock mostrado en la ficha</strong> tolera algo de desfase: enseñar «quedan 3» cuando ya quedan 2 es un error menor que se corrige al confirmar. Va con consistencia intermedia —lee tus propias escrituras— que da agilidad sin sustos groseros.</p></li>
+<li><p><strong>El contador de visitas del producto</strong> tolera mucho desfase: que dos usuarios vean números distintos no importa. Va con BASE, consistencia eventual, máxima disponibilidad y coste mínimo.</p></li>
+</ol>
+<p>La misma aplicación, pues, usa las dos filosofías y los grados intermedios, escogidos dato a dato según cuánto duele equivocarse. Esa es la decisión que la coherencia ajustable de la sección siguiente convierte en un parámetro.</p>
+</section>
+<section id="coherencia-ajustable" class="level2">
+<h2 class="anchored" data-anchor-id="coherencia-ajustable">Coherencia ajustable</h2>
+<p>La gran aportación práctica de los sistemas tipo Dynamo es haber convertido la elección del CAP en un <em>dial</em> que se gradúa por operación, mediante tres números. Sea <span class="math inline">\(N\)</span> el número de réplicas de cada dato, <span class="math inline">\(W\)</span> el número de réplicas que una escritura debe confirmar antes de darse por buena, y <span class="math inline">\(R\)</span> el número que una lectura debe consultar. Jugando con <span class="math inline">\(R\)</span> y <span class="math inline">\(W\)</span> se recorre todo el espectro entre disponibilidad y consistencia.</p>
+<p>La clave es una desigualdad sencilla con una consecuencia profunda: si <span class="math display">\[R + W &gt; N,\]</span> entonces el conjunto de réplicas que confirma una escritura y el que atiende una lectura <em>se solapan necesariamente</em> en al menos una réplica (figura&nbsp;7.8), y esa réplica compartida tiene el último valor, de modo que la lectura no puede ser obsoleta: la consistencia es fuerte. Si <span class="math inline">\(R + W \le N\)</span>, los dos conjuntos pueden no tocarse, y entonces una lectura puede perderse la última escritura: la consistencia es eventual. El umbral <span class="math inline">\(R+W&gt;N\)</span> es la frontera exacta entre los dos mundos, y la práctica lo medirá.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_08.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.8.</strong> El solapamiento de quórum con <span class="math inline">\(N=5\)</span>. Una escritura confirma en <span class="math inline">\(W=3\)</span> réplicas y una lectura consulta <span class="math inline">\(R=3\)</span>. Como <span class="math inline">\(R+W=6&gt;5\)</span>, los dos conjuntos comparten al menos una réplica —aquí r<span class="math inline">\(_2\)</span>—, que lleva el último valor: la lectura no puede ser obsoleta.</figcaption>
+</figure>
+</div>
+<p>Esto da un espectro continuo, no una elección de dos extremos (figura&nbsp;7.9). En un extremo, <span class="math inline">\(W=N\)</span> y <span class="math inline">\(R=1\)</span> (escribir en todos, leer de uno): lecturas rapidísimas y siempre frescas, pero escrituras frágiles, que fallan si una sola réplica está caída. En el otro, <span class="math inline">\(W=1\)</span> y <span class="math inline">\(R=N\)</span>: escrituras siempre posibles, lecturas caras. En medio, el <em>quórum de mayoría</em> —<span class="math inline">\(W=R=\lceil(N{+}1)/2\rceil\)</span>— cumple <span class="math inline">\(R+W&gt;N\)</span> con el menor coste, y es el ajuste por defecto de muchos sistemas. Estos niveles se nombran a menudo <code>ONE</code>, <code>QUORUM</code> y <code>ALL</code>, y se eligen por operación (listado&nbsp;7.9): la misma tabla puede escribirse con <code>QUORUM</code> para los datos críticos y leerse con <code>ONE</code> para los que toleran desfase.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_09.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.9.</strong> El espectro de consistencia ajustable. Entre la consistencia fuerte (<span class="math inline">\(W=N\)</span>, o <span class="math inline">\(R+W&gt;N\)</span>) y la eventual (<span class="math inline">\(W=1\)</span>) hay una gradación que los niveles <code>ONE</code>, <code>QUORUM</code> y <code>ALL</code> permiten elegir por operación.</figcaption>
+</figure>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:niveles"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:niveles-1"><a href="#lst:niveles-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- escritura critica: confirmar en una mayoria de replicas</span></span>
+<span id="lst:niveles-2"><a href="#lst:niveles-2" aria-hidden="true" tabindex="-1"></a>CONSISTENCY QUORUM;</span>
+<span id="lst:niveles-3"><a href="#lst:niveles-3" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> cuenta (<span class="kw">id</span>, saldo) <span class="kw">VALUES</span> (<span class="dv">1</span>, <span class="dv">100</span>);</span>
+<span id="lst:niveles-4"><a href="#lst:niveles-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:niveles-5"><a href="#lst:niveles-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- lectura que tolera desfase: basta una replica, la mas rapida</span></span>
+<span id="lst:niveles-6"><a href="#lst:niveles-6" aria-hidden="true" tabindex="-1"></a>CONSISTENCY ONE;</span>
+<span id="lst:niveles-7"><a href="#lst:niveles-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> saldo <span class="kw">FROM</span> cuenta <span class="kw">WHERE</span> <span class="kw">id</span> <span class="op">=</span> <span class="dv">1</span>;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.9.</strong> Coherencia ajustable por operacion, al estilo de Cassandra: cada consulta elige su nivel.</p>
+<p>Una traza con números fija la idea (listado&nbsp;7.10). Con <span class="math inline">\(N=3\)</span>, <span class="math inline">\(W=2\)</span> y <span class="math inline">\(R=2\)</span> (quórum de mayoría, <span class="math inline">\(R+W=4&gt;3\)</span>), una escritura confirma en dos réplicas con la versión nueva; una lectura posterior consulta dos réplicas cualesquiera y, como los conjuntos han de solaparse, al menos una lleva la versión nueva: la lectura se queda con la versión más alta de las que ve, que es la correcta, aunque una de las réplicas consultadas estuviera rezagada.</p>
+<pre class="{#lst:trazaq}"><code>estado    r0:v1   r1:v1   r2:v1
+escribir v2 (W=2) -&gt; r0:v2   r1:v2   r2:v1  (r2 quedo rezagada)
+leer (R=2) de {r1, r2}:  ve v2 (de r1) y v1 (de r2)
+  -&gt; devuelve max version = v2   (correcto)
+  -&gt; read-repair: actualiza r2 a v2 de paso</code></pre>
+<p><strong>Listado 7.10.</strong> Traza de un quorum con N=3, W=2, R=2: la lectura ve la version nueva porque los conjuntos de escritura y lectura se solapan.</p>
+<p>En un sistema real como Cassandra, esto se declara en dos planos (listado&nbsp;7.11): el factor de replicación <span class="math inline">\(N\)</span> se fija al crear el espacio de claves, y el nivel —<span class="math inline">\(R\)</span> o <span class="math inline">\(W\)</span>— se elige por sentencia. La misma tabla admite así una escritura fuerte y una lectura barata sin cambiar el esquema.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:cql"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="lst:cql-1"><a href="#lst:cql-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- N = 3 replicas por dato, fijado al crear el espacio de claves</span></span>
+<span id="lst:cql-2"><a href="#lst:cql-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> KEYSPACE tienda <span class="kw">WITH</span> replication <span class="op">=</span> {</span>
+<span id="lst:cql-3"><a href="#lst:cql-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">'class'</span>: <span class="st">'SimpleStrategy'</span>, <span class="st">'replication_factor'</span>: <span class="dv">3</span> };</span>
+<span id="lst:cql-4"><a href="#lst:cql-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:cql-5"><a href="#lst:cql-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- escritura fuerte: confirmar en una mayoria (W=2, con R=2 da R+W&gt;N)</span></span>
+<span id="lst:cql-6"><a href="#lst:cql-6" aria-hidden="true" tabindex="-1"></a>CONSISTENCY QUORUM;</span>
+<span id="lst:cql-7"><a href="#lst:cql-7" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> tienda.cuenta (<span class="kw">id</span>, saldo) <span class="kw">VALUES</span> (<span class="dv">1</span>, <span class="dv">100</span>);</span>
+<span id="lst:cql-8"><a href="#lst:cql-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:cql-9"><a href="#lst:cql-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- lectura barata que tolera desfase: una sola replica</span></span>
+<span id="lst:cql-10"><a href="#lst:cql-10" aria-hidden="true" tabindex="-1"></a>CONSISTENCY ONE;</span>
+<span id="lst:cql-11"><a href="#lst:cql-11" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> saldo <span class="kw">FROM</span> tienda.cuenta <span class="kw">WHERE</span> <span class="kw">id</span> <span class="op">=</span> <span class="dv">1</span>;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.11.</strong> En CQL: el factor de replicacion N en el espacio de claves, y el nivel R/W por sentencia.</p>
+<p>El mecanismo de lectura y escritura por quórum se resume en unas pocas líneas (listado&nbsp;7.12): escribir es enviar el valor a las réplicas y esperar <span class="math inline">\(W\)</span> confirmaciones; leer es pedir a las réplicas y, de las <span class="math inline">\(R\)</span> respuestas, quedarse con la de versión más alta —y, de paso, reparar las rezagadas.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:quorum"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:quorum-1"><a href="#lst:quorum-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> escribir(replicas, clave, valor, version, w):</span>
+<span id="lst:quorum-2"><a href="#lst:quorum-2" aria-hidden="true" tabindex="-1"></a>    confirmadas <span class="op">=</span> <span class="dv">0</span></span>
+<span id="lst:quorum-3"><a href="#lst:quorum-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> replicas:</span>
+<span id="lst:quorum-4"><a href="#lst:quorum-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> r.guardar(clave, valor, version):  <span class="co"># envia y confirma</span></span>
+<span id="lst:quorum-5"><a href="#lst:quorum-5" aria-hidden="true" tabindex="-1"></a>            confirmadas <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="lst:quorum-6"><a href="#lst:quorum-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> confirmadas <span class="op">&gt;=</span> w:                  <span class="co"># quorum de escritura</span></span>
+<span id="lst:quorum-7"><a href="#lst:quorum-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">True</span></span>
+<span id="lst:quorum-8"><a href="#lst:quorum-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">False</span>  <span class="co"># no se alcanzo el quorum: escritura no garantizada</span></span>
+<span id="lst:quorum-9"><a href="#lst:quorum-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="lst:quorum-10"><a href="#lst:quorum-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> leer(replicas, clave, r):</span>
+<span id="lst:quorum-11"><a href="#lst:quorum-11" aria-hidden="true" tabindex="-1"></a>    respuestas <span class="op">=</span> [rep.leer(clave) <span class="cf">for</span> rep <span class="kw">in</span> replicas[:r]]</span>
+<span id="lst:quorum-12"><a href="#lst:quorum-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(respuestas, key<span class="op">=</span><span class="kw">lambda</span> x: x.version)  <span class="co"># la mas reciente</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.12.</strong> Lectura y escritura por quorum: esperar W confirmaciones al escribir, quedarse con la version mas alta al leer.</p>
+</section>
+<section id="práctica-el-quórum-medido" class="level2">
+<h2 class="anchored" data-anchor-id="práctica-el-quórum-medido">Práctica: el quórum, medido</h2>
+<p>Todo lo anterior es comprobable sin un clúster, porque las tres tensiones del quórum son estadísticas y se pueden simular. El módulo <code>src/cap07_cap_quorum.py</code> —Python puro, sin servicio ni GPU, que se ejecuta en el propio intérprete con una semilla fija— modela <span class="math inline">\(N\)</span> réplicas en memoria y mide tres cosas: cuándo aparecen lecturas obsoletas, cómo cae la disponibilidad al fallar los nodos, y cuánto cuesta en latencia un quórum grande. Cada medida es una de las tres gráficas que siguen.</p>
+<section id="las-tres-leyes-del-quórum-medidas" class="level3">
+<h3 class="anchored" data-anchor-id="las-tres-leyes-del-quórum-medidas">Las tres leyes del quórum, medidas</h3>
+<p>La predicción, declarada antes de medir, es la desigualdad de la sección&nbsp;7.7: las lecturas obsoletas deben desaparecer en cuanto <span class="math inline">\(R+W&gt;N\)</span>. El módulo prueba todas las parejas <span class="math inline">\((R,W)\)</span>, cuenta qué fracción de lecturas se pierde la última escritura y promedia por la suma <span class="math inline">\(R+W\)</span> (listado&nbsp;7.13). La medida confirma la teoría con nitidez (figura&nbsp;7.10): con <span class="math inline">\(N=5\)</span>, la fracción de lecturas obsoletas baja del 80 % al 15 % según crece la suma, y <em>cae a cero exactamente en <span class="math inline">\(R+W=6\)</span></em>, es decir, en <span class="math inline">\(R+W&gt;N\)</span>. El umbral no es una aproximación: es un acantilado.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:simq"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:simq-1"><a href="#lst:simq-1" aria-hidden="true" tabindex="-1"></a>escritas <span class="op">=</span> <span class="bu">set</span>(rng.sample(replicas, w))</span>
+<span id="lst:simq-2"><a href="#lst:simq-2" aria-hidden="true" tabindex="-1"></a>leidas <span class="op">=</span> rng.sample(replicas, r)</span>
+<span id="lst:simq-3"><a href="#lst:simq-3" aria-hidden="true" tabindex="-1"></a>fresca <span class="op">=</span> <span class="bu">any</span>(x <span class="kw">in</span> escritas <span class="cf">for</span> x <span class="kw">in</span> leidas)  <span class="co"># se solapan?</span></span>
+<span id="lst:simq-4"><a href="#lst:simq-4" aria-hidden="true" tabindex="-1"></a><span class="co"># si R+W&gt;N, los conjuntos se tocan siempre y 'fresca' es cierto</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.13.</strong> El nucleo de la simulacion: una lectura es fresca si su conjunto de replicas toca el de la escritura.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_10.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.10.</strong> Fracción de lecturas obsoletas según <span class="math inline">\(R+W\)</span> (simulación con <span class="math inline">\(N=5\)</span>, semilla fija). La fracción cae a cero justo al cruzar <span class="math inline">\(R+W&gt;N\)</span>: el solapamiento garantizado de los quórumes hace imposible la lectura obsoleta. Datos de <code>src/cap07_cap_quorum.py</code>.</figcaption>
+</figure>
+</div>
+<p>Si la consistencia fuerte exige quórumes grandes, su precio aparece al fallar los nodos. El módulo hace caer cada réplica de forma independiente con probabilidad <span class="math inline">\(p\)</span> y mide la probabilidad de poder formar el quórum de escritura para tres niveles (figura&nbsp;7.11). El resultado es el teorema CAP hecho curva: exigir <code>ONE</code> mantiene la escritura disponible casi siempre, pero no garantiza consistencia; exigir <code>ALL</code> se desploma en cuanto un nodo falla; y <code>QUORUM</code>, que es el ajuste que da consistencia fuerte, paga esa garantía con una disponibilidad que cae a la mitad cuando la mitad de los nodos falla. No hay ajuste que sea a la vez máximamente consistente y máximamente disponible: la curva es la frontera, y cada sistema elige un punto sobre ella.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_11.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.11.</strong> Disponibilidad de la escritura según la probabilidad de fallo por nodo, para tres niveles de quórum (<span class="math inline">\(N=5\)</span>). Más consistencia —quórum mayor— compra menos disponibilidad bajo fallos: la elección del CAP, medida. Datos de <code>src/cap07_cap_quorum.py</code>.</figcaption>
+</figure>
+</div>
+<p>Y aún sin partición ni fallo hay un coste, el que anuncia PACELC. Contactar un quórum de tamaño <span class="math inline">\(Q\)</span> significa esperar a las <span class="math inline">\(Q\)</span> réplicas más rápidas de las <span class="math inline">\(N\)</span>, así que cuanto mayor es el quórum, más arriba en la cola de latencias hay que esperar. El módulo modela la latencia de cada réplica con una distribución sesgada y mide la del quórum (figura&nbsp;7.12): la mediana casi se cuadruplica al pasar de leer una réplica a leerlas todas, y la cola (p95) crece aún más deprisa. La consistencia, pues, cuesta latencia incluso cuando todo va bien: ese es el «ELC» de PACELC que la observación de la sección&nbsp;7.1 anticipaba.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_12.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.12.</strong> Latencia de contactar un quórum de tamaño <span class="math inline">\(Q\)</span>, mediana y cola (<span class="math inline">\(N=5\)</span>). Esperar a más réplicas —más consistencia— cuesta más espera, también sin fallos. Las latencias se simulan a partir de una distribución elegida, no se miden en un sistema real; datos de <code>src/cap07_cap_quorum.py</code>.</figcaption>
+</figure>
+</div>
+<p>Queda una pregunta de diseño que la simulación también responde: si más réplicas dan más disponibilidad, ¿por qué los sistemas reales replican en números modestos —tres, cinco, siete— y no en docenas? El módulo mide la disponibilidad del quórum de mayoría al crecer <span class="math inline">\(N\)</span>, con la probabilidad de fallo por nodo fija (figura&nbsp;7.13). La curva sube hacia uno, pero con rendimientos decrecientes: pasar de tres a cinco réplicas gana mucho; pasar de nueve a once, casi nada. Como cada réplica añadida cuesta almacenamiento, escrituras y coordinación, hay un punto en que añadir más deja de compensar. La regla práctica —tolerar <span class="math inline">\(f\)</span> fallos exige <span class="math inline">\(N\ge 2f+1\)</span>, y se replica en impares para que la mayoría esté siempre definida— sale directamente de esta curva.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cap07/fig_13.svg" class="img-fluid figure-img"></p>
+<figcaption><strong>Figura&nbsp;7.13.</strong> Disponibilidad del quórum de mayoría según el número de réplicas <span class="math inline">\(N\)</span>, con fallo por nodo fijo (<span class="math inline">\(p=0{,}2\)</span>). Más réplicas dan más robustez, pero con rendimientos decrecientes: de ahí los <span class="math inline">\(3\)</span>, <span class="math inline">\(5\)</span>, <span class="math inline">\(7\)</span> habituales. Datos de <code>src/cap07_cap_quorum.py</code>.</figcaption>
+</figure>
+</div>
+</section>
+<section id="cómo-se-ejecuta-el-experimento" class="level3">
+<h3 class="anchored" data-anchor-id="cómo-se-ejecuta-el-experimento">Cómo se ejecuta el experimento</h3>
+<p>Las cinco mediciones salen de un mismo programa, y conviene ver cómo se orquesta (listado&nbsp;7.14). El módulo anuncia primero los recursos —Python puro, CPU, sin servicio ni GPU— según la convención del libro, fija la semilla para que los números se reproduzcan, y luego encadena las cinco simulaciones, cada una de las cuales vuelca su tabla a un <code>.dat</code> que las figuras leen. No hay nada oculto: el mismo <code>N=5</code> y la misma semilla gobiernan todo, de modo que quien ejecute el módulo obtendrá exactamente las cifras de las figuras de este capítulo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="lst:driver"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="lst:driver-1"><a href="#lst:driver-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main():</span>
+<span id="lst:driver-2"><a href="#lst:driver-2" aria-hidden="true" tabindex="-1"></a>    anunciar()                 <span class="co"># recursos: python puro, cpu, sin gpu</span></span>
+<span id="lst:driver-3"><a href="#lst:driver-3" aria-hidden="true" tabindex="-1"></a>    simular_consistencia()     <span class="co"># -&gt; cap07_quorum.dat</span></span>
+<span id="lst:driver-4"><a href="#lst:driver-4" aria-hidden="true" tabindex="-1"></a>    simular_disponibilidad()   <span class="co"># -&gt; cap07_disponibilidad.dat</span></span>
+<span id="lst:driver-5"><a href="#lst:driver-5" aria-hidden="true" tabindex="-1"></a>    simular_latencia()         <span class="co"># -&gt; cap07_latencia.dat</span></span>
+<span id="lst:driver-6"><a href="#lst:driver-6" aria-hidden="true" tabindex="-1"></a>    simular_convergencia()     <span class="co"># -&gt; cap07_convergencia_t.dat</span></span>
+<span id="lst:driver-7"><a href="#lst:driver-7" aria-hidden="true" tabindex="-1"></a>    simular_escala_n()         <span class="co"># -&gt; cap07_escala_n.dat</span></span>
+<span id="lst:driver-8"><a href="#lst:driver-8" aria-hidden="true" tabindex="-1"></a>    demostracion(<span class="dv">15</span>)           <span class="co"># 15 lecturas eventuales</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Listado 7.14.</strong> El motor del experimento: anunciar recursos, fijar la semilla y encadenar las cinco simulaciones.</p>
+<p>Fiel a la convención, el módulo muestra quince lecturas bajo el nivel más débil (<span class="math inline">\(R=W=1\)</span>), donde no hay solapamiento garantizado (listado&nbsp;7.15). La muestra hace tangible la consistencia eventual: unas lecturas dan con la réplica recién escrita y ven el valor fresco; la mayoría caen en otra réplica y ven uno obsoleto. No es un fallo, es el modo de funcionar elegido: disponibilidad a cambio de desfase.</p>
+<pre class="{#lst:artefacto7}"><code>n   escrita_en  leida_en  desenlace
+  --  ----------  --------  ---------
+  0   rep-1       rep-2     OBSOLETA
+  1   rep-3       rep-1     OBSOLETA
+  7   rep-3       rep-3     fresca
+  8   rep-3       rep-3     fresca
+  ...  ...        ...       ...
+  -&gt; 3/15 frescas; el resto vio un valor anterior</code></pre>
+<p><strong>Listado 7.15.</strong> Quince lecturas con R=W=1: sin solapamiento garantizado, unas ven el ultimo valor y otras uno anterior.</p>
+</section>
+<section id="lo-que-la-práctica-no-decide" class="level3">
+<h3 class="anchored" data-anchor-id="lo-que-la-práctica-no-decide">Lo que la práctica no decide</h3>
+<p>Conviene cerrar con la honestidad de costumbre. La simulación es un modelo: réplicas en memoria, fallos independientes, latencias de una distribución elegida. La realidad añade correlaciones —los nodos de un mismo bastidor caen juntos—, relojes desincronizados y cargas que cambian, y trasladar las cifras exactas a un sistema real sería un error. Lo que la simulación captura, y captura bien, es la <em>forma</em> de las tres leyes: el acantilado en <span class="math inline">\(R+W&gt;N\)</span>, el desplome de la disponibilidad con el quórum, y el ascenso de la latencia con él. Y lo que no decide —nunca— es qué punto elegir: eso depende de cuánta incoherencia tolera cada dato, que es una cuestión del negocio, no de la estadística. La herramienta cuantifica el compromiso; el juicio sobre cuánta consistencia hace falta lo pone el diseñador.</p>
+<p>Vistas juntas, las cinco mediciones componen un único cuadro, el del coste de distribuir. La frontera de la consistencia (figura&nbsp;7.10) dice <em>cuándo</em> se consigue —en <span class="math inline">\(R+W&gt;N\)</span>—; la disponibilidad (figura&nbsp;7.11) y la latencia (figura&nbsp;7.12) dicen <em>cuánto cuesta</em> conseguirla, bajo fallo y sin él; la convergencia (figura&nbsp;7.6) dice <em>cuánto dura</em> la incoherencia mientras tanto; y la escala con <span class="math inline">\(N\)</span> (figura&nbsp;7.13) dice <em>cuántas réplicas</em> compensa poner. No son cinco hechos sueltos, sino las cinco coordenadas de una misma decisión: dónde situarse entre la consistencia y la disponibilidad, sabiendo lo que cada paso cuesta. Ese cuadro es el que un diseñador lleva en la cabeza al configurar un almacén distribuido, y el que reaparecerá —con vectores en lugar de saldos— al replicar un índice de similitud en la cuarta parte.</p>
+</section>
+</section>
+<section id="síntesis-y-puente-al-capítulo-siguiente" class="level2">
+<h2 class="anchored" data-anchor-id="síntesis-y-puente-al-capítulo-siguiente">Síntesis y puente al capítulo siguiente</h2>
+<p>Este capítulo ha saldado la deuda del anterior. La renuncia a la consistencia que NoSQL hacía «por escala» no es una chapuza, sino la consecuencia de un teorema: bajo partición —y la partición es inevitable— hay que elegir entre consistencia y disponibilidad. De esa elección nace el modelo BASE, que cambia la coherencia inmediata de ACID por una consistencia eventual con ventana, sostenida por mecanismos de convergencia y por estrategias de reconciliación que van del frágil «último que gana» a los relojes vectoriales y los CRDT. Y la elección no es binaria: la coherencia ajustable por quórumes, gobernada por la desigualdad <span class="math inline">\(R+W&gt;N\)</span>, convierte el dilema del CAP en un dial que se gradúa por operación.</p>
+<p>Sobre todo, el capítulo ha puesto número al coste de distribuir. Las tres gráficas medidas no son adornos: son las tres caras de un mismo precio. La consistencia fuerte exige quórumes que se solapan (<span class="math inline">\(R+W&gt;N\)</span>), y esos quórumes cuestan disponibilidad cuando los nodos fallan y latencia cuando no. Ese precio —consistencia contra disponibilidad y latencia— es el que toda base distribuida paga, y el que reaparecerá, idéntico, cuando en la cuarta parte se repliquen los índices vectoriales para servir búsquedas a escala.</p>
+<p>El hilo del libro avanza un paso más. El «igual a» exacto del modelo relacional, que el capítulo&nbsp;5 defendía con ACID, se ha relajado aquí en un «igual a, eventualmente»: las réplicas acabarán coincidiendo, pero quizá no ahora. Con el coste de la distribución ya entendido y medido, el capítulo&nbsp;8 puede recorrer el catálogo de los sistemas que lo pagan —las familias NoSQL—, cada una situada en un punto distinto de las fronteras que aquí se han trazado.</p>
+</section>
+<section id="ejercicios-propuestos" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="ejercicios-propuestos">Ejercicios propuestos</h2>
+</section>
+<section id="lecturas-recomendadas" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecturas-recomendadas">Lecturas recomendadas</h2>
+<ul>
+<li><p><span class="citation" data-cites="gilbert2002">Gilbert y Lynch (<a href="#ref-gilbert2002" role="doc-biblioref">2002</a>)</span>: la demostración formal de la conjetura de Brewer; el teorema CAP con todo su rigor.</p></li>
+<li><p><span class="citation" data-cites="brewer2012">Brewer (<a href="#ref-brewer2012" role="doc-biblioref">2012</a>)</span>: la revisión del propio Brewer doce años después, que matiza el «elige dos» y aclara que la elección es por operación y solo bajo partición.</p></li>
+<li><p><span class="citation" data-cites="vogels2009">Vogels (<a href="#ref-vogels2009" role="doc-biblioref">2009</a>)</span>: la exposición de la consistencia eventual por el director técnico de Amazon, con los grados intermedios y los mecanismos de convergencia.</p></li>
+<li><p><span class="citation" data-cites="pritchett2008">Pritchett (<a href="#ref-pritchett2008" role="doc-biblioref">2008</a>)</span>: la presentación del modelo BASE como alternativa razonada a ACID, con ejemplos de diseño.</p></li>
+<li><p><span class="citation" data-cites="dynamo2007"><span class="nocase">DeCandia et&nbsp;al.</span> (<a href="#ref-dynamo2007" role="doc-biblioref">2007</a>)</span>: el sistema que popularizó la coherencia ajustable por quórumes <span class="math inline">\(N\)</span>, <span class="math inline">\(R\)</span>, <span class="math inline">\(W\)</span> y los relojes vectoriales.</p></li>
+<li><p><span class="citation" data-cites="kleppmann">Kleppmann (<a href="#ref-kleppmann" role="doc-biblioref">2017</a>)</span>: el tratamiento moderno y unificado de la replicación, la consistencia y los conflictos, que enmarca todo el capítulo.</p></li>
+</ul>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referencias</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-abadi2012" class="csl-entry" role="listitem">
+Abadi, Daniel J. 2012. <span>«Consistency Tradeoffs in Modern Distributed Database System Design: <span>CAP</span> is Only Part of the Story»</span>. <em>IEEE Computer</em> 45 (2): 37-42.
+</div>
+<div id="ref-brewer2000" class="csl-entry" role="listitem">
+Brewer, Eric A. 2000. <span>«Towards Robust Distributed Systems (Invited Talk)»</span>. <em>ACM Symposium on Principles of Distributed Computing (PODC)</em>.
+</div>
+<div id="ref-brewer2012" class="csl-entry" role="listitem">
+Brewer, Eric A. 2012. <span>«<span>CAP</span> Twelve Years Later: How the <span>“Rules”</span> Have Changed»</span>. <em>IEEE Computer</em> 45 (2): 23-29.
+</div>
+<div id="ref-dynamo2007" class="csl-entry" role="listitem">
+<span class="nocase">DeCandia, Giuseppe, Deniz Hastorun, Madan Jampani, et&nbsp;al.</span> 2007. <span>«Dynamo: Amazon’s Highly Available Key-Value Store»</span>. <em>ACM Symposium on Operating Systems Principles (SOSP)</em>.
+</div>
+<div id="ref-gilbert2002" class="csl-entry" role="listitem">
+Gilbert, Seth, y Nancy Lynch. 2002. <span>«Brewer’s Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services»</span>. <em>ACM SIGACT News</em> 33 (2): 51-59.
+</div>
+<div id="ref-kleppmann" class="csl-entry" role="listitem">
+Kleppmann, Martin. 2017. <em>Designing Data-Intensive Applications</em>. O’Reilly.
+</div>
+<div id="ref-lamport1978" class="csl-entry" role="listitem">
+Lamport, Leslie. 1978. <span>«Time, Clocks, and the Ordering of Events in a Distributed System»</span>. <em>Communications of the ACM</em> 21 (7): 558-65.
+</div>
+<div id="ref-pritchett2008" class="csl-entry" role="listitem">
+Pritchett, Dan. 2008. <span>«<span>BASE</span>: An <span>ACID</span> Alternative»</span>. <em>ACM Queue</em> 6 (3): 48-55.
+</div>
+<div id="ref-shapiro2011" class="csl-entry" role="listitem">
+Shapiro, Marc, Nuno Preguiça, Carlos Baquero, y Marek Zawirski. 2011. <span>«Conflict-Free Replicated Data Types»</span>. <em>International Symposium on Stabilization, Safety, and Security of Distributed Systems (SSS)</em>, Lecture Notes en Computer Science, vol. 6976: 386-400.
+</div>
+<div id="ref-vogels2009" class="csl-entry" role="listitem">
+Vogels, Werner. 2009. <span>«Eventually Consistent»</span>. <em>Communications of the ACM</em> 52 (1): 40-44.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cap06.html" class="pagination-link" aria-label="Capítulo 6. Límites del relacional y el movimiento NoSQL">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Capítulo 6. Límites del relacional y el movimiento NoSQL</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./cap08.html" class="pagination-link" aria-label="Capítulo 8. Las familias NoSQL">
+        <span class="nav-page-text">Capítulo 8. Las familias NoSQL</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2026 Manuel Muñoz Plá · Edición web bajo licencia <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es">CC BY-NC-ND 4.0</a> (uso académico con atribución; sin uso comercial ni obras derivadas) · El código va aparte bajo licencia MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

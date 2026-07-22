@@ -1,0 +1,7 @@
+# recall@10 de la consulta hibrida resuelta integrada (prefiltrado) vs separada (postfiltrado) segun la selectividad del filtro (n=20000)
+selectividad  prefiltrado  postfiltrado
+0.5  1.0  0.5017
+0.2  1.0  0.195
+0.1  1.0  0.1017
+0.05  1.0  0.0483
+0.01  1.0  0.0077

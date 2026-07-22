@@ -1,0 +1,5 @@
+# reparto del coste de una consulta del motor entre filtrado, busqueda y materializacion (porcentaje, n=200000)
+etapa  porcentaje
+filtrado  10.9
+busqueda  89.0
+materializacion  0.0
