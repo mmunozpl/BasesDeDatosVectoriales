@@ -13,6 +13,8 @@ Este repositorio reúne una **vista previa web navegable** del libro y el
 capítulo, sus soluciones y los apéndices están en la **obra completa** (papel,
 PDF y EPUB), que se distribuye por separado.
 
+> 📘 **Ficha del libro** y más obras del autor: [manpla.net/libros/bases-datos-vectoriales](https://manpla.net/libros/bases-datos-vectoriales/)
+
 ## Contenido
 
 ```
