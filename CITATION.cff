@@ -4,6 +4,7 @@ title: "Bases de datos: SQL · NoSQL · Vectorial"
 authors:
   - family-names: "Muñoz Plá"
     given-names: "Manuel"
+    website: "https://manpla.net"
 repository-code: "https://github.com/mmunozpl/BasesDeDatosVectoriales"
 url: "https://mmunozpl.github.io/BasesDeDatosVectoriales/"
 license: CC-BY-NC-ND-4.0
