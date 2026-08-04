@@ -1,125 +1,123 @@
-# Bases de datos: SQL · NoSQL · Vectorial
+# Databases: SQL · NoSQL · Vector
+
+🇬🇧 English · 🇪🇸 [Español](LEEME.md)
 
 **Manuel Muñoz Plá**
 
-Manual sobre **bases de datos vectoriales**, de la coincidencia exacta del
-modelo relacional a la similitud semántica del embedding, y de la teoría al
-sistema en producción. Veintiún capítulos en cinco partes: *Fundamentos del
-dato estructurado*, *La relajación del esquema*, *De la coincidencia a la
-similitud*, *Bases de datos vectoriales* y *Arquitecturas e integración*.
+A book on **vector databases**, from the exact matching of the relational
+model to the semantic similarity of the embedding, and from theory to the
+system in production. Twenty-one chapters in five parts: *Foundations of
+structured data*, *Relaxing the schema*, *From matching to similarity*,
+*Vector databases* and *Architectures and integration*.
 
-Este repositorio reúne una **vista previa web navegable** del libro y el
-**código reproducible** que genera cada resultado. Los ejercicios de cada
-capítulo, sus soluciones y los apéndices están en la **obra completa** (papel,
-PDF y EPUB), que se distribuye por separado.
+This repository holds a **browsable web preview** of the book and the
+**reproducible code** behind every result. Each chapter's exercises, their
+solutions, and the appendices live in the **complete work** (print, PDF and
+EPUB), distributed separately.
 
-> 📘 **Ficha del libro** y más obras del autor: [manpla.net/libros/bases-datos-vectoriales](https://manpla.net/libros/bases-datos-vectoriales/)
+> 📘 **Book page** and more of the author's work: [manpla.net/libros/bases-datos-vectoriales](https://manpla.net/libros/bases-datos-vectoriales/)
 
-## Contenido
+## Contents
 
 ```
 .
-├── docs/                # edición web (Quarto): un HTML por capítulo, figuras SVG,
-│                        #   con buscador
-├── src/                 # un módulo Python reproducible por capítulo
-├── data/                # el registro de figuras: los .dat que alimentan las gráficas
-├── infra/               # docker-compose de los motores (Postgres+pgvector, Mongo,
+├── docs/                # web edition (Quarto): one HTML page per chapter, SVG
+│                        #   figures, with search
+├── src/                 # one reproducible Python module per chapter
+├── data/                # the figure registry: the .dat files the plots consume
+├── infra/               # docker-compose for the engines (Postgres+pgvector, Mongo,
 │                        #   Redis, TimescaleDB, Qdrant, Milvus) + healthcheck
 └── requirements.txt
 ```
 
-## Leer el libro
+## Read the book
 
-La edición web (21 capítulos, con buscador, matemáticas y bibliografía por
-página) se publica con GitHub Pages desde `docs/`:
+The web edition (21 chapters, with search, math and per-page bibliography) is
+published with GitHub Pages from `docs/`:
 
 > https://mmunozpl.github.io/BasesDeDatosVectoriales/
 
-Cada capítulo se compone con **figuras vectoriales SVG renderizadas con el mismo
-pdfLaTeX del libro**, de modo que las referencias y los números de figura,
-tabla y listado son los del texto impreso.
+Each chapter is composed with **vector SVG figures rendered with the same
+pdfLaTeX as the book**, so references and figure/table/listing numbers match
+the printed text.
 
-Los amplios ejercicios de cada capítulo, sus soluciones y los apéndices no se
-publican en la web: viven en la **obra completa** (papel, PDF y EPUB).
+Each chapter's extensive exercises, their solutions, and the appendices are
+not published on the web: they live in the **complete work** (print, PDF and
+EPUB).
 
-## Ejecutar el código
+## Run the code
 
-Cada capítulo trae un módulo reproducible en `src/capNN_*.py`, determinista con
-semilla fija: al ejecutarlo regenera los `.dat` sobre los que se dibujan sus
-figuras.
+Each chapter ships a reproducible module in `src/capNN_*.py`, seeded for
+determinism: running it regenerates the `.dat` files its figures are drawn
+from.
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate   # o conda
+python3 -m venv .venv && source .venv/bin/activate   # or conda
 pip install -r requirements.txt
-python3 src/cap15_ann.py        # p. ej. índices de vecino aproximado
+python3 src/cap15_ann.py        # e.g. approximate nearest neighbor indexes
 ```
 
-La mayoría de los capítulos corren en **CPU con numpy** (implementan las ideas
-—HNSW, IVF, cuantización de producto, quórumes, Map-Reduce…— desde cero, sin
-dependencias pesadas). Los cuatro que **miden sobre motores reales** necesitan
-los servicios, que se levantan con Docker:
+Most chapters run on **CPU with numpy** (they implement the ideas —HNSW, IVF,
+product quantization, quorums, Map-Reduce…— from scratch, with no heavy
+dependencies). The four that **measure against real engines** need the
+services, brought up with Docker:
 
 ```bash
 docker compose -f infra/docker-compose.yml up -d
-bash infra/healthcheck.sh                    # confirma que los motores responden
-python3 src/cap05_concurrencia.py            # PostgreSQL (caps. 1, 3, 5)
-python3 src/cap06_documental.py              # MongoDB  (cap. 6)
+bash infra/healthcheck.sh                    # confirms the engines respond
+python3 src/cap05_concurrencia.py            # PostgreSQL (chaps. 1, 3, 5)
+python3 src/cap06_documental.py              # MongoDB  (chap. 6)
 ```
 
-## Reproducibilidad y datos
+## Reproducibility and data
 
-- Cada resultado del libro es **reproducible de extremo a extremo**: todo
-  artefacto —figuras, tablas y `.dat`— se regenera ejecutando el script que lo
-  produce, con semilla fija y salida determinista.
-- **Medir, no proclamar.** Cada número tiene procedencia declarada: medido en
-  local (registro `.dat`), sintético declarado, o citado de la literatura. Las
-  gráficas se generan de forma nativa en LaTeX (`pgfplots` sobre los `.dat`,
-  `TikZ` para los esquemas); las latencias se reportan por su forma, no por su
-  valor absoluto (dependiente de la máquina).
-- Los conjuntos de datos son públicos, de fuente canónica o repositorio abierto,
-  y se citan en su primer uso.
+- Every result in the book is **reproducible end to end**: every artifact
+  —figures, tables and `.dat` files— is regenerated by running the script that
+  produces it, with a fixed seed and deterministic output.
+- **Measure, don't proclaim.** Every number has declared provenance: measured
+  locally (`.dat` registry), declared synthetic, or cited from the literature.
+  Plots are generated natively in LaTeX (`pgfplots` over the `.dat` files,
+  `TikZ` for the diagrams); latencies are reported by their shape, not their
+  absolute value (machine-dependent).
+- Datasets are public, from canonical sources or open repositories, and are
+  cited on first use.
 
-## Capítulos
+## Chapters
 
-**Fundamentos del dato estructurado.** 1 Persistencia · 2 Modelo relacional ·
-3 SQL · 4 Normalización · 5 Transacciones.
+**Foundations of structured data.** 1 Persistence · 2 The relational model ·
+3 SQL · 4 Normalization · 5 Transactions.
 
-**La relajación del esquema.** 6 NoSQL · 7 Consistencia distribuida ·
-8 Familias NoSQL (con un mapa de las especializadas: serie temporal, OLAP
-columnar, NewSQL y geoespacial) · 9 Distribución.
+**Relaxing the schema.** 6 NoSQL · 7 Distributed consistency ·
+8 NoSQL families (with a map of the specialized ones: time series, columnar
+OLAP, NewSQL and geospatial) · 9 Distribution.
 
-**De la coincidencia a la similitud.** 10 Recuperación clásica · 11 Densa
-frente a dispersa · 12 Embeddings neuronales (vector único y multivector de
-interacción tardía, Matryoshka) · 13 Geometría métrica.
+**From matching to similarity.** 10 Classic retrieval · 11 Dense versus
+sparse · 12 Neural embeddings (single-vector and late-interaction
+multivector, Matryoshka) · 13 Metric geometry.
 
-**Bases de datos vectoriales.** 14 Anatomía vectorial · 15 Índices ANN ·
-16 Motores · 17 Consulta híbrida (dos etapas con reranking) · 18 Evaluación
-(con cuantización float16/int8/binaria).
+**Vector databases.** 14 Vector anatomy · 15 ANN indexes · 16 Engines ·
+17 Hybrid querying (two stages with reranking) · 18 Evaluation (with
+float16/int8/binary quantization).
 
-**Arquitecturas e integración.** 19 RAG, GraphRAG y memoria de agentes ·
-20 El futuro híbrido (motor multimodelo) · 21 Caso de estudio integral.
+**Architectures and integration.** 19 RAG, GraphRAG and agent memory ·
+20 The hybrid future (multi-model engine) · 21 End-to-end case study.
 
-## Licencias
+## Licenses
 
-Este repositorio combina dos regímenes; conviene no confundirlos:
+This repository combines two regimes; best not to confuse them:
 
-| Directorio | Contenido | Licencia |
+| Directory | Content | License |
 |---|---|---|
-| `src/`, `data/`, `infra/` | Código reproducible, registro de datos e infraestructura | [MIT](src/LICENSE) — uso libre |
-| `docs/` | Texto del libro (edición web) | [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es) — leer y compartir con atribución; sin uso comercial ni obras derivadas |
+| `src/`, `data/`, `infra/` | Reproducible code, data registry and infrastructure | [MIT](src/LICENSE) — free to use |
+| `docs/` | Book text (web edition) | [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) — read and share with attribution; no commercial use or derivative works |
 
-La **obra completa** —con los ejercicios de cada capítulo, sus soluciones y los
-apéndices— se publica en papel, PDF y EPUB con todos los derechos reservados.
+The **complete work** —with each chapter's exercises, their solutions, and the
+appendices— is published in print, PDF and EPUB, all rights reserved.
 
-Que el texto lleve una licencia restrictiva **no limita el uso del código**:
-puedes llevarte los módulos de `src/`, el registro de `data/` o la
-infraestructura de `infra/` a un proyecto propio, incluso comercial, en los
-términos de la licencia MIT.
+## How to cite
 
-## Cómo citar
-
-Si mencionas o usas esta obra, cítala así (GitHub también ofrece el botón
-«Cite this repository», generado desde `CITATION.cff`):
+If you mention or use this work, please cite it like this (GitHub also offers
+a "Cite this repository" button, generated from `CITATION.cff`):
 
 ```bibtex
 @book{munozpla2026basesdedatosvectoriales,
@@ -133,4 +131,4 @@ Si mencionas o usas esta obra, cítala así (GitHub también ofrece el botón
 
 ---
 
-*Autor: Manuel Muñoz Plá.*
+*Author: Manuel Muñoz Plá.*
