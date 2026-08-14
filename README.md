@@ -4,42 +4,44 @@
 
 **Manuel Muñoz Plá**
 
+[![Cite](https://img.shields.io/badge/Cite-BibTeX-009e73)](#how-to-cite)
+
 A book on **vector databases**, from the exact matching of the relational
 model to the semantic similarity of the embedding, and from theory to the
 system in production. Twenty-one chapters in five parts: *Foundations of
 structured data*, *Relaxing the schema*, *From matching to similarity*,
 *Vector databases* and *Architectures and integration*.
 
-This repository holds a **browsable web preview** of the book and the
-**reproducible code** behind every result. Each chapter's exercises, their
-solutions, and the appendices live in the **complete work** (print, PDF and
-EPUB), distributed separately.
+This repository holds the **reproducible code** behind every result in the
+book. Each chapter's exercises, their solutions, and the appendices live in
+the **complete work** (print, PDF and EPUB), distributed separately.
 
-> 📘 **Book page** and more of the author's work: [manpla.net/libros/bases-datos-vectoriales](https://manpla.net/libros/bases-datos-vectoriales/)
+> 📘 **Book page** and more of the author's work:
+> [manpla.net/libros/bases-datos-vectoriales](https://manpla.net/libros/bases-datos-vectoriales/)
 
 ## Contents
 
 ```
 .
-├── docs/                # web edition (Quarto): one HTML page per chapter, SVG
-│                        #   figures, with search
 ├── src/                 # one reproducible Python module per chapter
 ├── data/                # the figure registry: the .dat files the plots consume
 ├── infra/               # docker-compose for the engines (Postgres+pgvector, Mongo,
 │                        #   Redis, TimescaleDB, Qdrant, Milvus) + healthcheck
-└── requirements.txt
+└── pyproject.toml       # the exact environment, with uv.lock and requirements.txt
 ```
+
+The web edition does not live here: it is read on manpla.net, linked below.
 
 ## Read the book
 
-The web edition (21 chapters, with search, math and per-page bibliography) is
-published with GitHub Pages from `docs/`:
+The web edition (21 chapters, with search, mathematics and per-page
+bibliography) is published on the author's site:
 
-> https://mmunozpl.github.io/BasesDeDatosVectoriales/
+> https://manpla.net/libros/bases-datos-vectoriales/
 
-Each chapter is composed with **vector SVG figures rendered with the same
-pdfLaTeX as the book**, so references and figure/table/listing numbers match
-the printed text.
+Each chapter is a page of manpla.net, with its own navigation, and is composed
+with **vector SVG figures rendered with the same pdfLaTeX as the book**, so
+references and figure, table and listing numbers match the printed text.
 
 Each chapter's extensive exercises, their solutions, and the appendices are
 not published on the web: they live in the **complete work** (print, PDF and
@@ -51,27 +53,44 @@ Each chapter ships a reproducible module in `src/capNN_*.py`, seeded for
 determinism: running it regenerates the `.dat` files its figures are drawn
 from.
 
+The `uv.lock` pins the exact versions the numbers were obtained with:
+**Python 3.11.14** with `numpy` 2.3.3. Most of the book runs on **CPU** and
+needs no GPU: the indexes and the ideas —HNSW, IVF, product quantisation,
+quorums, Map-Reduce…— are implemented from scratch, with no heavy
+dependencies.
+
 ```bash
-python3 -m venv .venv && source .venv/bin/activate   # or conda
-pip install -r requirements.txt
-python3 src/cap15_ann.py        # e.g. approximate nearest neighbor indexes
+uv run python src/cap15_ann.py        # e.g. approximate nearest neighbour indexes
 ```
 
-Most chapters run on **CPU with numpy** (they implement the ideas —HNSW, IVF,
-product quantization, quorums, Map-Reduce…— from scratch, with no heavy
-dependencies). The four that **measure against real engines** need the
-services, brought up with Docker:
+If the environment is shared with other projects, the installation goes
+**additive**, which does not sweep away what is not declared here:
+
+```bash
+uv pip install -r <(uv export --no-hashes --no-dev)
+```
+
+Without `uv`, with `pip`:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+The chapters that **measure against real engines** need the services, whose
+versions `infra/docker-compose.yml` pins (`pgvector/pgvector:pg16`, `mongo:7`,
+`redis:7`, `qdrant/qdrant`, `milvusdb/milvus:v2.5.4`):
 
 ```bash
 docker compose -f infra/docker-compose.yml up -d
 bash infra/healthcheck.sh                    # confirms the engines respond
-python3 src/cap05_concurrencia.py            # PostgreSQL (chaps. 1, 3, 5)
-python3 src/cap06_documental.py              # MongoDB  (chap. 6)
+uv run python src/cap05_concurrencia.py      # PostgreSQL (chaps. 1, 3, 5)
+uv run python src/cap06_documental.py        # MongoDB  (chap. 6)
 ```
 
 ## Reproducibility and data
 
-- Every result in the book is **reproducible end to end**: every artifact
+- Every result in the book is **reproducible end to end**: every artefact
   —figures, tables and `.dat` files— is regenerated by running the script that
   produces it, with a fixed seed and deterministic output.
 - **Measure, don't proclaim.** Every number has declared provenance: measured
@@ -85,10 +104,10 @@ python3 src/cap06_documental.py              # MongoDB  (chap. 6)
 ## Chapters
 
 **Foundations of structured data.** 1 Persistence · 2 The relational model ·
-3 SQL · 4 Normalization · 5 Transactions.
+3 SQL · 4 Normalisation · 5 Transactions.
 
 **Relaxing the schema.** 6 NoSQL · 7 Distributed consistency ·
-8 NoSQL families (with a map of the specialized ones: time series, columnar
+8 NoSQL families (with a map of the specialised ones: time series, columnar
 OLAP, NewSQL and geospatial) · 9 Distribution.
 
 **From matching to similarity.** 10 Classic retrieval · 11 Dense versus
@@ -97,38 +116,33 @@ multivector, Matryoshka) · 13 Metric geometry.
 
 **Vector databases.** 14 Vector anatomy · 15 ANN indexes · 16 Engines ·
 17 Hybrid querying (two stages with reranking) · 18 Evaluation (with
-float16/int8/binary quantization).
+float16/int8/binary quantisation).
 
 **Architectures and integration.** 19 RAG, GraphRAG and agent memory ·
 20 The hybrid future (multi-model engine) · 21 End-to-end case study.
 
-## Licenses
+## Licences
 
 This repository combines two regimes; best not to confuse them:
 
-| Directory | Content | License |
+| Directory | Content | Licence |
 |---|---|---|
 | `src/`, `data/`, `infra/` | Reproducible code, data registry and infrastructure | [MIT](src/LICENSE) — free to use |
-| `docs/` | Book text (web edition) | [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) — read and share with attribution; no commercial use or derivative works |
+| — | Book text and figures (web edition) | [CC BY-NC-ND 4.0](LICENSE) — read and share with attribution; no commercial use or derivative works |
 
 The **complete work** —with each chapter's exercises, their solutions, and the
 appendices— is published in print, PDF and EPUB, all rights reserved.
 
 ## How to cite
 
-If you mention or use this work, please cite it like this (GitHub also offers
-a "Cite this repository" button, generated from `CITATION.cff`):
-
 ```bibtex
 @book{munozpla2026basesdedatosvectoriales,
   author    = {Muñoz Plá, Manuel},
   title     = {Bases de datos: SQL · NoSQL · Vectorial},
-  year      = {2026},
   publisher = {qWORD.dev},
-  url       = {https://mmunozpl.github.io/BasesDeDatosVectoriales/}
+  year      = {2026},
+  url       = {https://manpla.net/libros/bases-datos-vectoriales/},
 }
 ```
 
----
-
-*Author: Manuel Muñoz Plá.*
+Machine-readable metadata: [`CITATION.cff`](CITATION.cff).

@@ -1,0 +1,31 @@
+# Entorno exacto con que se obtuvieron los resultados del libro. Las
+# versiones van CLAVADAS, no acotadas: el lock se congela desde el entorno
+# que generó los números, no desde uno limpio.
+#
+# Se declara lo que el código publicado en src/ importa de verdad; el resto
+# del utillaje del libro —los motores— no es una dependencia de Python:
+# se levanta con infra/docker-compose.yml, que fija su versión ahí.
+[project]
+name = "bases-datos-vectoriales"
+version = "1.0.0"
+description = "Código reproducible de «Bases de datos: SQL · NoSQL · Vectorial»"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+license = { text = "MIT" }
+authors = [{ name = "Manuel Muñoz Plá" }]
+
+dependencies = [
+  "numpy==2.3.3",           # el grueso del libro: HNSW, IVF, PQ desde cero
+  "psycopg[binary]==3.3.4", # PostgreSQL + pgvector (caps. 1, 3, 5)
+  "pymongo==4.17.0",        # MongoDB (cap. 6)
+]
+
+[project.urls]
+Libro = "https://manpla.net/libros/bases-datos-vectoriales/"
+Repositorio = "https://github.com/mmunozpl/BasesDeDatosVectoriales"
+
+[tool.uv]
+# La instalación es ADITIVA cuando el entorno conda se comparte con otros
+# proyectos:  uv pip install -r <(uv export --no-hashes --no-dev)
+# `uv sync` NO se usa ahí: eliminaría todo paquete no declarado aquí.
+package = false

@@ -6,7 +6,7 @@ authors:
     given-names: "Manuel"
     website: "https://manpla.net"
 repository-code: "https://github.com/mmunozpl/BasesDeDatosVectoriales"
-url: "https://mmunozpl.github.io/BasesDeDatosVectoriales/"
+url: "https://manpla.net/libros/bases-datos-vectoriales/"
 license: CC-BY-NC-ND-4.0
 preferred-citation:
   type: book
@@ -17,4 +17,4 @@ preferred-citation:
   year: 2026
   publisher:
     name: "qWORD.dev"
-  url: "https://mmunozpl.github.io/BasesDeDatosVectoriales/"
+  url: "https://manpla.net/libros/bases-datos-vectoriales/"

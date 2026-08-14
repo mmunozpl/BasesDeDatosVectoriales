@@ -4,42 +4,45 @@
 
 **Manuel Muñoz Plá**
 
+[![Cite](https://img.shields.io/badge/Cite-BibTeX-009e73)](#cómo-citar)
+
 Manual sobre **bases de datos vectoriales**, de la coincidencia exacta del
 modelo relacional a la similitud semántica del embedding, y de la teoría al
 sistema en producción. Veintiún capítulos en cinco partes: *Fundamentos del
 dato estructurado*, *La relajación del esquema*, *De la coincidencia a la
 similitud*, *Bases de datos vectoriales* y *Arquitecturas e integración*.
 
-Este repositorio reúne una **vista previa web navegable** del libro y el
-**código reproducible** que genera cada resultado. Los ejercicios de cada
-capítulo, sus soluciones y los apéndices están en la **obra completa** (papel,
-PDF y EPUB), que se distribuye por separado.
+Este repositorio reúne el **código reproducible** que genera cada resultado del
+libro. Los ejercicios de cada capítulo, sus soluciones y los apéndices están en
+la **obra completa** (papel, PDF y EPUB), que se distribuye por separado.
 
-> 📘 **Ficha del libro** y más obras del autor: [manpla.net/libros/bases-datos-vectoriales](https://manpla.net/libros/bases-datos-vectoriales/)
+> 📘 **Ficha del libro** y más obras del autor:
+> [manpla.net/libros/bases-datos-vectoriales](https://manpla.net/libros/bases-datos-vectoriales/)
 
 ## Contenido
 
 ```
 .
-├── docs/                # edición web (Quarto): un HTML por capítulo, figuras SVG,
-│                        #   con buscador
 ├── src/                 # un módulo Python reproducible por capítulo
 ├── data/                # el registro de figuras: los .dat que alimentan las gráficas
 ├── infra/               # docker-compose de los motores (Postgres+pgvector, Mongo,
 │                        #   Redis, TimescaleDB, Qdrant, Milvus) + healthcheck
-└── requirements.txt
+└── pyproject.toml       # entorno exacto, con uv.lock y requirements.txt
 ```
+
+La edición web no vive aquí: se lee en manpla.net, enlazada más abajo.
 
 ## Leer el libro
 
 La edición web (21 capítulos, con buscador, matemáticas y bibliografía por
-página) se publica con GitHub Pages desde `docs/`:
+página) se publica en el sitio del autor:
 
-> https://mmunozpl.github.io/BasesDeDatosVectoriales/
+> https://manpla.net/libros/bases-datos-vectoriales/
 
-Cada capítulo se compone con **figuras vectoriales SVG renderizadas con el mismo
-pdfLaTeX del libro**, de modo que las referencias y los números de figura,
-tabla y listado son los del texto impreso.
+Cada capítulo es una página de manpla.net, con su propia navegación, y se
+compone con **figuras vectoriales SVG renderizadas con el mismo pdfLaTeX del
+libro**, de modo que las referencias y los números de figura, tabla y listado
+son los del texto impreso.
 
 Los amplios ejercicios de cada capítulo, sus soluciones y los apéndices no se
 publican en la web: viven en la **obra completa** (papel, PDF y EPUB).
@@ -50,22 +53,39 @@ Cada capítulo trae un módulo reproducible en `src/capNN_*.py`, determinista co
 semilla fija: al ejecutarlo regenera los `.dat` sobre los que se dibujan sus
 figuras.
 
+El `uv.lock` fija las versiones exactas con que se obtuvieron los números:
+**Python 3.11.14** con `numpy` 2.3.3. La mayor parte del libro corre en **CPU**
+y no necesita GPU: los índices y las ideas —HNSW, IVF, cuantización de
+producto, quórumes, Map-Reduce…— están implementados desde cero, sin
+dependencias pesadas.
+
 ```bash
-python3 -m venv .venv && source .venv/bin/activate   # o conda
-pip install -r requirements.txt
-python3 src/cap15_ann.py        # p. ej. índices de vecino aproximado
+uv run python src/cap15_ann.py        # p. ej. índices de vecino aproximado
 ```
 
-La mayoría de los capítulos corren en **CPU con numpy** (implementan las ideas
-—HNSW, IVF, cuantización de producto, quórumes, Map-Reduce…— desde cero, sin
-dependencias pesadas). Los cuatro que **miden sobre motores reales** necesitan
-los servicios, que se levantan con Docker:
+Si el entorno se comparte con otros proyectos, la instalación va **aditiva**,
+que no barre lo que no esté declarado aquí:
+
+```bash
+uv pip install -r <(uv export --no-hashes --no-dev)
+```
+
+Sin `uv`, con `pip`:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Los capítulos que **miden sobre motores reales** necesitan los servicios, cuya
+versión fija `infra/docker-compose.yml` (`pgvector/pgvector:pg16`, `mongo:7`,
+`redis:7`, `qdrant/qdrant`, `milvusdb/milvus:v2.5.4`):
 
 ```bash
 docker compose -f infra/docker-compose.yml up -d
 bash infra/healthcheck.sh                    # confirma que los motores responden
-python3 src/cap05_concurrencia.py            # PostgreSQL (caps. 1, 3, 5)
-python3 src/cap06_documental.py              # MongoDB  (cap. 6)
+uv run python src/cap05_concurrencia.py      # PostgreSQL (caps. 1, 3, 5)
+uv run python src/cap06_documental.py        # MongoDB  (cap. 6)
 ```
 
 ## Reproducibilidad y datos
@@ -108,26 +128,21 @@ Este repositorio combina dos regímenes; conviene no confundirlos:
 | Directorio | Contenido | Licencia |
 |---|---|---|
 | `src/`, `data/`, `infra/` | Código reproducible, registro de datos e infraestructura | [MIT](src/LICENSE) — uso libre |
-| `docs/` | Texto del libro (edición web) | [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es) — leer y compartir con atribución; sin uso comercial ni obras derivadas |
+| — | Texto y figuras del libro (edición web) | [CC BY-NC-ND 4.0](LICENSE) — leer y compartir con atribución; sin uso comercial ni obras derivadas |
 
 La **obra completa** —con los ejercicios de cada capítulo, sus soluciones y los
 apéndices— se publica en papel, PDF y EPUB con todos los derechos reservados.
 
 ## Cómo citar
 
-Si mencionas o usas esta obra, cítala así (GitHub también ofrece el botón
-«Cite this repository», generado desde `CITATION.cff`):
-
 ```bibtex
 @book{munozpla2026basesdedatosvectoriales,
   author    = {Muñoz Plá, Manuel},
   title     = {Bases de datos: SQL · NoSQL · Vectorial},
-  year      = {2026},
   publisher = {qWORD.dev},
-  url       = {https://mmunozpl.github.io/BasesDeDatosVectoriales/}
+  year      = {2026},
+  url       = {https://manpla.net/libros/bases-datos-vectoriales/},
 }
 ```
 
----
-
-*Autor: Manuel Muñoz Plá.*
+Metadatos legibles por máquina: [`CITATION.cff`](CITATION.cff).
