@@ -1,0 +1,7 @@
+# --- fuera del repo publico ------------------------------------------
+# La web se sirve en manpla.net: docs/ se construye en local y de ahi lo
+# lleva al sitio Autor-qWORD/bin/sync-web.sh.
+/docs/
+# Utillaje de construccion: plano PRIVADO segun los tres planos.
+/herramientas/
+/Makefile
