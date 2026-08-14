@@ -121,11 +121,11 @@ float16/int8/binary quantisation).
 **Architectures and integration.** 19 RAG, GraphRAG and agent memory ·
 20 The hybrid future (multi-model engine) · 21 End-to-end case study.
 
-## Licences
+## License
 
 This repository combines two regimes; best not to confuse them:
 
-| Directory | Content | Licence |
+| Directory | Content | License |
 |---|---|---|
 | `src/`, `data/`, `infra/` | Reproducible code, data registry and infrastructure | [MIT](src/LICENSE) — free to use |
 | — | Book text and figures (web edition) | [CC BY-NC-ND 4.0](LICENSE) — read and share with attribution; no commercial use or derivative works |
