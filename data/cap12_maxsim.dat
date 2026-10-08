@@ -1,7 +1,7 @@
 # similitud consulta-doc segun relleno ajeno: MaxSim (multivector) vs vector medio
 relleno  maxsim  medio
 0  1.0  1.0
-2  1.0  0.5427
-4  1.0  0.2766
-8  1.0  -0.222
-16  1.0  -0.656
+2  1.0  0.5465
+4  1.0  0.2824
+8  1.0  -0.3401
+16  1.0  -0.896

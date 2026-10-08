@@ -1,26 +1,27 @@
 """capitulo 12 — deep learning para embeddings.
 
 implementa desde cero, en numpy, las ideas centrales del aprendizaje de
-embeddings, y las mide. no usa modelos preentrenados ni GPU ---se ejecuta en
-CPU en segundos---, porque el objetivo es entender los mecanismos, no reproducir
+embeddings, y las mide. no usa modelos preentrenados ni GPU (se ejecuta en
+CPU en segundos), porque el objetivo es entender los mecanismos, no reproducir
 un modelo industrial:
 
-  1. word2vec (skip-gram con muestreo negativo): aprende vectores de palabra
-     prediciendo el contexto. se mide la curva de aprendizaje (la perdida baja y
-     la calidad sube epoca a epoca).
+  1. skip-gram con muestreo negativo (SGNS), version didactica de word2vec:
+     aprende vectores de palabra prediciendo el contexto. se registran por
+     epoca la perdida media y el acierto de tema, medido aparte.
   2. comparacion: la calidad del embedding aprendido frente al aleatorio y al de
      co-ocurrencia+SVD del capitulo 11.
-  3. atencion (producto escalar escalado): el mecanismo del transformer. se mide
-     que una misma palabra recibe vectores distintos segun su contexto ---la
-     clave de los embeddings contextuales---, frente al vector unico estatico.
-  4. Matryoshka: entrenar para que los primeros componentes basten; se mide la
-     calidad al truncar la dimension, frente a un embedding estandar.
+  3. self-attention minima (Q = K = V, sin proyecciones): se mide que la salida
+     de una misma palabra cambia con los vectores de su contexto, frente al
+     vector unico estatico.
+  4. maqueta inspirada en Matryoshka: la perdida promedia la de varios
+     prefijos; se mide la calidad al truncar, frente a un embedding estandar.
   5. interaccion tardia (MaxSim): comparar por el mejor emparejamiento de tokens
      frente al vector unico promediado.
 
-los modelos reales (Sentence-BERT, ViT, CLIP, BGE-M3) si necesitan la GPU y el
-entorno con sus dependencias; este modulo se queda en los mecanismos, en CPU.
-semilla fija. ver IMPLEMENTACION.md.
+los modelos reales (Sentence-BERT, ViT, CLIP, BGE-M3) se descargan con sus
+dependencias; entrenarlos pide aceleradores, y en inferencia muchos corren en
+CPU, mas despacio. este modulo se queda en los mecanismos, en CPU. semilla
+fija.
 """
 
 from __future__ import annotations
@@ -50,7 +51,7 @@ def anunciar() -> None:
     print("=" * 64)
     print("cap. 12 — deep learning para embeddings (desde cero, numpy)")
     print("recursos: python + numpy · cpu. los modelos reales (SBERT,")
-    print("ViT, CLIP) necesitan GPU y el entorno; aqui solo los mecanismos.")
+    print("ViT, CLIP) no se usan; aqui solo los mecanismos.")
     print(f"semilla = {SEMILLA}, dimension = {DIM}")
     print("=" * 64)
 
@@ -134,6 +135,8 @@ def entrenar_word2vec(corpus, vocab, dim=DIM, ventana=2, negativos=5,
 
     los gradientes se calculan sobre copias de los vectores y se aplican al
     final del par, para no corromper el calculo con vistas que se modifican.
+    los negativos se muestrean de f(w)^0.75 sin el propio positivo, y su
+    actualizacion acumula los indices repetidos (np.add.at).
     """
     rng = np.random.default_rng(SEMILLA)
     v = len(vocab)
@@ -154,7 +157,9 @@ def entrenar_word2vec(corpus, vocab, dim=DIM, ventana=2, negativos=5,
         rng.shuffle(pares)
         perdida = 0.0
         for c, o in pares:
-            neg = rng.choice(v, size=negativos, p=p_neg)
+            q = p_neg.copy()
+            q[o] = 0.0                       # el positivo no es negativo
+            neg = rng.choice(v, size=negativos, p=q / q.sum())
             vc, vo, vn = W[c].copy(), C[o].copy(), C[neg].copy()
             gW = np.zeros(dim)
             gO = np.zeros(dim)
@@ -170,7 +175,7 @@ def entrenar_word2vec(corpus, vocab, dim=DIM, ventana=2, negativos=5,
                 gN[:, :m] += (sn[:, None] * vc[:m]) / nc
             W[c] -= lr * gW
             C[o] -= lr * gO
-            C[neg] -= lr * gN
+            np.add.at(C, neg, -lr * gN)      # acumula negativos repetidos
         acc = _acierto_tema(W, vocab)
         hist.append((ep + 1, round(perdida / len(pares), 4), round(acc, 4)))
     return W, hist
@@ -221,9 +226,10 @@ def simular_comparacion(corpus, vocab, w2v) -> None:
 def atencion(consultas, claves, valores):
     """producto escalar escalado: salida ponderada de los valores segun la
     afinidad consulta-clave. es el mecanismo del transformer."""
-    d = claves.shape[1]
-    pesos = sigmoide(consultas @ claves.T / np.sqrt(d))  # afinidad
-    pesos = pesos / pesos.sum(axis=1, keepdims=True)      # normalizar
+    dk = claves.shape[-1]
+    a = consultas @ claves.T / np.sqrt(dk)                # afinidad
+    a = np.exp(a - a.max(axis=-1, keepdims=True))         # softmax estable
+    pesos = a / a.sum(axis=-1, keepdims=True)             # por fila
     return pesos @ valores
 
 
