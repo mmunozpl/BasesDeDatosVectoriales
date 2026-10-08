@@ -1,8 +1,8 @@
-# recall@10 del cribado binario (top-R por signo) seguido de reordenacion exacta, segun R (n=30000, dim=128)
+# ann recall@10 del cribado binario (top-R por hamming) seguido de reordenacion exacta con los originales, segun R (n=30000, dim=128)
 R  recall
-50  0.156
-100  0.2515
-200  0.3615
-500  0.5685
-1000  0.726
-2000  0.8585
+50  0.4265
+100  0.607
+200  0.798
+500  0.9805
+1000  0.9995
+2000  1.0

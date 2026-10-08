@@ -1,8 +1,8 @@
-# recall@k de un indice IVF (nprobe=8) frente a la verdad exacta, segun la profundidad k (n=20000)
-k  recall
-1  0.995
-5  0.99
-10  0.9895
-20  0.9862
-50  0.9812
-100  0.9747
+# ann recall@k de un IVF (nlist 128) frente al top-k exacto, segun k y nprobe (n=20000, dim=128, 200 consultas reservadas)
+k  np2  np4  np8
+1  0.885  0.99  1.0
+5  0.856  0.987  1.0
+10  0.8565  0.9865  1.0
+20  0.8483  0.9825  1.0
+50  0.837  0.9819  1.0
+100  0.8327  0.9802  1.0

@@ -1,6 +1,6 @@
-# recall@10 y bytes por vector (dim 128) de float32, float16, int8 y binaria frente a la verdad exacta float32 (n=30000)
-tipo  bytes  recall
-float32  512  1.0
-float16  256  0.9995
-int8  128  0.9715
-binaria  16  0.0995
+# ann recall@10 frente al top-k exacto float32 y bytes por vector (carga y escala por vector) de float32, float16, int8 y binaria empaquetada (n=30000, dim=128)
+tipo  bytes  escala  recall
+float32  512  0  1.0
+float16  256  0  0.998
+int8  128  4  0.9825
+binaria  16  0  0.1525

@@ -1,6 +1,8 @@
-# recall@10 de un IVF al insertar temas nuevos (deriva) sin reentrenar, y tras reindexar (reentrenar el k-means)
-fase  n  recall
-inicial  20000  0.987
-+deriva  30000  0.6985
-++deriva  40000  0.512
-reindexado  40000  0.8775
+# ann recall@10 y candidatos evaluados por consulta de un IVF (nlist 128) al insertar temas nuevos sin reentrenar, con mas nprobe (reajuste) y tras reconstruir el k-means (reindexado)
+fase  n  nprobe  recall  evaluados
+inicial  20000  8  1.0  1300
+deriva1  30000  8  0.813  2141
+deriva2  40000  8  0.7005  3009
+deriva2  40000  16  0.7905  5857
+deriva2  40000  32  0.899  11399
+reindexado  40000  8  1.0  2714

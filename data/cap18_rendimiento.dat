@@ -1,7 +1,7 @@
-# latencia (ms) y rendimiento (QPS) de la busqueda exacta por fuerza bruta segun N (dim 256, una maquina)
-n  latencia_ms  qps
-1000  0.035  28347
-10000  2.874  347
-100000  8.206  121
-500000  39.708  25
-1000000  78.972  12
+# busqueda exacta segun N (dim 256, un hilo): latencia mediana de una consulta (ms), su inverso (qps en serie) y rendimiento de un lote de 64 consultas (qps en lote)
+n  latencia_ms  qps_serie  qps_lote
+1000  0.03  33003  94294
+10000  0.18  5542  11298
+100000  5.771  173  926
+500000  32.629  30  188
+1000000  68.795  14  82
