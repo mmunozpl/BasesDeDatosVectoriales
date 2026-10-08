@@ -1,4 +1,4 @@
-"""capitulo 6 — limites del relacional y el movimiento NoSQL.
+"""capitulo 6: limites del relacional y el movimiento NoSQL.
 
 modela el mismo dominio ---autores con sus libros--- de dos maneras: en un
 esquema relacional normalizado (PostgreSQL, dos tablas que se reunen) y en
@@ -215,7 +215,7 @@ def demostracion(col, k: int = 15) -> None:
 
 def main() -> None:
     print("=" * 64)
-    print("cap. 6 — el mismo dominio: normalizado y embebido")
+    print("cap. 6: el mismo dominio: normalizado y embebido")
     print("recursos: postgres + mongo (servicios docker) · cpu. sin gpu.")
     print("=" * 64)
     comparar()

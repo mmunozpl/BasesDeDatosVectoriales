@@ -1,4 +1,4 @@
-"""capitulo 10 — recuperacion de informacion clasica.
+"""capitulo 10: recuperacion de informacion clasica.
 
 construye, en Python puro, un sistema de recuperacion documental completo sobre
 un corpus reducido y real ---indice invertido, modelo booleano, modelo de
@@ -65,7 +65,7 @@ CONSULTA = "consulta sql sobre una base de datos con tablas e indices"
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 10 — recuperacion de informacion clasica")
+    print("cap. 10: recuperacion de informacion clasica")
     print("recursos: python puro · cpu. no usa servicio, gpu ni torch.")
     print(f"corpus de {len(CORPUS)} documentos, semilla = {SEMILLA}")
     print("=" * 64)

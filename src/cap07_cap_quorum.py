@@ -1,4 +1,4 @@
-"""capitulo 7 — consistencia distribuida.
+"""capitulo 7: consistencia distribuida.
 
 simula, con replicas en memoria, las tres tensiones que el teorema CAP y el
 modelo de quorum hacen explicitas, y mide cada una para alimentar una grafica:
@@ -31,7 +31,7 @@ N = 5  # numero de replicas
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 7 — consistencia distribuida (simulacion de quorum)")
+    print("cap. 7: consistencia distribuida (simulacion de quorum)")
     print("recursos: python puro · cpu. no usa servicio, gpu ni torch.")
     print(f"replicas N = {N}, semilla = {SEMILLA}")
     print("=" * 64)

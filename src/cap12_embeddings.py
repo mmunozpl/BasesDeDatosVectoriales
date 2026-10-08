@@ -1,4 +1,4 @@
-"""capitulo 12 — deep learning para embeddings.
+"""capitulo 12: deep learning para embeddings.
 
 implementa desde cero, en numpy, las ideas centrales del aprendizaje de
 embeddings, y las mide. no usa modelos preentrenados ni GPU (se ejecuta en
@@ -49,7 +49,7 @@ CONECTORES = ["el", "la", "de", "una", "con", "y"]
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 12 — deep learning para embeddings (desde cero, numpy)")
+    print("cap. 12: deep learning para embeddings (desde cero, numpy)")
     print("recursos: python + numpy · cpu. los modelos reales (SBERT,")
     print("ViT, CLIP) no se usan; aqui solo los mecanismos.")
     print(f"semilla = {SEMILLA}, dimension = {DIM}")

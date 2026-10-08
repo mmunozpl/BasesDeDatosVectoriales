@@ -1,4 +1,4 @@
-"""capitulo 9 — mecanica de la distribucion.
+"""capitulo 9: mecanica de la distribucion.
 
 implementa y mide, en Python puro, las cuatro piezas comunes a cualquier
 almacen distribuido:
@@ -41,7 +41,7 @@ def h(cadena: str) -> int:
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 9 — mecanica de la distribucion")
+    print("cap. 9: mecanica de la distribucion")
     print("recursos: python puro · cpu. no usa servicio, gpu ni torch.")
     print(f"semilla = {SEMILLA}")
     print("=" * 64)

@@ -1,4 +1,4 @@
-"""capitulo 13 — geometria del espacio metrico.
+"""capitulo 13: geometria del espacio metrico.
 
 estudia, en numpy, como se mide el parecido entre vectores y como se comporta el
 espacio donde viven los embeddings. mide doce cosas que fijan el criterio para
@@ -47,7 +47,7 @@ SEMILLA = 13
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 13 — geometria del espacio metrico")
+    print("cap. 13: geometria del espacio metrico")
     print("recursos: python + numpy · cpu. no usa servicio, gpu ni torch.")
     print(f"semilla = {SEMILLA}")
     print("=" * 64)

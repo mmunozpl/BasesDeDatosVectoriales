@@ -1,10 +1,10 @@
-"""capitulo 4 — diseno y normalizacion.
+"""capitulo 4: diseno y normalizacion.
 
 opera sobre dependencias funcionales: calcula el cierre de un
 conjunto de atributos, halla las claves candidatas, detecta
 violaciones de Boyce-Codd (BCNF) y descompone el esquema sin
-perdida. ademas mide la redundancia —cuantas veces se almacena un
-mismo hecho— en un esquema desnormalizado frente a su version
+perdida. ademas mide la redundancia (cuantas veces se almacena un
+mismo hecho) en un esquema desnormalizado frente a su version
 normalizada, y muestra 15 tuplas del esquema desnormalizado.
 
 python puro, cpu: sin gpu, sin torch, sin servicio de base de datos (las
@@ -190,7 +190,7 @@ def demostracion(k: int = 15) -> None:
 
 def main() -> None:
     print("=" * 64)
-    print("cap. 4 — diseno y normalizacion")
+    print("cap. 4: diseno y normalizacion")
     print("recursos: python puro · cpu. sin gpu ni servicio de bd.")
     print("=" * 64)
     demo_normalizacion()

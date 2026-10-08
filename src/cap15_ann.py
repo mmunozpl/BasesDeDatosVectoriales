@@ -1,4 +1,4 @@
-"""capitulo 15 — indices de vecino aproximado (ANN).
+"""capitulo 15: indices de vecino aproximado (ANN).
 
 implementa en numpy, desde cero y con fines didacticos, el nucleo de cuatro
 tecnicas de busqueda de vecino aproximado y mide el compromiso que comparten:
@@ -55,7 +55,7 @@ OBJETIVOS = (0.90, 0.95)                 # recall@10 de la comparativa
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 15 — indices de vecino aproximado (ANN)")
+    print("cap. 15: indices de vecino aproximado (ANN)")
     print("recursos: python + numpy · cpu. no usa servicio, gpu ni faiss.")
     print(f"semilla = {SEMILLA}")
     print("=" * 64)

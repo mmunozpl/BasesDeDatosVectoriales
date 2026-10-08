@@ -1,4 +1,4 @@
-"""capitulo 3 — SQL: del DML declarativo a las extensiones.
+"""capitulo 3: SQL: del DML declarativo a las extensiones.
 
 ejecuta sobre PostgreSQL una consulta con funcion de ventana (suma
 acumulada por cliente, ordenada por tiempo) y muestra su plan con
@@ -41,7 +41,7 @@ def conexion() -> psycopg.Connection:
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 3 — SQL: funciones de ventana e indice")
+    print("cap. 3: SQL: funciones de ventana e indice")
     print("recursos: postgres (servicio docker) · cpu. no usa gpu.")
     print(f"tabla de demostracion: {N_DEMO} filas")
     print("=" * 64)
@@ -122,7 +122,7 @@ def demostrar_planes(conn: psycopg.Connection) -> None:
     sin indice el motor ordena (WindowAgg -> Sort -> Seq Scan); con el
     indice (cliente, ts) lee en orden y el Sort desaparece (WindowAgg ->
     Index Scan). el cambio es estructural; que ademas sea mas rapido
-    depende de si el Sort dominaba el coste —en memoria no lo hace—.
+    depende de si el Sort dominaba el coste (en memoria no lo hace).
     """
     with conn.cursor() as cur:
         cur.execute("drop index if exists idx_evento_cli_ts")

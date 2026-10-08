@@ -1,9 +1,9 @@
-"""capitulo 2 — el modelo relacional.
+"""capitulo 2: el modelo relacional.
 
 implementa el algebra relacional sobre relaciones representadas como
 conjuntos de tuplas con nombre, verifica equivalencias algebraicas (que
 son la base de la optimizacion de consultas del cap. 1) y mide como el
-orden de evaluacion —empujar la seleccion antes de la reunion— reduce el
+orden de evaluacion (empujar la seleccion antes de la reunion) reduce el
 tamano del resultado intermedio. la demostracion: 15 tuplas al azar de una
 reunion natural.
 
@@ -276,7 +276,7 @@ def muestra_join(k: int = 15) -> None:
 
 def main() -> None:
     print("=" * 64)
-    print("cap. 2 — algebra relacional")
+    print("cap. 2: algebra relacional")
     print("recursos: python puro · cpu. sin gpu ni servicio de bd.")
     print("=" * 64)
     verificar_equivalencias()

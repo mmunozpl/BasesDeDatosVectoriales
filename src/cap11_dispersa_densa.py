@@ -1,4 +1,4 @@
-"""capitulo 11 — de la representacion dispersa a la densa.
+"""capitulo 11: de la representacion dispersa a la densa.
 
 contrasta, en Python con numpy, las dos familias de representacion vectorial y
 mide cinco cosas que explican por que la densa sucede a la dispersa:
@@ -46,7 +46,7 @@ CONECTORES = ["el", "la", "de", "una", "con", "y"]
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 11 — de la representacion dispersa a la densa")
+    print("cap. 11: de la representacion dispersa a la densa")
     print("recursos: python + numpy · cpu. la gpu es opcional; aqui no.")
     print(f"semilla = {SEMILLA}")
     print("=" * 64)

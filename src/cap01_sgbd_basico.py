@@ -1,9 +1,9 @@
-"""capitulo 1 — la persistencia y la disciplina de gestion de datos.
+"""capitulo 1: la persistencia y la disciplina de gestion de datos.
 
 demuestra, sobre una tabla relacional de juguete en postgres, las dos
 ideas que el capitulo fija: (1) un sgbd separa el dato de la aplicacion
-y (2) esa separacion permite cambiar el acceso fisico —de barrido
-secuencial a indice b-tree— sin tocar la consulta logica. imprime el
+y (2) esa separacion permite cambiar el acceso fisico (de barrido
+secuencial a indice b-tree) sin tocar la consulta logica. imprime el
 plan de ejecucion antes y despues de crear el indice y, como demostracion,
 15 observaciones reproducibles (muestreadas con la semilla fija).
 
@@ -73,7 +73,7 @@ def conexion() -> psycopg.Connection:
 def anunciar_recursos() -> None:
     """declara, antes de actuar, que necesita el modulo."""
     print("=" * 64)
-    print("cap. 1 — sgbd basico")
+    print("cap. 1: sgbd basico")
     print("recursos: postgres (servicio docker) · cpu. no usa gpu.")
     print(f"se insertaran {N_FILAS} filas de juguete.")
     print("=" * 64)
@@ -179,7 +179,7 @@ def muestra_reproducible(
     el muestreo se hace en python con random.Random(SEMILLA): elige k
     ids del rango [1, N_FILAS] y los trae con WHERE id = ANY(...). la
     seleccion es asi reproducible de extremo a extremo, sin depender del
-    random() del servidor —que `order by random()` no siembra—. se
+    random() del servidor (que `order by random()` no siembra). se
     preserva el orden del muestreo (id = any no garantiza el de vuelta).
 
     args:

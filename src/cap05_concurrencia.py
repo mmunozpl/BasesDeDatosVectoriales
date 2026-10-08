@@ -1,4 +1,4 @@
-"""capitulo 5 — transacciones, concurrencia y recuperacion.
+"""capitulo 5: transacciones, concurrencia y recuperacion.
 
 reproduce sobre PostgreSQL las anomalias clasicas de la concurrencia
 ---lectura sucia, lectura no repetible, fantasma y sesgo de escritura---
@@ -256,7 +256,7 @@ def demostracion(k: int = 15) -> None:
 
 def main() -> None:
     print("=" * 64)
-    print("cap. 5 — transacciones, concurrencia y recuperacion")
+    print("cap. 5: transacciones, concurrencia y recuperacion")
     print("recursos: postgres (servicio docker) · cpu. no usa gpu.")
     print("=" * 64)
     matriz_anomalias()

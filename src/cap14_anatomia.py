@@ -1,4 +1,4 @@
-"""capitulo 14 — anatomia de una base de datos vectorial.
+"""capitulo 14: anatomia de una base de datos vectorial.
 
 construye, en numpy, una maqueta funcional del nucleo de un almacen vectorial
 para diseccionar sus partes: el almacenamiento del vector y sus metadatos, la
@@ -39,7 +39,7 @@ SEMILLA = 14
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 14 — anatomia de una base de datos vectorial")
+    print("cap. 14: anatomia de una base de datos vectorial")
     print("recursos: python + numpy · cpu. no usa servicio, gpu ni torch.")
     print(f"semilla = {SEMILLA}")
     print("=" * 64)

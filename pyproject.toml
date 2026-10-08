@@ -3,7 +3,7 @@
 # que generó los números, no desde uno limpio.
 #
 # Se declara lo que el código publicado en src/ importa de verdad; el resto
-# del utillaje del libro —los motores— no es una dependencia de Python:
+# del utillaje del libro (los motores) no es una dependencia de Python:
 # se levanta con infra/docker-compose.yml, que fija su versión ahí.
 [project]
 name = "bases-datos-vectoriales"

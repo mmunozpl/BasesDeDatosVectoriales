@@ -1,4 +1,4 @@
-"""capitulo 17 — consulta hibrida.
+"""capitulo 17: consulta hibrida.
 
 estudia, en numpy, como se combinan las senales de una busqueda: el filtro
 estructurado sobre los metadatos, la senal lexica (BM25, del cap. 10) y una
@@ -47,7 +47,7 @@ SEMILLA = 17
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 17 — consulta hibrida")
+    print("cap. 17: consulta hibrida")
     print("recursos: python + numpy · cpu. sin servicio, gpu ni torch.")
     print(f"semilla = {SEMILLA}")
     print("=" * 64)

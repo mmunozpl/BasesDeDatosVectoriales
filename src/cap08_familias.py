@@ -1,4 +1,4 @@
-"""capitulo 8 — las familias NoSQL.
+"""capitulo 8: las familias NoSQL.
 
 cada familia NoSQL optimiza un patron de acceso distinto, y este modulo lo
 mide implementando versiones de juguete en memoria ---Python puro--- y
@@ -36,7 +36,7 @@ SEMILLA = 8
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 8 — las familias NoSQL (maquetas en memoria)")
+    print("cap. 8: las familias NoSQL (maquetas en memoria)")
     print("recursos: python puro · cpu. no usa servicio, gpu ni torch.")
     print(f"semilla = {SEMILLA}")
     print("=" * 64)

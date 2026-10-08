@@ -55,8 +55,8 @@ figuras.
 
 El `uv.lock` fija las versiones exactas con que se obtuvieron los números:
 **Python 3.11.14** con `numpy` 2.3.3. La mayor parte del libro corre en **CPU**
-y no necesita GPU: los índices y las ideas —HNSW, IVF, cuantización de
-producto, quórumes, Map-Reduce…— están implementados desde cero, sin
+y no necesita GPU: los índices y las ideas (HNSW, IVF, cuantización de
+producto, quórumes, Map-Reduce…) están implementados desde cero, sin
 dependencias pesadas.
 
 ```bash
@@ -91,7 +91,7 @@ uv run python src/cap06_documental.py        # MongoDB  (cap. 6)
 ## Reproducibilidad y datos
 
 - Cada resultado del libro es **reproducible de extremo a extremo**: todo
-  artefacto —figuras, tablas y `.dat`— se regenera ejecutando el script que lo
+  artefacto (figuras, tablas y `.dat`) se regenera ejecutando el script que lo
   produce, con semilla fija y salida determinista.
 - **Medir, no proclamar.** Cada número tiene procedencia declarada: medido en
   local (registro `.dat`), sintético declarado, o citado de la literatura. Las
@@ -127,11 +127,11 @@ Este repositorio combina dos regímenes; conviene no confundirlos:
 
 | Directorio | Contenido | Licencia |
 |---|---|---|
-| `src/`, `data/`, `infra/` | Código reproducible, registro de datos e infraestructura | [MIT](src/LICENSE) — uso libre |
-| — | Texto y figuras del libro (edición web) | [CC BY-NC-ND 4.0](LICENSE) — leer y compartir con atribución; sin uso comercial ni obras derivadas |
+| `src/`, `data/`, `infra/` | Código reproducible, registro de datos e infraestructura | [MIT](src/LICENSE): uso libre |
+| — | Texto y figuras del libro (edición web) | [CC BY-NC-ND 4.0](LICENSE): leer y compartir con atribución; sin uso comercial ni obras derivadas |
 
-La **obra completa** —con los ejercicios de cada capítulo, sus soluciones y los
-apéndices— se publica en papel, PDF y EPUB con todos los derechos reservados.
+La **obra completa** (con los ejercicios de cada capítulo, sus soluciones y los
+apéndices) se publica en papel, PDF y EPUB con todos los derechos reservados.
 
 ## Cómo citar
 

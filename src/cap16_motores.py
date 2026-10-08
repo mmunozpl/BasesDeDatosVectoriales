@@ -1,4 +1,4 @@
-"""capitulo 16 — motores: dedicados frente a extensiones.
+"""capitulo 16: motores: dedicados frente a extensiones.
 
 los motores reales (pgvector, Qdrant, Milvus, Redis, Weaviate) requieren
 servidores que no estan disponibles en este entorno, asi que este modulo no
@@ -44,7 +44,7 @@ METRICAS = ("coseno", "producto", "l2")
 
 def anunciar() -> None:
     print("=" * 64)
-    print("cap. 16 — motores: dedicados frente a extensiones")
+    print("cap. 16: motores: dedicados frente a extensiones")
     print("recursos: python + numpy · cpu. sin servidores (pgvector/Qdrant/")
     print("Milvus/Redis no disponibles); maqueta del nucleo de un motor.")
     print(f"semilla = {SEMILLA}")
