@@ -1,7 +1,7 @@
-# recall@10 de la consulta hibrida resuelta integrada (prefiltrado) vs separada (postfiltrado) segun la selectividad del filtro (n=20000)
-selectividad  prefiltrado  postfiltrado
-0.5  1.0  0.5017
-0.2  1.0  0.195
-0.1  1.0  0.1017
-0.05  1.0  0.0483
-0.01  1.0  0.0077
+# recall del top-10 global filtrado despues respecto del top-10 filtrado exacto, con filtro independiente y correlacionado positiva y negativamente con la similitud (n=20000)
+selectividad  indep  pos  neg
+0.5  0.493  0.9603  0.045
+0.2  0.1987  0.797  0.0033
+0.1  0.104  0.613  0.0013
+0.05  0.0547  0.4623  0.0
+0.01  0.011  0.1827  0.0

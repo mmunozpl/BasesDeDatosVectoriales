@@ -1,7 +1,7 @@
-# factor de sobremuestreo (candidatos / k) que el postfiltrado necesita para entregar 10 resultados validos segun la selectividad del filtro (n=20000)
-selectividad  factor
-0.5  2.0
-0.2  4.82
-0.1  10.43
-0.05  21.09
-0.01  105.99
+# factor de sobremuestreo (candidatos recorridos / k) para reunir 10 validos: esperanza 1/s y cuantil 95 teoricos bajo independencia, media y percentil 95 medidos con filtro independiente, y medias con correlacion positiva y negativa (n=20000)
+selectividad  inversa  teo95  medio  p95  pos  neg
+0.5  2.0  2.8  2.0  2.8  1.1  14.7
+0.2  5.0  7.6  4.8  7.1  1.4  67.3
+0.1  10.0  15.4  10.4  16.3  1.8  162.5
+0.05  20.0  31.1  21.6  34.5  2.9  271.7
+0.01  100.0  156.8  109.9  171.2  11.1  831.9

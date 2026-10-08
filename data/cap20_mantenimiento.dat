@@ -1,7 +1,7 @@
-# recall@10 y numero de reentrenos del indice particionado segun la cadencia de reindexado, bajo 6000 altas que derivan a temas nuevos (cadencia 0 = nunca)
-cadencia  recall  reentrenos
-500  0.6745  12
-1000  0.6877  6
-2000  0.6652  3
-3000  0.6753  2
-0  0.63  0
+# recall@10 de un indice particionado (nlist 32, nprobe 8) bajo 6000 altas que derivan, segun la cadencia de reconstruccion (0 = nunca): final (media, minimo y maximo de 3 semillas), media y peor de los puntos de control, y vectores procesados por las reconstrucciones
+cadencia  final  final_min  final_max  media  peor  coste
+500  0.6768  0.675  0.6785  0.7054  0.676  87000
+1000  0.6837  0.6465  0.709  0.7012  0.6685  45000
+2000  0.6847  0.6825  0.687  0.6828  0.6065  24000
+3000  0.6753  0.6645  0.683  0.6655  0.5987  17000
+0  0.6068  0.6  0.6175  0.6058  0.5937  0
