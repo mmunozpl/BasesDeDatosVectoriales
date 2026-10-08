@@ -1,4 +1,4 @@
-# dimension intrinseca: componentes PCA para el 90 por ciento de la varianza en datos uniformes vs estructurados, segun la dimension
+# dimension lineal efectiva: componentes PCA para el 90 por ciento de la varianza en datos isotropicos vs en un subespacio
 dim  uniforme  estructurado
 16  15  7
 32  29  8

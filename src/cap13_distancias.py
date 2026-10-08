@@ -2,36 +2,36 @@
 
 estudia, en numpy, como se mide el parecido entre vectores y como se comporta el
 espacio donde viven los embeddings. mide doce cosas que fijan el criterio para
-elegir metrica y entender la alta dimension:
+elegir medida de parecido y entender la alta dimension:
 
-  1. metricas y la norma: coseno, euclidea y producto interno ordenan distinto
-     cuando los vectores tienen normas distintas; el coseno ignora la norma, la
-     euclidea y el producto interno no.
-  2. normalizacion: al normalizar a la esfera unidad, la euclidea y el coseno
-     ordenan IGUAL; la normalizacion reconcilia las dos metricas.
-  3. concentracion de distancias: en alta dimension, la distancia maxima y la
-     minima se igualan; el contraste cae hacia cero.
-  4. cosenos aleatorios: la distribucion del coseno entre vectores aleatorios se
+  1. medidas y la norma: coseno, euclidea y producto interno pueden ordenar
+     distinto cuando los vectores tienen normas distintas; el coseno no depende
+     de la norma (vectores no nulos), la euclidea y el producto interno si.
+  2. normalizacion: con base y consulta en la esfera unidad, la euclidea y el
+     coseno ordenan igual.
+  3. concentracion de distancias: para puntos gaussianos isotropicos, el
+     contraste entre la distancia maxima y la minima cae al crecer la dimension.
+  4. cosenos aleatorios: el coseno entre vectores aleatorios independientes se
      concentra en cero al crecer la dimension (casi-ortogonalidad).
   5. la cascara: casi todo el volumen de una bola de alta dimension esta pegado
-     a su superficie; el interior esta vacio.
+     a su superficie.
   6. el volumen de la bola unidad: crece, alcanza un maximo hacia la dimension 5
      y luego se desploma hacia cero.
-  7. hubness: en alta dimension surgen 'hubs', puntos que son el vecino mas
-     proximo de muchisimos otros; la distribucion se vuelve asimetrica.
+  7. hubness: en puntos gaussianos de alta dimension, la k-ocurrencia se vuelve
+     muy asimetrica; algunos puntos son vecinos de muchisimos otros.
   8. el triangulo: la 'distancia' coseno (1 - coseno) no cumple la desigualdad
-     triangular; no es una metrica verdadera.
+     triangular; la angular sobre la esfera si.
   9. dispersion: la dispersion relativa de las distancias (std/media) cae como
-     1/raiz(d); es la aritmetica de la concentracion.
- 10. estructura: en datos agrupados en cumulos el contraste se mantiene alto
-     aunque la dimension crezca; la estructura salva la busqueda.
- 11. Johnson-Lindenstrauss: una proyeccion aleatoria a pocas dimensiones
-     conserva las distancias por pares con poco error.
- 12. dimension intrinseca: los datos estructurados se describen con pocas
-     componentes (PCA) por alta que sea la dimension aparente.
+     1/raiz(d) bajo coordenadas independientes.
+ 10. estructura: en cumulos sinteticos bien separados el contraste se mantiene
+     aunque la dimension crezca.
+ 11. Johnson-Lindenstrauss: distorsion media de las distancias al proyectar al
+     azar a pocas dimensiones, sobre una muestra de pares.
+ 12. dimension lineal efectiva: componentes PCA para el 90 por ciento de la
+     varianza, en datos isotropicos y en datos generados en un subespacio.
 
-es Python puro con numpy (sin servicio ni GPU, segun la tabla de recursos), con
-semilla fija. ver IMPLEMENTACION.md.
+es Python puro con numpy (sin servicio ni GPU), con semilla fija; cada medida
+crea su propio generador, de modo que el orden de ejecucion no cambia nada.
 """
 
 from __future__ import annotations
@@ -136,7 +136,8 @@ def simular_normalizacion(n: int = 500, d: int = 64, k: int = 10,
 
 
 def simular_concentracion(n: int = 1000, trials: int = 50) -> None:
-    """contraste (dmax-dmin)/dmin de las distancias segun la dimension."""
+    """contraste (dmax-dmin)/dmin de las distancias de una consulta a puntos
+    gaussianos isotropicos, segun la dimension."""
     rng = np.random.default_rng(SEMILLA)
     filas = []
     print("\nconcentracion de distancias: (dmax-dmin)/dmin segun dimension")
@@ -208,7 +209,8 @@ def simular_volumen() -> None:
 
 def simular_hubness(n: int = 800, k: int = 10, trials: int = 20) -> None:
     """hubness: asimetria de la distribucion de cuantas veces cada punto es
-    vecino de otros (k-ocurrencia). crece con la dimension."""
+    vecino de otros (k-ocurrencia), en puntos gaussianos. crece con la
+    dimension en este modelo."""
     rng = np.random.default_rng(SEMILLA)
     filas = []
     print("\nhubness: asimetria de la k-ocurrencia segun la dimension")
@@ -266,14 +268,14 @@ def simular_triangulo(d: int = 32, trials: int = 100000) -> None:
 
 
 def simular_intrinseca(n: int = 2000, k: int = 10) -> None:
-    """dimension INTRINSECA por PCA: cuantas componentes hacen falta para explicar
-    el 90 por ciento de la varianza. los datos estructurados ---que viven en un
-    subespacio de dimension k--- necesitan ~k componentes por alta que sea la
-    dimension aparente; los uniformes, casi todas. la estructura es de baja
-    dimension aunque el espacio sea enorme (la variedad del capitulo 11)."""
+    """dimension lineal efectiva por PCA: cuantas componentes hacen falta para
+    explicar el 90 por ciento de la varianza. los datos generados en un
+    subespacio de dimension k (mas algo de ruido) necesitan unas k componentes
+    por alta que sea la dimension ambiente; los isotropicos, casi todas. no es
+    la dimension intrinseca de una variedad no lineal."""
     rng = np.random.default_rng(SEMILLA)
     filas = []
-    print("\ndimension intrinseca (componentes PCA para el 90% de varianza)")
+    print("\ndimension lineal efectiva (componentes PCA para el 90% de varianza)")
     print("  dim     uniforme  estructurado")
     for d in (16, 32, 64, 128, 256, 512):
         uni = rng.standard_normal((n, d))
@@ -286,8 +288,8 @@ def simular_intrinseca(n: int = 2000, k: int = 10) -> None:
         filas.append((d, iu, ie))
         print(f"  {d:<6}  {iu:<8}  {ie}")
     _escribir(os.path.join("data", "cap13_intrinseca.dat"),
-              "dimension intrinseca: componentes PCA para el 90 por ciento de la "
-              "varianza en datos uniformes vs estructurados, segun la dimension",
+              "dimension lineal efectiva: componentes PCA para el 90 por ciento "
+              "de la varianza en datos isotropicos vs en un subespacio",
               "dim  uniforme  estructurado", filas)
 
 
@@ -301,19 +303,23 @@ def _componentes_90(x: np.ndarray) -> int:
 
 
 def simular_dispersion(n: int = 3000) -> None:
-    """dispersion RELATIVA de las distancias (std/media) segun la dimension. cae
-    como 1/raiz(d): es la aritmetica de la concentracion ---la ley de los grandes
-    numeros aplicada a la suma de diferencias coordenada a coordenada."""
+    """dispersion RELATIVA de las distancias (std/media) de un punto a los demas
+    segun la dimension. con coordenadas independientes cae como 1/raiz(d): la
+    distancia al cuadrado es una suma de d terminos. se excluye la distancia del
+    punto consigo mismo, que es cero y sesgaria la estimacion."""
     rng = np.random.default_rng(SEMILLA)
     filas = []
     print("\ndispersion relativa de las distancias (std/media) ~ 1/raiz(d)")
-    print("  dim     std/media   1/raiz(d)")
+    print("  dim     std/media   1/raiz(d)   media   raiz(2d)   std")
     for d in (2, 4, 8, 16, 32, 64, 128, 256, 512, 1024):
         pts = rng.standard_normal((n, d))
-        dist = np.linalg.norm(pts - pts[0], axis=1)
+        dist = np.linalg.norm(pts[1:] - pts[0], axis=1)    # sin el propio
         rel = float(dist.std() / dist.mean())
         filas.append((d, round(rel, 4), round(1.0 / math.sqrt(d), 4)))
-        print(f"  {d:<6}  {filas[-1][1]:.4f}      {filas[-1][2]:.4f}")
+        # la media crece como raiz(2d) y la desviacion absoluta se estabiliza
+        print(f"  {d:<6}  {filas[-1][1]:.4f}      {filas[-1][2]:.4f}"
+              f"      {dist.mean():6.2f}  {math.sqrt(2 * d):6.2f}"
+              f"     {dist.std():.3f}")
     _escribir(os.path.join("data", "cap13_dispersion.dat"),
               "dispersion relativa de las distancias (std/media) y la "
               "referencia 1/raiz(d), segun la dimension",
@@ -321,10 +327,9 @@ def simular_dispersion(n: int = 3000) -> None:
 
 
 def simular_estructura(n: int = 1000, trials: int = 40) -> None:
-    """contraste de distancias en datos UNIFORMES frente a ESTRUCTURADOS (en
-    cumulos), segun la dimension. la estructura mantiene el contraste alto
-    aunque la dimension crezca: por eso la busqueda funciona en datos reales.
-    """
+    """contraste de distancias en datos isotropicos frente a diez cumulos
+    sinteticos bien separados, segun la dimension. en este modelo el contraste
+    entre el cumulo propio y los demas sobrevive al crecer la dimension."""
     rng = np.random.default_rng(SEMILLA)
     filas = []
     print("\nestructura: contraste uniforme vs estructurado (cumulos)")
@@ -355,8 +360,8 @@ def simular_estructura(n: int = 1000, trials: int = 40) -> None:
 
 def simular_jl(n: int = 300, d: int = 512, trials: int = 20) -> None:
     """reduccion de dimension por proyeccion aleatoria (Johnson-Lindenstrauss):
-    distorsion media de las distancias al proyectar de d a k dimensiones. con
-    pocas dimensiones destino, las distancias se conservan casi intactas."""
+    distorsion relativa media de las distancias de una muestra de pares al
+    proyectar de d a k dimensiones. no verifica la garantia uniforme del lema."""
     rng = np.random.default_rng(SEMILLA)
     filas = []
     base = rng.standard_normal((n, d))
