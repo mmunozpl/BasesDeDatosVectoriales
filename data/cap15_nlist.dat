@@ -1,7 +1,11 @@
-# IVF: recall@10 y % de la coleccion comparada segun nlist, a nprobe=8 fijo (n=20000)
-nlist  recall  pct
-16  0.9655  61.5
-64  0.9835  12.82
-256  0.945  3.92
-1024  0.7305  6.21
-4096  0.5295  20.81
+# IVF: recall@10 y % de la coleccion evaluado (total, centroides y listas) segun nlist, a nprobe=8 fijo (n=20000)
+nlist  recall  pct  pct_centroides  pct_listas
+16  1.0  55.92  0.08  55.84
+32  1.0  36.75  0.16  36.59
+64  1.0  14.05  0.32  13.73
+128  1.0  7.37  0.64  6.73
+256  1.0  4.69  1.28  3.41
+512  0.9635  4.52  2.56  1.96
+1024  0.8295  6.46  5.12  1.34
+2048  0.68  11.14  10.24  0.9
+4096  0.583  21.08  20.48  0.6

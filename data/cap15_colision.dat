@@ -1,0 +1,15 @@
+# LSH por hiperplanos: fraccion de 20000 hiperplanos que no separan dos vectores a angulo theta (dim=128) frente a 1-theta/pi
+grados  medida  teorica
+0  1.0  1.0
+15  0.9165  0.9167
+30  0.8329  0.8333
+45  0.751  0.75
+60  0.6694  0.6667
+75  0.5873  0.5833
+90  0.5044  0.5
+105  0.4198  0.4167
+120  0.3297  0.3333
+135  0.2447  0.25
+150  0.1628  0.1667
+165  0.0795  0.0833
+180  0.0  0.0

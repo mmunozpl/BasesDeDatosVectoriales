@@ -1,8 +1,12 @@
-# HNSW: recall@10, comparaciones, % de la coleccion y latencia (ms) segun ef (n=20000, M=32)
-ef  recall  comparaciones  pct  latencia_ms
-8  0.4805  291  1.46  0.39
-16  0.581  357  1.78  0.507
-32  0.7235  492  2.46  0.789
-64  0.821  660  3.3  1.295
-128  0.9355  892  4.46  2.304
-256  0.9705  1169  5.84  4.381
+# HNSW (M=32, efc=200): recall@10, % de la coleccion evaluado y latencia (ms) segun ef, con la heuristica de diversidad y sin ella (n=20000); grado medio de la capa 0: 26.9 con, 49.1 sin
+ef  recall  pct  latencia_ms  recall_sin  pct_sin
+10  0.8585  1.82  0.77  0.8855  1.8
+16  0.931  2.24  0.613  0.904  2.02
+24  0.9705  2.7  0.751  0.916  2.2
+32  0.9865  3.09  1.24  0.927  2.32
+48  0.9975  3.72  1.231  0.9375  2.47
+64  0.999  4.25  1.636  0.9425  2.54
+96  0.9995  5.16  2.114  0.953  2.63
+128  1.0  5.97  3.873  0.963  2.7
+192  1.0  7.46  4.304  0.978  2.82
+256  1.0  8.79  5.542  0.988  2.97

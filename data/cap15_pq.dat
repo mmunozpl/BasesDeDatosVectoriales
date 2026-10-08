@@ -1,6 +1,6 @@
-# PQ: bytes por vector, factor de compresion frente a float32, recall@10 y latencia (ms) segun m (n=20000, dim=128)
+# PQ: bytes del codigo por vector, compresion frente a float32 (solo codigos), recall@10 sin reordenar y latencia (ms) segun m (n=20000, dim=128)
 m  bytes  compresion  recall  latencia_ms
-4  4  128.0  0.073  1.116
-8  8  64.0  0.103  1.449
-16  16  32.0  0.147  2.059
-32  32  16.0  0.3285  3.187
+4  4  128.0  0.0715  0.839
+8  8  64.0  0.1575  1.151
+16  16  32.0  0.321  2.2
+32  32  16.0  0.5605  3.139

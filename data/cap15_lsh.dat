@@ -1,8 +1,11 @@
-# LSH: recall@10, candidatos, % de la coleccion y latencia (ms) segun los bits de la firma (n=20000, 16 tablas)
-bits  recall  candidatos  pct  latencia_ms
-4  0.929  12664  63.32  3.903
-6  0.5795  4652  23.26  1.291
-8  0.2615  1363  6.82  0.372
-10  0.091  371  1.85  0.235
-12  0.0365  104  0.52  0.173
-14  0.0125  25  0.12  0.153
+# LSH: recall@10, % de la coleccion evaluado (candidatos y productos de la firma) y latencia (ms) segun los bits (n=20000, 16 tablas, consultas reservadas)
+bits  recall  pct  latencia_ms
+2  1.0  98.79  10.12
+3  0.998  87.5  13.721
+4  0.991  64.76  8.965
+5  0.963  41.62  6.259
+6  0.8905  24.43  4.07
+8  0.6625  8.2  0.651
+10  0.4345  3.12  0.289
+12  0.243  1.7  0.214
+14  0.14  1.39  0.153

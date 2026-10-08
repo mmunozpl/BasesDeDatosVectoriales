@@ -1,0 +1,6 @@
+# HNSW (M=32, efc=200, ef=64): evaluaciones medias por consulta, % de la coleccion y recall@10 segun n
+n  evaluaciones  pct  recall
+2500  1057.2  42.29  1.0
+5000  1128.6  22.57  1.0
+10000  1060.5  10.61  1.0
+20000  850.8  4.25  0.999

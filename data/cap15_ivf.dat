@@ -1,9 +1,12 @@
-# IVF: recall@10, comparaciones, % de la coleccion y latencia (ms) segun nprobe (n=20000, nlist=256)
-nprobe  recall  comparaciones  pct  latencia_ms
-1  0.222  314  1.57  0.043
-2  0.4495  392  1.96  0.046
-4  0.7555  545  2.73  0.056
-8  0.945  784  3.92  0.069
-16  0.9935  1333  6.67  0.1
-32  1.0  2538  12.69  0.166
-64  1.0  5073  25.36  1.074
+# IVF: recall@10, % de la coleccion evaluado (centroides y listas) y latencia (ms) segun nprobe (n=20000, nlist=256)
+nprobe  recall  pct  latencia_ms
+1  0.4085  1.86  0.119
+2  0.69  2.41  0.114
+3  0.8535  2.85  0.246
+4  0.9295  3.2  0.102
+6  0.99  3.92  0.073
+8  1.0  4.69  0.332
+12  1.0  6.45  0.1
+16  1.0  8.24  0.11
+24  1.0  11.73  0.146
+32  1.0  15.24  0.217

@@ -1,8 +1,9 @@
 # recall@10 de PQ (m=16) tras reordenar los R primeros candidatos con la distancia exacta (n=20000)
 R  recall
-10  0.147
-20  0.251
-50  0.446
-100  0.647
-200  0.851
-500  0.982
+10  0.321
+20  0.484
+50  0.742
+100  0.898
+200  0.984
+500  1.0
+1000  1.0

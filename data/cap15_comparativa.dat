@@ -1,6 +1,9 @@
-# comparativa: recall@10 y % de la coleccion comparada por familia (n=20000, mejor punto operativo)
-metodo  recall  pct_comparado
-Flat  1.0  100.0
-IVF  0.994  6.7
-LSH  0.58  23.3
-HNSW  0.936  4.5
+# comparativa: configuracion mas barata de cada familia que alcanza el objetivo de recall@10 en su barrido; % evaluado y latencia mediana de 5 pasadas (ms) de esta maqueta (n=20000)
+metodo  objetivo  parametro  recall  pct  latencia_ms
+Flat  -  -  1.0  100.0  0.229
+LSH  0.9  bits=5  0.963  41.62  4.59
+IVF  0.9  nprobe=4  0.9295  3.2  0.094
+HNSW  0.9  ef=16  0.931  2.24  0.623
+LSH  0.95  bits=5  0.963  41.62  4.59
+IVF  0.95  nprobe=6  0.99  3.92  0.066
+HNSW  0.95  ef=24  0.9705  2.7  1.031
