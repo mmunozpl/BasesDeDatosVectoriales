@@ -1,7 +1,8 @@
-# recall@10 de la consulta (mismo habitat, por parecido) con prefiltrado vs postfiltrado segun la prevalencia del habitat (n=20000)
-prevalencia_habitat  prefiltrado  postfiltrado
-0.3  1.0  0.2863
-0.15  1.0  0.149
-0.07  1.0  0.063
-0.03  1.0  0.0313
-0.01  1.0  0.0097
+# recall del top-10 global filtrado despues frente al top-10 filtrado exacto, por habitat del corpus, con consultas que son observaciones del habitat y con consultas aleatorias
+habitat  prevalencia  observacion  aleatoria
+costa  0.026  0.0315  0.027
+humedal  0.028  0.02  0.029
+montana  0.061  0.095  0.0705
+matorral  0.227  0.2155  0.2315
+bosque  0.25  0.282  0.2505
+urbano  0.407  0.447  0.3955

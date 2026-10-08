@@ -1,7 +1,7 @@
-# precision@10 por especie segun su frecuencia en el corpus: las especies raras se recuperan peor (n=20000)
-especie  frecuencia  precision
-gorrion_comun  0.55  0.7018
-mirlo_comun  0.12  0.2795
-petirrojo  0.2  0.3758
-abubilla  0.08  0.2193
-alimoche  0.05  0.172
+# precision@10 de la misma especie por especie (sin la consulta), con su soporte en el corpus, intervalo al 95 %, hit@10 y la precision que daria la autocoincidencia
+especie  soporte  precision  ic_bajo  ic_alto  hit  con_auto
+gorrion_comun  11014  0.6457  0.6241  0.6672  1.0  0.682
+mirlo_comun  2362  0.1917  0.175  0.2083  0.83  0.2743
+petirrojo  4073  0.308  0.2891  0.3269  0.9567  0.3793
+abubilla  1544  0.112  0.0993  0.1247  0.6333  0.2013
+alimoche  1007  0.0823  0.0722  0.0924  0.5667  0.177
