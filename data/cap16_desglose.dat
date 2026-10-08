@@ -1,5 +1,5 @@
-# reparto del coste de una consulta del motor entre filtrado, busqueda y materializacion (porcentaje, n=200000)
+# reparto del tiempo de una consulta de la maqueta entre filtrado, busqueda y materializacion (porcentaje, n=200000)
 etapa  porcentaje
-filtrado  10.9
-busqueda  89.0
-materializacion  0.0
+filtrado  5.7
+busqueda  94.0
+materializacion  0.3

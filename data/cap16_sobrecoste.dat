@@ -1,4 +1,4 @@
-# latencia (ms) de la busqueda cruda en el indice vs la consulta completa por la API del motor (n=100000, dim=256)
+# latencia minima de 50 consultas (ms) de la busqueda cruda frente a la API de la maqueta (n=100000, dim=256, un hilo)
 capa  latencia_ms
-indice_crudo  18.479
-motor_completo  18.621
+indice_crudo  5.665
+motor_completo  5.72

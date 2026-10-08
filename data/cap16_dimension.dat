@@ -1,4 +1,4 @@
-# memoria (GB) de 1000000 vectores segun la dimension, en float32 y int8
+# payload vectorial bruto (GB decimales) de 1000000 vectores segun la dimension, en float32 e int8
 dim  float32_gb  int8_gb
 128  0.51  0.13
 256  1.02  0.26

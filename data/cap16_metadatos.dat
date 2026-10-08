@@ -1,6 +1,6 @@
-# coste (ms) de filtrar metadatos por filas (dicts) vs columnas (numpy) y aceleracion, segun selectividad (n=200000)
+# coste minimo de 30 repeticiones (ms) de filtrar una lista de dicts de Python frente a un array de numpy por campo, y aceleracion, segun selectividad (n=200000)
 selectividad  filas_ms  columnas_ms  aceleracion
-5.0  12.826  0.703  18.2
-25.0  12.688  2.924  4.3
-50.0  14.552  2.737  5.3
-100.0  19.336  0.7  27.6
+5.0  6.636  0.596  11.1
+25.0  7.199  1.51  4.8
+50.0  8.37  2.536  3.3
+100.0  9.13  1.656  5.5

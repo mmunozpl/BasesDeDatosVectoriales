@@ -1,7 +1,7 @@
-# latencia (ms) de una consulta por la API del motor (indice flat) segun el tamano de la coleccion (dim 256)
+# latencia minima de 30 consultas (ms) por la API de la maqueta (busqueda flat, un hilo) segun el tamano de la coleccion (dim 256)
 n  latencia_ms
-10000  1.238
-50000  1.999
-100000  5.284
-200000  13.857
-500000  35.794
+10000  0.196
+50000  2.598
+100000  5.85
+200000  12.096
+500000  32.067

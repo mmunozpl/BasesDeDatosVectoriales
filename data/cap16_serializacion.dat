@@ -1,6 +1,6 @@
-# tamano (KB) de un lote de N vectores dim 768 como JSON vs binario float32, y su ratio
-n  json_kb  binario_kb  ratio
-1  15.5  3.0  5.17
-10  154.8  30.0  5.16
-100  1547.4  300.0  5.16
-1000  15473.2  3000.0  5.16
+# tamano (KB) y tiempo mediano de ida y vuelta (ms) de un lote de N vectores dim 768 como JSON frente a bytes float32
+n  json_kb  binario_kb  ratio  json_ms  binario_ms
+1  15.5  3.0  5.17  0.4663  0.0022
+10  154.8  30.0  5.16  4.5772  0.005
+100  1547.4  300.0  5.16  47.9877  0.0212
+1000  15473.2  3000.0  5.16  508.8071  0.2803
