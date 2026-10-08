@@ -1,4 +1,4 @@
 # cuantizacion: bits, memoria relativa y recall@10 de int8 frente a float32 (error rel. medio int8 = 0.0069)
 tipo  bits  memoria_rel  recall10
 float32  32  1.0  1.0
-int8  8  0.25  0.9515
+int8  8  0.2539  0.9515

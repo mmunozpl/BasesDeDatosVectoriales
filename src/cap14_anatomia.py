@@ -1,33 +1,35 @@
 """capitulo 14 — anatomia de una base de datos vectorial.
 
-construye, en numpy, un mini almacen vectorial desde cero para diseccionar las
-partes de las que esta hecha una base de datos vectorial real: el
-almacenamiento del vector y sus metadatos, la ingesta por lotes, el indice como
-estructura central (aqui, busqueda exacta por fuerza bruta) y el caso
-multivector. luego mide seis cosas que fijan el criterio de diseno:
+construye, en numpy, una maqueta funcional del nucleo de un almacen vectorial
+para diseccionar sus partes: el almacenamiento del vector y sus metadatos, la
+ingesta por lotes, la busqueda exacta por barrido (sin indice de poda, la
+referencia contra la que se miden los indices) y el caso multivector. luego
+mide cinco cosas y muestra una demostracion:
 
   1. almacenamiento: el coste en memoria de N vectores segun el tipo numerico
      (float32, float16, int8); la cuantizacion divide la huella.
-  2. busqueda exacta: la latencia y el numero de operaciones de la busqueda por
-     fuerza bruta crecen linealmente con N (O(n*d)); de ahi nace el cap. 15.
-  3. filtrado por metadatos: el coste de filtrar antes (prefiltrado) o despues
-     (posfiltrado) de buscar, segun la selectividad del filtro.
-  4. cuantizacion: el error y el recall@10 de cuantizar a int8 frente a
-     float32; mucha menos memoria, casi el mismo resultado.
-  5. multivector: el coste en almacenamiento y comparaciones de representar cada
-     documento por varios vectores (un vector por token, estilo MaxSim).
-  6. normalizacion en ingesta: precomputar la norma al ingestar abarata cada
-     consulta posterior (coseno = producto escalar sobre vectores normalizados).
+  2. busqueda exacta: el calculo de las similitudes cuesta O(n*d) y la
+     seleccion de los k mejores, O(n) con argpartition; se mide la latencia.
+  3. filtrado por metadatos: prefiltrar (mascara O(n) y busqueda en el
+     subconjunto) frente a posfiltrar (buscar 10*k candidatos y filtrar).
+  4. cuantizacion escalar simetrica a int8 (255 niveles, una escala por
+     vector): error de reconstruccion y recall@10 frente a float32.
+  5. multivector: memoria y parejas relativas de un vector por token, bajo el
+     modelo simplificado T_q = T_d = T y la misma dimension por token.
 
-es Python puro con numpy (sin servicio, sin GPU): un motor real como pgvector,
-Qdrant o Milvus implementa estas mismas partes con mucha mas ingenieria, pero la
-anatomia es la que este modulo deja a la vista. ver IMPLEMENTACION.md.
+es Python puro con numpy (sin servicio, sin GPU). un motor real comparte este
+nucleo conceptual, pero anade estructuras de almacenamiento e indice,
+recuperacion ante fallos, concurrencia, durabilidad, filtrado indexado y
+distribucion que pueden cambiar mucho la implementacion.
 """
 
 from __future__ import annotations
 
+import json
+import math
 import os
 import time
+from collections import Counter
 from typing import Callable, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -58,82 +60,119 @@ def _escribir(ruta: str, nota: str, cols: str,
 # el mini almacen: las cuatro partes de una base vectorial
 # ---------------------------------------------------------------------------
 
-class AlmacenVectorial:
-    """Un almacen vectorial minimo pero completo.
+def _topk(puntuaciones: np.ndarray, k: int) -> np.ndarray:
+    """indices de los k mayores, ordenados: seleccion parcial O(n) con
+    argpartition y orden solo de esos k (O(k log k))."""
+    k = min(k, len(puntuaciones))
+    if k == 0:
+        return np.empty(0, dtype=int)
+    idx = np.argpartition(-puntuaciones, k - 1)[:k]
+    return idx[np.argsort(-puntuaciones[idx])]
 
-    Reune las cuatro partes anatomicas de una base de datos vectorial: una
-    matriz de vectores (el dato), una lista de metadatos paralela (el
+
+class AlmacenVectorial:
+    """Maqueta funcional del nucleo de un almacen vectorial.
+
+    Reune la matriz de vectores (el dato), los metadatos paralelos (el
     contexto), las normas precomputadas (la optimizacion de ingesta) y la
-    busqueda exacta por fuerza bruta (el indice mas simple posible).
+    busqueda exacta por barrido. No tiene indice de poda, ni recuperacion
+    ante fallos, ni concurrencia, ni borrado: es el nucleo, no un motor.
     """
 
     def __init__(self, dim: int, metrica: str = "coseno") -> None:
         self.dim = dim
         self.metrica = metrica
-        self.vectores = np.empty((0, dim), dtype=np.float32)
+        self._buf = np.empty((1024, dim), dtype=np.float32)   # capacidad
+        self._normas = np.empty(1024, dtype=np.float32)
+        self.n = 0
         self.metadatos: List[Dict] = []
-        self.normas = np.empty((0,), dtype=np.float32)
+
+    @property
+    def vectores(self) -> np.ndarray:
+        return self._buf[:self.n]
+
+    @property
+    def normas(self) -> np.ndarray:
+        return self._normas[:self.n]
 
     def agregar(self, vecs: np.ndarray, metas: List[Dict]) -> None:
-        """Ingesta por lotes: apila los vectores y guarda sus metadatos.
+        """Ingesta por lotes con crecimiento amortizado.
 
-        Precomputa la norma de cada vector en la ingesta para que cada
-        consulta posterior no tenga que recalcularla (coseno barato).
+        Valida dimension y metadatos, rechaza vectores nulos con el coseno y
+        precomputa la norma. La capacidad se dobla cuando hace falta, de modo
+        que cada vector se copia un numero acotado de veces (un vstack por
+        lote recopiaria toda la matriz en cada insercion).
         """
-        vecs = vecs.astype(np.float32)
-        self.vectores = np.vstack([self.vectores, vecs])
-        self.metadatos.extend(metas)
+        vecs = np.asarray(vecs, dtype=np.float32)
+        if vecs.ndim != 2 or vecs.shape[1] != self.dim:
+            raise ValueError("dimension incompatible")
+        if len(metas) != len(vecs):
+            raise ValueError("un registro de metadatos por vector")
         normas = np.linalg.norm(vecs, axis=1)
-        self.normas = np.concatenate([self.normas, normas])
+        if self.metrica == "coseno" and np.any(normas == 0):
+            raise ValueError("el coseno no admite vectores nulos")
+        m = len(vecs)
+        if self.n + m > len(self._buf):
+            self._crecer(self.n + m)                 # dobla la capacidad
+        self._buf[self.n:self.n + m] = vecs
+        self._normas[self.n:self.n + m] = normas
+        self.n += m
+        self.metadatos.extend(metas)
+
+    def _crecer(self, minimo: int) -> None:
+        """Dobla la capacidad del bufer (o la lleva a minimo si no basta)."""
+        cap = max(2 * len(self._buf), minimo)
+        buf = np.empty((cap, self.dim), dtype=np.float32)
+        buf[:self.n] = self._buf[:self.n]
+        nor = np.empty(cap, dtype=np.float32)
+        nor[:self.n] = self._normas[:self.n]
+        self._buf, self._normas = buf, nor
 
     def __len__(self) -> int:
-        return len(self.metadatos)
+        return self.n
 
-    def _similitud(self, consulta: np.ndarray) -> np.ndarray:
-        """Vector de similitudes de la consulta con toda la coleccion."""
+    def _sim_sobre(self, consulta: np.ndarray, sub: np.ndarray,
+                   normas: np.ndarray) -> np.ndarray:
+        """Similitudes de la consulta con las filas de sub."""
         if self.metrica == "coseno":
-            sim = self.vectores @ consulta
-            sim = sim / (self.normas * np.linalg.norm(consulta) + 1e-12)
-            return sim
+            nq = np.linalg.norm(consulta)
+            if nq == 0:
+                raise ValueError("el coseno no admite una consulta nula")
+            return (sub @ consulta) / (normas * nq)
         if self.metrica == "producto":
-            return self.vectores @ consulta
-        # euclidea: se devuelve la negativa de la distancia (mayor = mas cerca)
-        return -np.linalg.norm(self.vectores - consulta, axis=1)
+            return sub @ consulta
+        # euclidea: la negativa de la distancia (mayor = mas cerca)
+        return -np.linalg.norm(sub - consulta, axis=1)
 
     def buscar(self, consulta: np.ndarray, k: int = 10,
                filtro: Optional[Callable[[Dict], bool]] = None
                ) -> List[Tuple[int, float]]:
         """Busqueda exacta de los k mas proximos, con filtro opcional.
 
-        Si hay filtro, se aplica como PREFILTRADO: primero se restringe la
-        coleccion a los que pasan el predicado y despues se busca en ese
-        subconjunto. Devuelve pares (indice, similitud).
+        Con filtro, se evalua el predicado sobre todos los metadatos (O(n), sin
+        indice de metadatos) y se busca en el subconjunto. Devuelve pares
+        (identificador original, similitud).
         """
         if filtro is not None:
-            idx = [i for i, m in enumerate(self.metadatos) if filtro(m)]
-            if not idx:
+            idx = np.array([i for i, m in enumerate(self.metadatos)
+                            if filtro(m)], dtype=int)
+            if len(idx) == 0:
                 return []
-            sub = self.vectores[idx]
-            normas = self.normas[idx]
-            sim = self._sim_sobre(consulta, sub, normas)
-            orden = np.argsort(-sim)[:k]
-            return [(idx[j], float(sim[j])) for j in orden]
-        sim = self._similitud(consulta)
-        orden = np.argsort(-sim)[:k]
-        return [(int(j), float(sim[j])) for j in orden]
-
-    def _sim_sobre(self, consulta: np.ndarray, sub: np.ndarray,
-                   normas: np.ndarray) -> np.ndarray:
-        if self.metrica == "coseno":
-            s = sub @ consulta
-            return s / (normas * np.linalg.norm(consulta) + 1e-12)
-        if self.metrica == "producto":
-            return sub @ consulta
-        return -np.linalg.norm(sub - consulta, axis=1)
+            sim = self._sim_sobre(consulta, self.vectores[idx],
+                                  self.normas[idx])
+            loc = _topk(sim, k)
+            return [(int(idx[j]), float(sim[j])) for j in loc]
+        sim = self._sim_sobre(consulta, self.vectores, self.normas)
+        return [(int(j), float(sim[j])) for j in _topk(sim, k)]
 
     def guardar(self, ruta: str) -> None:
-        """Persistencia: los vectores a disco como un unico array binario."""
-        np.save(ruta, self.vectores)
+        """Serializacion minima: vectores, normas, metadatos y configuracion
+        en un .npz. No es persistencia de base de datos: sin atomicidad, sin
+        registro de escritura anticipada ni recuperacion tras una escritura
+        parcial."""
+        np.savez(ruta, vectores=self.vectores, normas=self.normas,
+                 metadatos=np.array(json.dumps(self.metadatos)),
+                 dim=self.dim, metrica=self.metrica)
 
     def memoria_bytes(self) -> int:
         """Huella en memoria de los vectores mas las normas."""
@@ -201,6 +240,7 @@ def simular_busqueda(dim: int = 256, repeticiones: int = 20) -> None:
         alm = AlmacenVectorial(dim, metrica="coseno")
         alm.agregar(vecs, metas)
         consultas = rng.standard_normal((repeticiones, dim)).astype(np.float32)
+        alm.buscar(consultas[0], k=10)               # calentamiento
         t0 = time.perf_counter()
         for q in consultas:
             alm.buscar(q, k=10)
@@ -221,37 +261,40 @@ def simular_filtrado(n: int = 200_000, dim: int = 256,
                      repeticiones: int = 30) -> None:
     """Coste y correccion de prefiltrar frente a posfiltrar.
 
-    Prefiltrar (con un indice de metadatos: aqui, una mascara vectorizada)
-    busca solo en el subconjunto que pasa el filtro: barato cuando el filtro es
-    selectivo. Posfiltrar busca en toda la coleccion y descarta despues: coste
-    casi fijo, pero se queda corto de resultados cuando el filtro es selectivo
-    (inanicion), porque entre los k primeros por similitud pasan muy pocos.
+    Prefiltrar (aqui, una mascara vectorizada O(n) sobre los metadatos, sin
+    indice) busca solo en el subconjunto que pasa el filtro. Posfiltrar busca
+    los 10*k mejores en toda la coleccion y descarta despues: coste casi fijo,
+    pero se queda corto de resultados cuando el filtro es selectivo y, como en
+    estos datos, el filtro esta correlacionado con la similitud (los temas
+    son cumulos: los mejores candidatos caen casi todos en un mismo tema).
     """
     rng = np.random.default_rng(SEMILLA)
     vecs, metas = _coleccion(n, dim, n_temas=20)
-    temas = np.array([m["tema"] for m in metas])     # el indice de metadatos
+    temas = np.array([m["tema"] for m in metas])     # columna de metadatos
     normas = np.linalg.norm(vecs, axis=1)
     consultas = rng.standard_normal((repeticiones, dim)).astype(np.float32)
     filas = []
-    print("\nfiltrado: prefiltrado (indice) vs posfiltrado segun selectividad")
+    _ = (vecs @ consultas[0]) / normas               # calentamiento
+    print("\nfiltrado: prefiltrado vs posfiltrado (10*k) segun selectividad")
     print("  sel(%)   prefiltro_ms  posfiltro_ms  result_posfiltro")
     for temas_ok in (1, 2, 5, 10, 20):
         permitidos = np.arange(temas_ok)
         sel = 100.0 * temas_ok / 20
-        # prefiltrado con indice: mascara vectorizada + busqueda en el subconj.
+        # prefiltrado: mascara O(n) sobre los metadatos y busqueda en el
+        # subconjunto; los indices locales se traducen a los originales
         t0 = time.perf_counter()
         for q in consultas:
-            mask = np.isin(temas, permitidos)        # el indice filtra
-            sub, subn = vecs[mask], normas[mask]
-            sim = (sub @ q) / (subn * np.linalg.norm(q) + 1e-12)
-            np.argsort(-sim)[:10]
+            mask = np.isin(temas, permitidos)        # barrido de metadatos
+            originales = np.flatnonzero(mask)
+            sim = (vecs[mask] @ q) / (normas[mask] * np.linalg.norm(q))
+            originales[_topk(sim, 10)]
         pre = (time.perf_counter() - t0) / repeticiones
-        # posfiltrado: buscar en todo (top 100) y filtrar despues
+        # posfiltrado: buscar en todo los 10*k = 100 mejores y filtrar despues
         survivientes = 0
         t0 = time.perf_counter()
         for q in consultas:
-            sim = (vecs @ q) / (normas * np.linalg.norm(q) + 1e-12)
-            cand = np.argsort(-sim)[:100]
+            sim = (vecs @ q) / (normas * np.linalg.norm(q))
+            cand = _topk(sim, 100)
             paso = [c for c in cand if temas[c] in permitidos][:10]
             survivientes += len(paso)
         pos = (time.perf_counter() - t0) / repeticiones
@@ -261,9 +304,9 @@ def simular_filtrado(n: int = 200_000, dim: int = 256,
         print(f"  {sel:<7.1f}  {pre * 1e3:>10.3f}  {pos * 1e3:>10.3f}"
               f"  {res:>14.1f}")
     _escribir(os.path.join("data", "cap14_filtrado.dat"),
-              "latencia (ms) de prefiltrado (con indice) vs posfiltrado y "
-              "resultados que devuelve el posfiltrado, segun selectividad "
-              "(n %d, dim %d, k=10)" % (n, dim),
+              "latencia (ms) de prefiltrado (mascara) vs posfiltrado (10*k "
+              "candidatos) y resultados que devuelve el posfiltrado, segun "
+              "selectividad (n %d, dim %d, k=10)" % (n, dim),
               "selectividad  prefiltro_ms  posfiltro_ms  result_posfiltro",
               filas)
 
@@ -273,9 +316,12 @@ def simular_filtrado(n: int = 200_000, dim: int = 256,
 # ---------------------------------------------------------------------------
 
 def _cuantizar_int8(vecs: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """Cuantiza cada vector a int8 con un factor de escala por vector."""
-    escala = np.abs(vecs).max(axis=1, keepdims=True) / 127.0
-    q = np.round(vecs / (escala + 1e-12)).astype(np.int8)
+    """Cuantizacion escalar simetrica a int8 con un factor por vector: los
+    codigos van de -127 a 127 (255 niveles; el -128 no se usa). Un vector
+    nulo recibe escala 1 y codigos cero, de forma explicita."""
+    maximo = np.abs(vecs).max(axis=1, keepdims=True)
+    escala = np.where(maximo > 0, maximo / 127.0, 1.0).astype(np.float32)
+    q = np.round(vecs / escala).astype(np.int8)
     return q, escala
 
 
@@ -283,29 +329,51 @@ def simular_cuantizacion(n: int = 50_000, dim: int = 256,
                          consultas: int = 200) -> None:
     """Error y recall@10 de cuantizar a int8 frente a float32.
 
-    Mide cuanto se degrada el resultado al guardar los vectores en un byte por
-    componente en vez de cuatro: el recall@10 sigue altisimo y la memoria cae
-    a la cuarta parte. Es el porque de la cuantizacion en produccion.
+    El error es el cociente entre la norma media del error de reconstruccion,
+    ||x - x_rec||, y la norma media de los vectores. La busqueda puntua con
+    los codigos y la escala, q8 @ x * escala, sin materializar la coleccion
+    reconstruida (numpy convierte el bloque de codigos al operar; un motor real
+    usa nucleos que operan sobre los enteros). El recall@10 compara con el
+    top-10 exacto por producto interno.
     """
     rng = np.random.default_rng(SEMILLA)
     vecs, _ = _coleccion(n, dim)
     q, escala = _cuantizar_int8(vecs)
-    recon = q.astype(np.float32) * escala         # vectores reconstruidos
+    recon = q.astype(np.float32) * escala         # solo para medir el error
     err = float(np.linalg.norm(vecs - recon, axis=1).mean()
                 / np.linalg.norm(vecs, axis=1).mean())
+    del recon
     qs = rng.standard_normal((consultas, dim)).astype(np.float32)
     aciertos = 0
+    margen, ruido, perdidos = [], [], []
     for x in qs:
-        exacto = np.argsort(-(vecs @ x))[:10]
-        aprox = np.argsort(-(recon @ x))[:10]
+        punt = vecs @ x
+        exacto = _topk(punt, 10)
+        aprox = _topk((q @ x) * escala[:, 0], 10)  # en el dominio cuantizado
         aciertos += len(set(exacto) & set(aprox))
+        # margen entre el decimo y el undecimo exactos frente al ruido de
+        # puntuacion que introduce la cuantizacion
+        orden = np.sort(punt)[::-1]
+        margen.append(orden[9] - orden[10])
+        ruido.append(float(np.std((q @ x) * escala[:, 0] - punt)))
+        perdidos += [r + 1 for r, i in enumerate(exacto) if i not in set(aprox)]
     recall = aciertos / (consultas * 10)
+    # modelo del ruido uniforme: error relativo ~ (max/rms) / (127 raiz(12))
+    rms = np.sqrt((vecs ** 2).mean(axis=1))
+    pico = float((np.abs(vecs).max(axis=1) / rms).mean())
+    mem_int8 = (q.nbytes + escala.nbytes) / vecs.nbytes   # con las escalas
     filas = [("float32", 32, 1.0, 1.0),
-             ("int8", 8, round(0.25, 3), round(recall, 4))]
+             ("int8", 8, round(mem_int8, 4), round(recall, 4))]
     print("\ncuantizacion int8 vs float32 (dim", dim, ")")
     print(f"  error relativo medio: {err:.4f}")
+    print(f"  max/rms medio:        {pico:.2f} -> modelo "
+          f"{pico / (127 * math.sqrt(12)):.4f}")
     print(f"  recall@10 de int8:    {recall:.4f}")
-    print("  memoria int8:         0.25x")
+    print(f"  ruido de puntuacion:  {np.mean(ruido):.2f}; margen 10-11 "
+          f"exacto: {np.mean(margen):.2f}")
+    print("  puesto exacto de los perdidos:",
+          dict(sorted(Counter(perdidos).items())))
+    print(f"  memoria int8:         {mem_int8:.4f}x (codigos + escalas)")
     _escribir(os.path.join("data", "cap14_cuantizacion.dat"),
               "cuantizacion: bits, memoria relativa y recall@10 de int8 "
               "frente a float32 (error rel. medio int8 = %.4f)" % err,
@@ -324,11 +392,12 @@ def _maxsim(consulta_tokens: np.ndarray, doc_tokens: np.ndarray) -> float:
 
 
 def simular_multivector(dim: int = 128, n_docs: int = 2000) -> None:
-    """Coste de almacenamiento y comparaciones del multivector vs single.
-
-    Representar cada documento por T vectores (uno por token) multiplica por T
-    la memoria y por T*T el coste de comparar; a cambio, captura el parecido a
-    nivel de token. Es el compromiso que la compresion tipo PLAID ataca.
+    """Coste relativo del multivector frente al vector unico, bajo un modelo
+    simplificado: T_q = T_d = T tokens y la misma dimension y precision por
+    token que el vector unico. Entonces la memoria crece como T y las parejas
+    que puntua MaxSim, como T_q*T_d = T^2 (cada pareja cuesta O(r) con r la
+    dimension). Con vectores por token mas cortos o comprimidos, como en
+    ColBERT, los factores reales son menores.
     """
     filas = []
     print("\nmultivector: memoria y comparaciones segun tokens por documento")
@@ -356,14 +425,28 @@ def simular_multivector(dim: int = 128, n_docs: int = 2000) -> None:
 # ---------------------------------------------------------------------------
 
 def demostracion(k: int = 15, n: int = 5000, dim: int = 256) -> None:
-    """Una consulta real al mini almacen: los 15 vecinos mas proximos."""
-    vecs, metas = _coleccion(n, dim)
+    """Una consulta al mini almacen con un vector de reserva: se genera con
+    la coleccion pero no se inserta, de modo que no puede encontrarse a si
+    mismo."""
+    vecs, metas = _coleccion(n + 1, dim)
     alm = AlmacenVectorial(dim, metrica="coseno")
-    alm.agregar(vecs, metas)
-    rng = np.random.default_rng(SEMILLA + 1)
-    consulta = vecs[0] + 0.5 * rng.standard_normal(dim).astype(np.float32)
+    alm.agregar(vecs[:n], metas[:n])
+    consulta, tema_q = vecs[n], metas[n]["tema"]
     res = alm.buscar(consulta, k=k)
-    print(f"\ndemostracion: {k} vecinos mas proximos de una consulta")
+    mismos = sum(alm.metadatos[i]["tema"] == tema_q for i, _ in res)
+    print(f"\ndemostracion: {k} vecinos de una consulta de reserva "
+          f"(tema {tema_q}); del mismo tema: {mismos} de {k}")
+    # el coseno lo fija el generador: |c|^2 / (|c|^2 + d) dentro de un tema
+    centros = np.random.default_rng(SEMILLA).standard_normal((8, dim)) * 4
+    centro = centros[tema_q]
+    c2 = float(centro @ centro) / dim
+    tema = np.array([m["tema"] for m in metas[:n]])
+    cos = (vecs[:n] @ consulta) / (np.linalg.norm(vecs[:n], axis=1)
+                                    * np.linalg.norm(consulta))
+    print(f"  |c|^2 = {c2:.1f} d; coseno esperado {c2 / (c2 + 1):.3f}; "
+          f"medio en el tema ({(tema == tema_q).sum()} vectores) "
+          f"{cos[tema == tema_q].mean():.3f}; maximo fuera del tema "
+          f"{cos[tema != tema_q].max():.3f}")
     print("  rank  id      tema  coseno")
     print("  ----  ------  ----  ------")
     for r, (i, sim) in enumerate(res):
