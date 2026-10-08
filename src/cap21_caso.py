@@ -350,7 +350,11 @@ def simular_desbalance(k: int = 10, por_especie: int = 300) -> None:
             auto.append((esp[_top(s_auto, k)] == d).mean())
         m, sd = float(np.mean(prec)), float(np.std(prec, ddof=1))
         ic = 1.96 * sd / np.sqrt(len(prec))
-        filas.append((ESPECIES[d], int((esp == d).sum()), round(m, 4),
+        soporte = int((esp == d).sum())             # observaciones de la clase
+        techo = min(1.0, (soporte - 1) / k)         # sin la propia consulta
+        if techo < 1.0:
+            print(f"  {ESPECIES[d]}: techo de precision@{k} {techo:.2f}")
+        filas.append((ESPECIES[d], soporte, round(m, 4),
                       round(m - ic, 4), round(m + ic, 4),
                       round(float(np.mean(hit)), 4),
                       round(float(np.mean(auto)), 4)))
