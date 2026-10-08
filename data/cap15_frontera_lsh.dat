@@ -1,8 +1,0 @@
-# frontera LSH: %% de la coleccion comparada vs recall@10
-pct  recall
-0.13  0.0125
-0.52  0.0365
-1.86  0.091
-6.82  0.2615
-23.26  0.5795
-63.32  0.929

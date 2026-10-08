@@ -1,8 +1,0 @@
-# frontera HNSW: %% de la coleccion comparada vs recall@10
-pct  recall
-1.46  0.4805
-1.79  0.581
-2.46  0.7235
-3.3  0.821
-4.46  0.9355
-5.85  0.9705
