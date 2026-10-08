@@ -1,7 +1,7 @@
-# recall@5 del recuerdo relevante en la memoria de un agente segun el numero de recuerdos almacenados
-memoria  recall
-100  0.5567
-500  0.2833
-2000  0.1767
-10000  0.0767
-50000  0.0133
+# hit@5 del recuerdo objetivo segun los recuerdos acumulados, por similitud pura y dentro de su sesion de 100, y distractores medios con mayor similitud que el objetivo (dim=64)
+memoria  recall  sesion  encima
+100  0.6567  0.6567  7.5
+500  0.34  0.62  34.2
+2000  0.2033  0.5967  162.2
+10000  0.0867  0.57  895.6
+50000  0.0167  0.5633  4292.3

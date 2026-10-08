@@ -1,7 +1,7 @@
-# recall del recuperador vs exito de la tarea (que exige las 3 piezas de la respuesta) segun k
+# fraccion media de las 3 piezas de evidencia en el top-k y cobertura completa (las 3), sobre la misma bateria de 300 consultas para todos los k
 k  recall  exito
-3  0.1989  0.0067
-5  0.2956  0.0267
-10  0.3844  0.0567
-20  0.4833  0.14
-50  0.6644  0.2967
+3  0.1978  0.0067
+5  0.2567  0.0167
+10  0.3511  0.06
+20  0.4622  0.1233
+50  0.6167  0.28

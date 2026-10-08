@@ -1,8 +1,8 @@
-# recall@5 segun el peso de recencia alpha, para consultas recientes vs atemporales (memoria de 5000)
+# hit@5 segun el peso de recencia alpha (recencia sintetica por posicion), para las mismas consultas recientes y atemporales (memoria de 5000)
 alpha  reciente  atemporal
-0.0  0.0533  0.0833
-0.2  0.1233  0.03
-0.4  0.27  0.0167
-0.6  0.3133  0.02
-0.8  0.2733  0.0133
-1.0  0.0333  0.0033
+0.0  0.08  0.07
+0.2  0.1733  0.04
+0.4  0.26  0.0233
+0.6  0.3267  0.01
+0.8  0.32  0.0033
+1.0  0.0233  0.0

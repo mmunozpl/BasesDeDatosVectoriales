@@ -1,0 +1,6 @@
+# fraccion de piezas y cobertura completa en el top-10 segun el numero de piezas de la evidencia
+piezas  recall  exito
+1  0.3933  0.3933
+2  0.4033  0.17
+3  0.3289  0.0467
+5  0.3673  0.02
