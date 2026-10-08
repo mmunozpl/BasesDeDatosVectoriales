@@ -123,12 +123,12 @@ interacción tardía, Matryoshka) · 13 Geometría métrica.
 
 ## Licencias
 
-Este repositorio combina dos regímenes; conviene no confundirlos:
+Este repositorio combina dos regímenes:
 
 | Directorio | Contenido | Licencia |
 |---|---|---|
 | `src/`, `data/`, `infra/` | Código reproducible, registro de datos e infraestructura | [MIT](src/LICENSE): uso libre |
-| — | Texto y figuras del libro (edición web) | [CC BY-NC-ND 4.0](LICENSE): leer y compartir con atribución; sin uso comercial ni obras derivadas |
+| — | Texto del libro (edición web en manpla.net) | [CC BY-NC-ND 4.0](LICENSE): leer y compartir con atribución; sin uso comercial ni obras derivadas |
 
 La **obra completa** (con los ejercicios de cada capítulo, sus soluciones y los
 apéndices) se publica en papel, PDF y EPUB con todos los derechos reservados.

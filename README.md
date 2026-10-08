@@ -123,12 +123,12 @@ float16/int8/binary quantisation).
 
 ## License
 
-This repository combines two regimes; best not to confuse them:
+This repository combines two regimes:
 
 | Directory | Content | License |
 |---|---|---|
 | `src/`, `data/`, `infra/` | Reproducible code, data registry and infrastructure | [MIT](src/LICENSE): free to use |
-| — | Book text and figures (web edition) | [CC BY-NC-ND 4.0](LICENSE): read and share with attribution; no commercial use or derivative works |
+| — | Book text (web edition on manpla.net) | [CC BY-NC-ND 4.0](LICENSE): read and share with attribution; no commercial use or derivative works |
 
 The **complete work** (with each chapter's exercises, their solutions, and the
 appendices) is published in print, PDF and EPUB, all rights reserved.
