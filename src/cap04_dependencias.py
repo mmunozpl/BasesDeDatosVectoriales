@@ -8,8 +8,7 @@ mismo hecho) en un esquema desnormalizado frente a su version
 normalizada, y muestra 15 tuplas del esquema desnormalizado.
 
 python puro, cpu: sin gpu, sin torch, sin servicio de base de datos (las
-dependencias y relaciones viven en memoria como conjuntos). ver la tabla
-de recursos de IMPLEMENTACION.md.
+dependencias y relaciones viven en memoria como conjuntos).
 """
 
 from __future__ import annotations

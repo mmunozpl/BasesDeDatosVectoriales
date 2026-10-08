@@ -10,7 +10,7 @@ latencia: con la tabla en memoria, ordenar es barato. imprime ademas 15
 filas como demostracion reproducible.
 
 recurso: el servicio postgres del docker-compose de infra/ (cap. 3 usa
-servicio + cpu; no usa gpu ni torch; ver IMPLEMENTACION.md). antes de
+servicio + cpu; no usa gpu ni torch). antes de
 poblar la tabla avisa y pide confirmacion (--si o CAP_CONFIRM=1).
 """
 

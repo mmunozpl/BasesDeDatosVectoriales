@@ -203,7 +203,7 @@ def simular_almacenamiento(dim: int = 768) -> None:
     """Memoria de N vectores de dimension dim segun float32/float16/int8.
 
     Es aritmetica exacta (N*dim*bytes), pero deja ver de un golpe que la
-    cuantizacion ---pasar de 4 bytes a 1--- divide por cuatro la huella, la
+    cuantizacion (pasar de 4 bytes a 1) divide por cuatro la huella, la
     palanca central de la operacion a gran escala.
     """
     filas = []

@@ -18,8 +18,8 @@ almacen distribuido:
      makespan ideal frente al sesgado segun el numero de trabajadores, sobre un
      conteo de palabras real.
 
-es Python puro (sin servicio ni torch, segun la tabla de recursos): basta el
-interprete, con semilla fija. ver IMPLEMENTACION.md.
+es Python puro (sin servicio ni torch): basta el interprete, con semilla
+fija.
 """
 
 from __future__ import annotations

@@ -7,8 +7,8 @@ orden de evaluacion (empujar la seleccion antes de la reunion) reduce el
 tamano del resultado intermedio. la demostracion: 15 tuplas al azar de una
 reunion natural.
 
-no usa gpu, ni torch, ni servicio de base de datos: es python puro, cpu
-(ver tabla de recursos en IMPLEMENTACION.md). las relaciones viven en
+no usa gpu, ni torch, ni servicio de base de datos: es python puro, cpu.
+las relaciones viven en
 memoria como conjuntos, fieles a la semantica de conjuntos del modelo.
 """
 

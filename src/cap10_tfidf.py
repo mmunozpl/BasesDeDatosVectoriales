@@ -1,8 +1,9 @@
 """capitulo 10: recuperacion de informacion clasica.
 
 construye, en Python puro, un sistema de recuperacion documental completo sobre
-un corpus reducido y real ---indice invertido, modelo booleano, modelo de
-espacio vectorial con TF-IDF y similitud coseno, y medidas de evaluacion--- y
+un corpus sintetico reducido, escrito a mano (indice invertido, modelo
+booleano, modelo de espacio vectorial con TF-IDF y similitud coseno, y
+medidas de evaluacion) y
 mide cuatro cosas que muestran por que el modelo vectorial sucede al booleano:
 
   1. booleano: al encadenar terminos con AND el resultado se desploma (a menudo
@@ -14,8 +15,8 @@ mide cuatro cosas que muestran por que el modelo vectorial sucede al booleano:
   4. precision@k: la precision en los primeros k resultados, TF-IDF frente a
      frecuencia bruta.
 
-es Python puro (sin servicio ni torch, segun la tabla de recursos): basta el
-interprete, con semilla fija para la muestra de la demostracion. ver IMPLEMENTACION.md.
+es Python puro (sin servicio ni torch): basta el interprete, con semilla
+fija para la muestra de la demostracion.
 """
 
 from __future__ import annotations

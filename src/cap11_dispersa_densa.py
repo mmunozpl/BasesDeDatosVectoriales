@@ -17,8 +17,7 @@ mide cinco cosas que explican por que la densa sucede a la dispersa:
   5. compresion: unas pocas componentes densas (SVD de la co-ocurrencia) retienen
      la mayor parte de la estructura. se mide la varianza acumulada.
 
-es Python puro con numpy (sin servicio ni torch; la GPU es opcional y aqui no se
-usa, segun la tabla de recursos), con semilla fija. ver IMPLEMENTACION.md.
+es Python puro con numpy (sin servicio ni torch, y sin GPU), con semilla fija.
 """
 
 from __future__ import annotations

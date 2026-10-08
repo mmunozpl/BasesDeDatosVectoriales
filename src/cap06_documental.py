@@ -1,17 +1,17 @@
 """capitulo 6: limites del relacional y el movimiento NoSQL.
 
-modela el mismo dominio ---autores con sus libros--- de dos maneras: en un
+modela el mismo dominio (autores con sus libros) de dos maneras: en un
 esquema relacional normalizado (PostgreSQL, dos tablas que se reunen) y en
 documentos embebidos (MongoDB, un documento por autor que lleva dentro sus
-libros). Mide la latencia de la misma consulta logica ---traer un autor con
-todos sus libros, el agregado completo--- en ambos modelos y al crecer el
+libros). Mide la latencia de la misma consulta logica (traer un autor con
+todos sus libros, el agregado completo) en ambos modelos y al crecer el
 numero de libros por autor, para hacer ver el compromiso: el documento
 embebido sirve el agregado de una lectura, sin reunion; el relacional reune,
 pero responde mejor a las consultas que cruzan todos los autores. Tambien
 muestra 15 documentos al azar como demostracion.
 
 recurso: los servicios postgres y mongo del docker-compose de infra/ (cap. 6
-usa servicio + cpu; sin gpu ni torch). ver IMPLEMENTACION.md.
+usa servicio + cpu; sin gpu ni torch).
 """
 
 from __future__ import annotations

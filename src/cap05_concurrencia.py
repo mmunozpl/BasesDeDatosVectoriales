@@ -1,17 +1,17 @@
 """capitulo 5: transacciones, concurrencia y recuperacion.
 
 reproduce sobre PostgreSQL las anomalias clasicas de la concurrencia
----lectura sucia, lectura no repetible, fantasma y sesgo de escritura---
+(lectura sucia, lectura no repetible, fantasma y sesgo de escritura)
 variando el nivel de aislamiento, y registra en una tabla comparativa
 cuales aparecen en cada nivel. PostgreSQL resulta mas estricto que el
 estandar ANSI: nunca permite lecturas sucias y su REPEATABLE READ ya
-evita los fantasmas. Mide ademas el coste del aislamiento ---la caida de
-rendimiento al endurecerlo bajo contencion--- y muestra 15 transacciones
+evita los fantasmas. Mide ademas el coste del aislamiento (la caida de
+rendimiento al endurecerlo bajo contencion) y muestra 15 transacciones
 con su desenlace como demostracion.
 
 recurso: el servicio postgres del docker-compose de infra/ (cap. 5 usa
 servicio + cpu; sin gpu ni torch). usa dos o mas conexiones a la vez para
-interleaver las transacciones. ver IMPLEMENTACION.md.
+interleaver las transacciones.
 """
 
 from __future__ import annotations

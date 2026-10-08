@@ -7,7 +7,7 @@ secuencial a indice b-tree) sin tocar la consulta logica. imprime el
 plan de ejecucion antes y despues de crear el indice y, como demostracion,
 15 observaciones reproducibles (muestreadas con la semilla fija).
 
-no usa gpu ni torch (ver tabla de recursos en IMPLEMENTACION.md). el
+no usa gpu ni torch. el
 unico recurso es el servicio postgres del docker-compose de infra/.
 """
 

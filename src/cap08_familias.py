@@ -1,7 +1,7 @@
 """capitulo 8: las familias NoSQL.
 
 cada familia NoSQL optimiza un patron de acceso distinto, y este modulo lo
-mide implementando versiones de juguete en memoria ---Python puro--- y
+mide implementando versiones de juguete en memoria (Python puro) y
 cronometrando la operacion que cada una sabe hacer bien frente a la que le
 resulta cara:
 
@@ -16,10 +16,10 @@ resulta cara:
      obliga a recorrer todas las aristas en cada salto. mide la latencia
      segun la profundidad.
 
-es Python puro (sin servicio ni torch, segun la tabla de recursos): basta el
+es Python puro (sin servicio ni torch): basta el
 interprete, con semilla fija para reproducir los numeros. los motores reales
----Redis, MongoDB, Cassandra, Neo4j--- se levantan con infra/, pero el
-modelo de datos y su coste se ven ya en estas maquetas. ver IMPLEMENTACION.md.
+(Redis, MongoDB, Cassandra, Neo4j) se levantan con infra/, pero el
+modelo de datos y su coste se ven ya en estas maquetas.
 """
 
 from __future__ import annotations

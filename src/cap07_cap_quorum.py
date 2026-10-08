@@ -14,9 +14,8 @@ modelo de quorum hacen explicitas, y mide cada una para alimentar una grafica:
   3. latencia: contactar un quorum es esperar a las Q replicas mas rapidas de
      N; al crecer Q, la latencia de cola crece. la consistencia cuesta espera.
 
-es Python puro (sin servicio ni torch, segun la tabla de recursos): basta el
-interprete. semilla fija para que los numeros se reproduzcan. ver
-IMPLEMENTACION.md.
+es Python puro (sin servicio ni torch): basta el interprete. semilla fija
+para que los numeros se reproduzcan.
 """
 
 from __future__ import annotations
