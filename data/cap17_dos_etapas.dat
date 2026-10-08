@@ -1,4 +1,4 @@
-# MRR de la recuperacion densa de una etapa vs la reordenacion de los 50 primeros candidatos (cross-encoder simulado)
+# MRR de la recuperacion densa (una etapa) frente al reordenador sintetico (BM25 normalizado mas 0,3 del denso) sobre los 50 primeros candidatos, consultas lexicas
 metodo  mrr
-una_etapa_denso  0.0659
-dos_etapas_rerank  0.5268
+una_etapa_denso  0.0895
+dos_etapas_reordenador  0.5202

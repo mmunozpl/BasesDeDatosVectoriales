@@ -1,6 +1,6 @@
-# latencia (ms) de prefiltrado vs posfiltrado y resultados del posfiltrado segun selectividad del filtro de anio (n=20000)
-selectividad  prefiltro_ms  posfiltro_ms  result_posfiltro
-12.5  0.35  1.638  9.8
-25.0  1.414  0.868  10.0
-50.0  2.657  2.072  10.0
-100.0  6.129  1.893  10.0
+# latencia minima de 100 consultas (ms, un hilo) del prefiltrado y del posfiltrado con overfetch 100, y resultados medios (de k=10) del posfiltrado ingenuo (overfetch 10), con overfetch 100 y recorriendo hasta k validos, segun la selectividad del filtro de anio (n=20000, busqueda exacta; filtro independiente de la similitud); iguales = consultas en que el recorrido coincide con el prefiltrado
+selectividad  prefiltro_ms  posfiltro_ms  r_ingenuo  r_over100  r_iter  iguales
+12.5  0.399  1.749  1.48  9.8  10.0  100
+25.0  0.754  1.833  2.62  10.0  10.0  100
+50.0  1.584  1.986  5.0  10.0  10.0  100
+100.0  3.548  2.222  10.0  10.0  10.0  100

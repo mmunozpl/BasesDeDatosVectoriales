@@ -1,8 +1,8 @@
-# MRR tras reordenar segun la profundidad R de candidatos de la primera etapa (denso)
-R  mrr
-5  0.0667
-10  0.1228
-20  0.25
-50  0.5268
-100  0.627
-200  0.6802
+# MRR tras el reordenador sintetico segun la profundidad R de la primera etapa (denso), y fraccion de consultas cuyo relevante esta entre los R candidatos (techo)
+R  mrr  techo
+10  0.1894  0.2033
+20  0.2903  0.3433
+50  0.5202  0.6633
+100  0.6327  0.8367
+200  0.6973  0.93
+500  0.7371  0.9933

@@ -1,5 +1,5 @@
-# recall@10 de BM25, denso e hibrido (RRF) en consultas semanticas (significado) y lexicas (termino exacto)
+# recall acotado@10 de BM25, denso e hibrido (RRF, rangos desde 1, listas top-100) en consultas semanticas, lexicas y su mezcla (corpus sintetico)
 consulta  bm25  denso  hibrido
 semantica  0.0203  0.789  0.789
-lexica  1.0  0.2033  0.81
-mixto  0.5102  0.4962  0.7995
+lexica  1.0  0.2033  0.8067
+mixto  0.5102  0.4962  0.7978

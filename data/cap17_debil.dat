@@ -1,0 +1,6 @@
+# recall acotado@10 de la mezcla de consultas con BM25, denso e hibrido (RRF) segun el ruido de la senal densa sintetica
+ruido  bm25  denso  hibrido
+0.6  0.5102  0.4962  0.7978
+1.5  0.5102  0.3493  0.6677
+3.0  0.5102  0.1508  0.5742
+6.0  0.5102  0.0553  0.5237
